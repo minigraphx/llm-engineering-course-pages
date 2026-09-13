@@ -1,0 +1,1867 @@
+
+<!doctype html>
+<html lang="de" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Understand, build, train, evaluate, align, and serve language models">
+      
+      
+      
+        <link rel="canonical" href="https://minigraphx.github.io/llm-engineering-course-pages/mkdocs/de/profiling/">
+      
+      
+        <link rel="prev" href="../evaluation/">
+      
+      
+        <link rel="next" href="../company-strategy/">
+      
+      
+        
+          <link rel="alternate" href="../../profiling/" hreflang="en">
+        
+          <link rel="alternate" href="./" hreflang="de">
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>E04 — Profiling & Budgets - LLM-Engineering-Kurs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="teal">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#profiling-vom-modell-zum-ressourcenbudget" class="md-skip">
+          Zum Inhalt
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Kopfzeile">
+    <a href="../" title="LLM-Engineering-Kurs" class="md-header__button md-logo" aria-label="LLM-Engineering-Kurs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            LLM-Engineering-Kurs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              E04 — Profiling & Budgets
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Sprache wechseln">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../profiling/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="de" class="md-select__link">
+              Deutsch
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Suche" placeholder="Suche" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Suche">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Zurücksetzen" aria-label="Zurücksetzen" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Suche wird initialisiert
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Hauptnavigation" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Start
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../setup/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Einrichtung
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../learning-guide/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Lernleitfaden
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../unit-00/" class="md-tabs__link">
+          
+  
+  
+  Kurs
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../glossary/" class="md-tabs__link">
+          
+  
+  
+  Referenz
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../" title="LLM-Engineering-Kurs" class="md-nav__button md-logo" aria-label="LLM-Engineering-Kurs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    LLM-Engineering-Kurs
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Einrichtung
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../learning-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lernleitfaden
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kurs
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Kurs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../unit-00/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Einheit 0 — Erster Tiny-LM-Lauf
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../unit-00-troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fehlerbehebung für Einheit 0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../diagnostic/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagnose & Lernpfad
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../foundations-01-python-numpy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    F01 — Python & NumPy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../foundations-02-shapes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    F02 — Tensoren & Shapes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../foundations-03-probability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    F03 — Wahrscheinlichkeit & Loss
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../foundations-04-neuron/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    F04 — Neuron & Gradient Descent
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../foundations-05-mlp-autograd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    F05 — MLP, Backprop & Autograd
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../foundations-06-pytorch-checkpoint/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    F06 — PyTorch & Checkpoint
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../foundations-godot-rl-bridge/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    B01 — Godot-RL-Brücke
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bigram-baseline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    T01 — Bigramm-Baseline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bpe-tokenizer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    T02 — Byte-Level-BPE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data-pipeline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    T03 — Datenpipeline & Embeddings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../attention/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    T04 — Self-Attention
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mini-gpt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    M2 — Mini-GPT
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mini-gpt-gate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    M2 — Kerngate
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pretraining/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    E01 — Reproduzierbares Training
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data-quality/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    E02 — Datenqualität
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../evaluation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    E03 — Evaluation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    E04 — Profiling & Budgets
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    E04 — Profiling & Budgets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Inhaltsverzeichnis">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Inhaltsverzeichnis
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-erst-die-groen-erklaren" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Erst die Größen erklären
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-die-tatsachliche-architektur-zahlen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Die tatsächliche Architektur zählen
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-erst-vorhersagen-dann-dieselbe-arbeit-messen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Erst vorhersagen, dann dieselbe Arbeit messen
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-engpass-erkennen-und-budgetentscheidung-treffen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Engpass erkennen und Budgetentscheidung treffen
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-skalierung-und-optionale-parallelisierung" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Skalierung und optionale Parallelisierung
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-ubungen-und-referenzantworten" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Übungen und Referenzantworten
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../company-strategy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    C01 — Firmenstrategie
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../company-data/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    M4 — Firmendaten
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../company-evaluation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    M4 — Geschützte Evaluation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../continued-pretraining/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    M4 — Continued Pretraining
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sft-lora/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    M5 — SFT & LoRA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adaptation-comparison/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    M5 — Adaptationsvergleich
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dpo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    M5 — DPO
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rlhf-bridge/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    M5 — RLHF-Brücke
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../company-capstone/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Capstone — Firmenmodell
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Referenz
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Referenz
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../glossary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossar
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../hardware/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hardware & Cloud-Sicherheit
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data-policy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Datenrichtlinie
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="profiling-vom-modell-zum-ressourcenbudget">Profiling: vom Modell zum Ressourcenbudget</h1>
+<p>Voraussetzungen: <a href="../mini-gpt/">Decoder</a>, <a href="../pretraining/">Training</a> und
+<a href="../evaluation/">Evaluation</a>. Plane etwa 45 Minuten ein. Eine CPU genügt.
+Das Ziel ist eine begründete Ressourcenentscheidung mit sichtbaren Annahmen.</p>
+<h2 id="1-erst-die-groen-erklaren">1. Erst die Größen erklären</h2>
+<p>Ein <strong>Parameter</strong> ist ein trainierbarer Skalar. Ein <strong>FLOP</strong> ist eine
+Gleitkommaoperation; Multiplikation plus Addition zählen hier als zwei.
+<strong>FLOPs</strong> geben Arbeit an, <strong>FLOP/s</strong> eine Rate. <strong>Durchsatz</strong> bezeichnet hier
+verarbeitete Trainingstokens pro Sekunde. Ein <strong>Profiler</strong> zeichnet Operationen
+und ihre Kosten während der Ausführung auf. <strong>Latenz</strong> ist die verstrichene Zeit
+für einen Schritt. Keine dieser Größen misst allein die Modellqualität.</p>
+<p><code>B</code> bezeichnet Batchgröße, <code>T</code> Sequenzlänge, <code>d</code> Einbettungsbreite, <code>L</code> Decoderblöcke,
+<code>H</code> Attention-Köpfe, <code>V</code> Vokabulargröße und <code>C</code> konfigurierte Kontextkapazität.
+Standard ist <code>B=2,T=C=8,d=16,L=1,H=2,V=7</code>: 16 Tokens pro Trainingsschritt und
+Ausgabelogits der Form <code>[2,8,7]</code>.</p>
+<h2 id="2-die-tatsachliche-architektur-zahlen">2. Die tatsächliche Architektur zählen</h2>
+<p>Tokeneinbettung und separate Ausgabematrix tragen zusammen <code>2*V*d</code> Parameter bei,
+Positionseinbettungen <code>C*d</code>. Pro Block sind es <code>4*d*d</code> Attention-Gewichte,
+<code>8*d*d</code> Feed-forward-Gewichte und <code>5*d</code> Feed-forward-Biaswerte. Zwei Normalisierungen
+fügen <code>4*d</code> Skalare hinzu; die abschließende Normalisierung weitere <code>2*d</code>.</p>
+<p>Mit aktivierter Normalisierung:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>P = 2*V*d + C*d + L*(12*d*d + 9*d) + 2*d
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>  = 224 + 128 + 3216 + 32
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>  = 3600 Parameter
+</code></pre></div>
+<p>Diese Anzahl ist für MiniGPT exakt: Einbettung und Ausgabematrix teilen keine
+Gewichte, die Attention-Projektionen haben keinen Bias. Der Test vergleicht die
+Formel mit <code>sum(p.numel() ...)</code>, auch ohne Normalisierung. Andere Architekturen
+benötigen eine angepasste Zählung.</p>
+<p><strong>FP32</strong> benötigt vier Bytes pro Skalar. <strong>AdamW</strong> speichert zwei gleitende
+Statistiken pro Parameter. Zusammen mit Parametern und Gradienten sind das ungefähr
+<code>4*4*P=16P=57.600</code> Bytes. Python, Laufzeitbibliotheken, Speicherverwaltung und
+Zwischentensoren sind darin nicht enthalten. Eine <strong>gespeicherte Aktivierung</strong> ist
+ein Zwischenwert für den Rückwärtslauf. Unsere bewusst grobe Schätzung lautet
+<code>4*B*(L*(12*T*d+H*T*T)+T*V)</code> und ergibt 13.760 Bytes. Zusammen sind es 71.360 Bytes;
+das ist nicht der Speicherbedarf eines gestarteten Python-Prozesses.</p>
+<p>Für dichte Matrixmultiplikationen schätzen wir:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>Vorwärts: 2*B*L*(12*T*d*d + 2*T*T*d) + 2*B*T*d*V = 110080 FLOPs
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>Training: ungefähr 3 * Vorwärts = 330240 FLOPs pro Optimierungsschritt
+</code></pre></div>
+<p>Der erste Term enthält Projektionen und Feed-forward-Matrizen. <code>T*T</code> entsteht aus
+Attention-Scores und gewichteten Werten. Der letzte Term ist die Vokabularausgabe.
+Nichtlinearitäten, Normalisierung, Nachschlagen und Optimierer-Arithmetik fehlen.
+Bei dichten Produkten kostet der Rückwärtslauf oft ungefähr zwei Vorwärtsläufe;
+<code>3x</code> ist eine Planungsnäherung, keine gemessene Gleichheit. Die Kausalmaske entfernt
+in dieser Lehrimplementierung keine dichten Matrixmultiplikationen.</p>
+<h2 id="3-erst-vorhersagen-dann-dieselbe-arbeit-messen">3. Erst vorhersagen, dann dieselbe Arbeit messen</h2>
+<p>Lege vor der Messung zehn Schritte und angenommene 10.000 Tokens/s fest. Dieser
+Durchsatz ist ausdrücklich hypothetisch und stammt nicht aus dem bevorstehenden
+Lauf. Bei Batch2/Kontext8 ergibt das <code>10*2*8=160</code> gemessene Tokens und eine
+Zeitvorhersage von <code>160/10000=0,016</code> Sekunden. Für Modellzustände plus Aktivierungen
+stehen vorab 71.360 Bytes in der Schätzung. Plane zusätzliche Reserve ein, zum
+Beispiel die doppelte Schrittzeit (0,032 Sekunden) für Schwankungen sowie ein
+getrenntes Budget für Start, Evaluation und Checkpoints. Reserve auf geschätzte
+Tensorbytes ersetzt keine Messung des tatsächlichen Prozess-Spitzenspeichers.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>python<span class="w"> </span>examples/profile_training.py<span class="w"> </span>--assumed-tokens-per-second<span class="w"> </span><span class="m">10000</span><span class="w"> </span>--output<span class="w"> </span>artifacts/profiling/review.json
+</code></pre></div>
+<p>Die CLI schreibt <code>artifacts/profiling/review.plan.json</code>, <strong>bevor</strong> sie den Profiler
+aufruft. Die Datei enthält Schritte, Tokens, angenommenen Durchsatz, vorhergesagte
+Sekunden, Tensorbytes, Architektur und Messumfang. Mit
+<code>--assumed-tokens-per-second</code> kannst du einen separat kalibrierten Durchsatz
+vorgeben; null, negative und nicht endliche Werte werden abgewiesen. Verwende für
+jeden Versuch einen eigenen Ausgabenamen, um seine ursprüngliche Annahme zu behalten.</p>
+<p><code>review.json</code> enthält anschließend denselben unveränderten Plan.
+<code>timed_step_total_seconds</code> summiert die zehn tatsächlich gemessenen Dauern, statt
+<code>10*Median</code> zu verwenden. Vorhersage und Messung schließen Aufwärmen, Modellaufbau,
+Profiling, Datenladen, Evaluation und Checkpoints aus. Ihr Umfang stimmt überein.
+Ein dokumentierter Wiederholungslauf auf der Referenz-CPU brauchte
+<strong>0,007748458 Sekunden</strong> statt vorhergesagter <strong>0,016 Sekunden</strong>. Die vorzeichenbehaftete
+Abweichung ist <code>Ist-Soll=-0,008251542</code> Sekunden; relativ ergibt das
+<code>-0,008251542/0,016=-0,515721</code>, also etwa <strong>51,57% weniger Zeit</strong> als angenommen.
+Der hypothetische Durchsatz war für diesen Rechner konservativ. Das widerlegt
+keine FLOP-Formel; andere Rechner können abweichen. Kalibriere mit einem getrennten
+Pilotlauf, statt die gespeicherte Vorhersage nach Kenntnis des Ergebnisses zu ändern.</p>
+<p>Beim Speicher stehen 71.360 geschätzte Tensorbytes den 115.904 Bytes positiver
+Operatorallokationen gegenüber. Da die Umfänge verschieden sind, berechnet der
+Bericht daraus ausdrücklich keinen prozentualen Peak-Speicherfehler. Dafür wäre
+eine zusätzliche passende Prozess-/Gerätespeichermessung nötig.</p>
+<p>Die folgenden Konfigurationsvergleiche verwenden dieselbe Standardannahme und
+schreiben jeweils ebenfalls eine eigene <code>.plan.json</code>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>python<span class="w"> </span>examples/profile_training.py<span class="w"> </span>--output<span class="w"> </span>artifacts/profiling/report.json
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>python<span class="w"> </span>examples/profile_training.py<span class="w"> </span>--context<span class="w"> </span><span class="m">16</span><span class="w"> </span>--output<span class="w"> </span>artifacts/profiling/context16.json
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>python<span class="w"> </span>examples/profile_training.py<span class="w"> </span>--context<span class="w"> </span><span class="m">16</span><span class="w"> </span>--width<span class="w"> </span><span class="m">32</span><span class="w"> </span>--output<span class="w"> </span>artifacts/profiling/width32.json
+</code></pre></div>
+<p>Der Runner kopiert das Modell auf die CPU und erzeugt mit einem Aufwärmschritt die
+AdamW-Zustände. <strong>Aufwärmen</strong> lässt erstmalige Initialisierung und verzögerte
+Allokationen vor der eigentlichen Messung stattfinden. Danach werden zehn volle
+Trainingsschritte gemessen. Der <strong>Median</strong>, die mittlere sortierte Dauer, reagiert
+weniger auf eine einzelne Unterbrechung als der Mittelwert. Die Zeitmessung erfolgt
+ohne Profiler, damit dessen Zusatzaufwand nicht im Durchsatz steckt. Separate
+instrumentierte Durchläufe erfassen Trainingsoperationen und Vorwärts-FLOPs.</p>
+<p>Referenz: macOS arm64, Python 3.12.13, PyTorch 2.14.0, ein CPU-Thread:</p>
+<table>
+<thead>
+<tr>
+<th>Kontext / Breite</th>
+<th style="text-align: right;">Parameter</th>
+<th style="text-align: right;">Vorwärts geschätzt / aufgezeichnet</th>
+<th style="text-align: right;">Geschätzter Speicher</th>
+<th style="text-align: right;">Median pro Schritt</th>
+<th style="text-align: right;">Tokens/s</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>8 / 16</td>
+<td style="text-align: right;">3.600</td>
+<td style="text-align: right;">110.080 / 111.728 FLOPs</td>
+<td style="text-align: right;">71.360 B</td>
+<td style="text-align: right;">0,753 ms</td>
+<td style="text-align: right;">21.261</td>
+</tr>
+<tr>
+<td>16 / 16</td>
+<td style="text-align: right;">3.728</td>
+<td style="text-align: right;">236.544 / 239.840 FLOPs</td>
+<td style="text-align: right;">89.216 B</td>
+<td style="text-align: right;">0,799 ms</td>
+<td style="text-align: right;">40.055</td>
+</tr>
+<tr>
+<td>16 / 32</td>
+<td style="text-align: right;">13.600</td>
+<td style="text-align: right;">866.304 / 872.672 FLOPs</td>
+<td style="text-align: right;">271.744 B</td>
+<td style="text-align: right;">0,958 ms</td>
+<td style="text-align: right;">33.392</td>
+</tr>
+</tbody>
+</table>
+<p>Das sind Beobachtungen, keine Bestehensgrenzen. Rechner, konkurrierende Prozesse
+und Bibliotheksversionen verändern die Zeiten. Längerer Kontext verdoppelt hier
+die Tokens, aber nicht die Laufzeit: Viele winzige Operationen haben festen
+Verwaltungsaufwand. Übertrage dieses günstige Verhältnis nicht auf lange Kontexte.</p>
+<p><code>with_flops=True</code> liefert Schätzungen für unterstützte Operationen, keine gezählten
+Hardwareinstruktionen. Im Standardfall ist die Abweichung
+<code>(111728-110080)/110080 ≈ 1,50%</code>. Zusätzlich erfasste Arithmetik und unterschiedliche
+Zählumfänge erklären, warum analytischer Wert und Profilerwert nicht exakt gleich
+sein müssen. Siehe die
+<a href="https://docs.pytorch.org/docs/stable/profiler.html">PyTorch-Profiler-API</a> und das
+<a href="https://docs.pytorch.org/tutorials/recipes/recipes/profiler_recipe.html">offizielle Profiling-Rezept</a>.</p>
+<p><code>positive_operator_allocation_bytes</code> beträgt in der Referenz 115.904 Bytes. Es ist
+die Summe positiver Nettoallokationen pro Operator während eines Schritts.
+Das ist <strong>nicht gleichzeitig belegter Spitzenspeicher</strong>, <strong>RSS</strong> (physisch belegter
+Prozessspeicher) oder GPU-Speicher. Wiederverwendete Zwischentensoren und dauerhafte
+Zustände unterscheiden diese Größen. PyTorch kann melden, dass ein vor Profilbeginn
+angelegter Block keinem aufgezeichneten Freigabeereignis zugeordnet werden kann.
+Auch deshalb darf diese Summe nicht als Peak-Speicher bezeichnet werden.</p>
+<h2 id="4-engpass-erkennen-und-budgetentscheidung-treffen">4. Engpass erkennen und Budgetentscheidung treffen</h2>
+<p>Ein <strong>Engpass</strong> ist der Teil, der bei dieser Konfiguration den Fortschritt
+begrenzt. <code>operators</code> sortiert nach eigener CPU-Zeit, ohne aufgezeichnete
+Kindoperationen. <code>course_forward</code> und <code>course_backward</code> sind markierte Bereiche,
+keine einzelnen Tensor-Kernel. Ihre eigenen Zeiten betragen in der Referenz etwa
+527 und 240 Mikrosekunden, der AdamW-Schritt etwa 226 Mikrosekunden. Bei diesem
+winzigen Modell ist Verwaltungs-/Python-/Optimiereraufwand damit sichtbar.
+Das beweist keinen Python-Engpass bei großen Transformern.</p>
+<p>Das Standardbudget beträgt 60 Sekunden und 64 MiB, also <code>64*1024*1024</code> Bytes.
+Die Speicherschätzung passt; aus dem Median folgt
+<code>floor(60/0,00075256)=79.727</code> Schritte. Im JSON steht <code>decision: "run"</code>.
+Das plant wiederholte synthetische Schritte. Datenladen, Evaluation, Checkpoints,
+Start und Profiling selbst brauchen zusätzliche Zeit. Es ist keine Zusage für
+79.727 vollständige End-to-End-Trainingsschritte in einer Minute.</p>
+<p>Bei einem hypothetischen Budget von 100.000 Bytes <em>für geschätzte Modelltensoren</em>
+passt Kontext 16 / Breite 16 mit 89.216 Bytes. Breite 32 passt mit 271.744 Bytes
+nicht. Wähle dafür die kleinere Breite. Für ein echtes Prozessbudget musst du
+Spitzenspeicher messen und Reserve einplanen: 100.000 Bytes reichen nicht einmal
+für die Python-Laufzeit. Mit <code>--memory-mib 0.001</code> scheitert bereits die
+Standardschätzung und liefert null mögliche Schritte. Null, negative und nicht
+endliche Budgets werden als ungültig zurückgewiesen.</p>
+<h2 id="5-skalierung-und-optionale-parallelisierung">5. Skalierung und optionale Parallelisierung</h2>
+<p>Mehr Batchgröße erhöht die geschätzte Arbeit linear. Doppelte Breite vervierfacht
+ungefähr die Matrixgewichte und Projektionsarbeit. Doppelter Kontext vervierfacht
+die <code>T*T</code>-Attention-Komponente, während viele andere Komponenten nur doppelt so
+groß werden. Mehr Blöcke skalieren die wiederholte Blockarbeit fast linear.
+Gelernte Positionseinbettungen wachsen mit der konfigurierten Kontextkapazität,
+auch bei kürzeren Batches. Miss erneut: Auslastung und Speicherverkehr ändern die
+Verhältnisse zwischen Rechenarbeit und Zeit.</p>
+<p>Ein <strong>Skalierungsgesetz</strong> beschreibt einen empirisch beobachteten Zusammenhang
+zwischen Modell-Loss und Größen wie Parameterzahl, Datenmenge und Rechenbudget.
+Es ist etwas anderes als die Formeln für Rechenoperationen: Diese zählen Arbeit,
+nicht ihren Nutzen für die Qualität. Ein größeres Modell braucht geeignete Daten
+und ausreichend Training. Mehr Durchläufe desselben winzigen Korpus können zu
+Überanpassung statt besserem Test-Loss führen. Bei abnehmendem Zusatznutzen wird
+die nächste Recheneinheit weniger wertvoll. Vergleiche deshalb gemessenen Loss
+unter kontrollierten Modell-/Daten-/Schrittbudgets. Die drei winzigen Konfigurationen
+hier reichen nicht aus, ein Sprachmodell-Skalierungsgesetz zu bestimmen oder zu
+bestätigen. Die empirische Grundlage beschreibt
+<a href="https://arxiv.org/abs/2001.08361">Kaplan et al., Scaling Laws for Neural Language Models</a>.</p>
+<p><strong>Datenparallelität</strong> hält auf jedem Gerät eine vollständige Modellkopie und
+verteilt Beispiele. Vor jeder Aktualisierung werden Gradienten ausgetauscht.
+Das erhöht potenziell den Gesamtdurchsatz, verkleinert aber nicht die Parameter
+einer Kopie. Bei unterschiedlich vielen gültigen Tokens pro Gerät muss die globale
+Tokengewichtung korrekt bleiben.</p>
+<p><strong>Tensorparallelität</strong> zerlegt die Matrizen einer Operation auf Geräte. Das kann
+den lokalen Speicherbedarf senken, erfordert aber Kommunikation innerhalb der
+Schichten. <strong>Pipelineparallelität</strong> verteilt aufeinanderfolgende Schichten auf
+Geräte und schickt Mikrobatches hindurch. Beim Füllen oder Warten entstehen
+<strong>Bubbles</strong>, also Leerlaufzeiten. Mehr Mikrobatches können diesen Anteil reduzieren.
+Beide Verfahren benötigen passende Kommunikations- und Ablaufplanung. Hier werden
+sie erklärt; die Einheit implementiert keine verteilte Trainingslaufzeit.</p>
+<p>Optionale GPUs können das Trainingslabor mit dessen CPU-Rückfall ausführen.
+Dieser Profiler misst ausdrücklich immer CPU. Für einen getrennten CUDA-Versuch
+müssen CUDA-Aktivitäten aufgezeichnet und asynchrone Operationen um die Zeitmessung
+synchronisiert werden. CUDA-Allokationen und Peak-Werte separat berichten.
+Unsynchronisierte Startzeit darf nicht mit dem CPU-Median verglichen werden.
+Bei 3.600 Parametern können Gerätestart und Kommunikation mehr kosten als die
+beschleunigte Arithmetik.</p>
+<h2 id="6-ubungen-und-referenzantworten">6. Übungen und Referenzantworten</h2>
+<ol>
+<li>Berechne die vier FP32-Parameterzustände. Warum genügt ein Prozessbudget von
+   57.600 Bytes trotzdem nicht?</li>
+<li>Bezeichne absichtlich <code>positive_operator_allocation_bytes</code> als maximalen RAM
+   in einer Experimentkarte. Benenne und korrigiere den falschen Schluss.</li>
+<li>Sage voraus, wie doppelter Kontext Attention-Score-Speicher und Projektionen
+   verändert. Führe den Kontextvergleich aus und erkläre seine Laufzeit.</li>
+<li>Wähle eine gemessene Konfiguration für 100.000 Bytes geschätzte Modelltensoren.
+   Welche fehlende Messung brauchst du vor einem echten Einsatz?</li>
+</ol>
+<p>Hinweise: Vier Zustände mal vier Bytes; Allokationen während einer Zeitspanne sind
+nicht gleichzeitig belegter Speicher; unterscheide <code>T</code> und <code>T*T</code>.</p>
+<p>Antworten: (1) <code>3600*16=57600</code> Bytes ohne Aktivierungen, temporäre Tensoren,
+Speicherverwaltung, Python und Bibliotheken. (2) Schreibe „115.904 Bytes positive
+Nettoallokationen pro Operator im profilierten Schritt; gleichzeitig belegter
+Spitzenspeicher wurde nicht gemessen.“ (3) Score-Speicher wächst vierfach,
+Projektionen ungefähr zweifach; feste Verwaltungskosten können bei winzigen
+CPU-Operationen besser ausgelastet werden. (4) Beide Breite-16-Konfigurationen
+passen in diese Schätzung; Kontext 16 zeigt hier höheren Tokendurchsatz. Miss
+den tatsächlichen Prozess-Spitzenspeicher und prüfe Qualität bei gewähltem Kontext.</p>
+<p>Die Einheit ist abgeschlossen, wenn du 3.600 Parameter herleiten, die FLOP-Abweichung
+erklären, Allokationsereignisse von Spitzenspeicher unterscheiden und eine
+Budgetentscheidung mit ihren Grenzen formulieren kannst.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Zurück zum Seitenanfang
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "content.code.copy", "toc.integrate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "In Zwischenablage kopiert", "clipboard.copy": "In Zwischenablage kopieren", "search.result.more.one": "1 weiteres Suchergebnis auf dieser Seite", "search.result.more.other": "# weitere Suchergebnisse auf dieser Seite", "search.result.none": "Keine Suchergebnisse", "search.result.one": "1 Suchergebnis", "search.result.other": "# Suchergebnisse", "search.result.placeholder": "Suchbegriff eingeben", "search.result.term.missing": "Es fehlt", "select.version": "Version ausw\u00e4hlen"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

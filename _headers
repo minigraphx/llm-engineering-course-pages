@@ -1,0 +1,10 @@
+/llm-engineering-course-pages/*.md
+  Content-Type: text/markdown; charset=utf-8
+/llm-engineering-course-pages/*.mdx
+  Content-Type: text/markdown; charset=utf-8
+/llm-engineering-course-pages/*.txt
+  Content-Type: text/plain; charset=utf-8
+/llm-engineering-course-pages/
+  Link: </llm-engineering-course-pages/.well-known/api-catalog>; rel="api-catalog"; type="application/linkset+json", </llm-engineering-course-pages/openapi.json>; rel="service-desc"; type="application/json", </llm-engineering-course-pages/agent-readability.json>; rel="describedby"; type="application/json", </llm-engineering-course-pages/llms.txt>; rel="describedby"; type="text/plain", </llm-engineering-course-pages/index.md>; rel="alternate"; type="text/markdown"
+/llm-engineering-course-pages/.well-known/api-catalog
+  Content-Type: application/linkset+json

@@ -1,0 +1,47 @@
+{
+  "actions": [],
+  "cta": null,
+  "featured": [],
+  "root": "/",
+  "selectors": [],
+  "sidebar": [
+    {
+      "description": "Four complete lessons, setup, and two languages. One small model at a time.",
+      "kind": "page",
+      "label": "Learn by tracing the numbers",
+      "pageId": "filesystem:index.mdx",
+      "route": "/"
+    },
+    {
+      "kind": "page",
+      "label": "Unit 0 — First Tiny-LM Run",
+      "pageId": "filesystem:unit-00.mdx",
+      "route": "/unit-00"
+    },
+    {
+      "kind": "page",
+      "label": "T04 — Self-attention as a number experiment",
+      "pageId": "filesystem:attention.mdx",
+      "route": "/attention"
+    },
+    {
+      "kind": "page",
+      "label": "SFT and LoRA: teach a response, preserve a base",
+      "pageId": "filesystem:sft-lora.mdx",
+      "route": "/sft-lora"
+    },
+    {
+      "kind": "page",
+      "label": "M2 core gate: code, diagnose, explain",
+      "pageId": "filesystem:mini-gpt-gate.mdx",
+      "route": "/mini-gpt-gate"
+    },
+    {
+      "kind": "page",
+      "label": "Setup — from a fresh computer to the first run",
+      "pageId": "filesystem:setup.mdx",
+      "route": "/setup"
+    }
+  ],
+  "tabs": []
+}

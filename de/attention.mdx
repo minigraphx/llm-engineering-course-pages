@@ -1,0 +1,216 @@
+---
+title: "T04 — Self-Attention als Zahlenexperiment"
+---
+
+[Diese Lektion in MkDocs](/llm-engineering-course-pages/mkdocs/de/attention/)
+
+<CourseContent>
+
+<span id="t04-self-attention-als-zahlenexperiment" />
+
+
+[← T03 Datenpipeline](/llm-engineering-course-pages/mkdocs/de/data-pipeline/) · [Kursstart](/llm-engineering-course-pages/mkdocs/de/)
+
+## Lernziel [#lernziel]
+
+In 90–110 Minuten implementierst du Scaled Dot-Product Attention von Grund auf,
+prüfst sie gegen eine Handrechnung und gegen die fusionierte PyTorch-Referenz,
+weist nach, dass die Causal Mask die Zukunft blockiert, erweiterst einen Head zu
+mehreren und diagnostizierst vier absichtlich fehlerhafte Varianten über
+Messungen statt über Intuition.
+
+Das Lab läuft auf den eingebetteten Batches aus T03; Attention arbeitet also auf
+echten Tokens und nicht auf Rauschen.
+
+## Vorhersagen · Was darf eine Position wissen? [#vorhersagen-was-darf-eine-position-wissen]
+
+Sage vor dem ersten Lauf voraus:
+
+1. welche Shape die Score-Matrix für einen Batch `[B,T,D]` mit `H` Heads hat;
+2. warum die Scores durch <InlineMath tex={"\\sqrt{d_k}"} /> geteilt werden und was ohne passiert;
+3. ob Attention-Gewichte in Zeile `t` rechts von `t` ungleich null sein dürfen.
+
+Starte dann die CPU-Referenz:
+
+```
+python examples/run_attention_lab.py
+```
+
+Sie druckt den Report und schreibt `artifacts/attention/heatmap-head-0.svg`
+(beides bleibt außerhalb von Git).
+
+## Verfolgen · Ein Beispiel von Hand rechnen [#verfolgen-ein-beispiel-von-hand-rechnen]
+
+`hand_check_example()` nutzt drei Tokens in zwei Dimensionen; Queries, Keys und
+Values sind identisch:
+
+$$
+X=\begin{pmatrix}1&0\\0&1\\1&1\end{pmatrix}.
+$$
+
+Attention besteht aus fünf sichtbaren Schritten:
+
+$$
+S=\frac{QK^\top}{\sqrt{d_k}},\qquad
+S'=\mathrm{mask}(S),\qquad
+A=\mathrm{softmax}(S'),\qquad
+Y=AV
+$$
+
+Mit <InlineMath tex={"d_k = 2"} /> vergleicht Zeile 1 die Scores <InlineMath tex={"0"} /> und <InlineMath tex={"1/\\sqrt{2}"} />; ihre Gewichte
+sind
+
+$$
+\left[\frac{1}{1+e^{1/\sqrt{2}}},\ \frac{e^{1/\sqrt{2}}}{1+e^{1/\sqrt{2}}}\right]
+= [0{,}330,\ 0{,}670].
+$$
+
+Zeile 0 darf nur sich selbst lesen und gibt daher <InlineMath tex={"V_0=[1,0]"} /> unverändert
+zurück. Rechne Zeile 2 selbst und vergleiche sie mit dem Report, bevor du
+weitermachst. Weicht deine Zahl ab, hast du entweder deinen Fehler oder den des
+Codes gefunden.
+
+
+
+## Interaktiv · Eine Attention-Zeile
+
+<AttentionDemo locale="de" />
+
+## Bauen · Ein Head [#bauen-ein-head]
+
+`SingleHeadSelfAttention` enthält drei Projektionen und sonst nichts. Verfolge
+die Shapes für einen Batch `[4,23,16]` mit `head_dim=8`:
+
+| Wert | Shape | Bedeutung |
+| --- | --- | --- |
+| `inputs` | `[4,23,16]` | eingebettete Tokens aus T03 |
+| `queries`, `keys`, `values` | `[4,23,8]` | was jede Position fragt, anbietet und trägt |
+| `scores` | `[4,23,23]` | Ähnlichkeit jeder Query zu jedem Key |
+| `weights` | `[4,23,23]` | zeilennormiert; jede Zeile summiert zu 1 |
+| `output` | `[4,23,8]` | Value-Mischung pro Position |
+
+Zwei Eigenschaften werden geprüft, nicht angenommen: Jede Zeile summiert zu
+eins, und `future_attention_mass(weights)` ist exakt `0.0`. Letzteres ist die
+Wirkung der Causal Mask — eine boolesche untere Dreiecksmatrix `[T,T]`, die
+gesperrte Scores **vor** dem Softmax auf <InlineMath tex={"-\\infty"} /> setzt, sodass sie exakt null
+Gewicht bekommen statt eines kleinen.
+
+
+Zusätzliche boolesche Masken schränken die kausale Maske durch Schnittbildung
+ein: `True` bedeutet erlaubt, kann bei `causal=True` aber keinen zukünftigen Key
+freigeben. Masken müssen `[T,T]` abdecken; pro Batch-Beispiel mit mehreren Heads
+verwende `[B,1,T,T]`. Jede Query benötigt mindestens einen erlaubten Key;
+vollständig gesperrte Zeilen lösen vor Softmax einen `ValueError` aus.
+Für unbeschränkte Attention setzt du ausdrücklich `causal=False`.
+
+Im JSON-Report steht für gesperrte Scores die Zeichenfolge `"-inf"`, da JSON
+keine unendlichen Zahlen kennt. Die Berechnung nutzt weiterhin negative
+Unendlichkeit. Heatmap-Labels gehören zur ausgewählten Batch-Sequenz
+(die CLI verwendet Sequenz 0).
+
+## Bauen · Mehrere Heads [#bauen-mehrere-heads]
+
+`MultiHeadSelfAttention` projiziert auf die volle Breite, teilt sie in `H` Heads
+zu je `D/H` Dimensionen, rechnet Attention pro Head, führt zusammen und mischt
+einmal nach:
+
+| Wert | Shape | Bedeutung |
+| --- | --- | --- |
+| `queries` | `[4,4,23,4]` | `[B,H,T,D/H]` nach `split_heads` |
+| `weights` | `[4,4,23,23]` | eine Attention-Matrix je Head |
+| `output` | `[4,23,16]` | zusammengeführte Heads, zurück auf Modellbreite |
+
+Genau das Reshape scheitert lautlos, denn eine falsche `view`/`transpose`-
+Reihenfolge liefert trotzdem die richtige Shape. `head_by_head_reference`
+rechnet dasselbe Ergebnis deshalb mit einer expliziten Python-Schleife über die
+Heads und ganz ohne Reshape nach. Die Referenzkonfiguration erreicht eine
+maximale Differenz von `0.000`; PyTorchs fusioniertes
+`scaled_dot_product_attention` weicht um `2.4e-7` ab — Float32-Arithmetik, kein
+Fehler.
+
+`gradient_check` vergleicht die Input-Gradienten von Autograd mit zentralen
+Differenzen in Float64 und meldet einen maximalen relativen Fehler von
+`3.3e-11`.
+
+## Brechen · Vier Defekte, vier Messungen [#brechen-vier-defekte-vier-messungen]
+
+`diagnose_broken_variants` führt jeden Defekt auf denselben Eingaben aus und
+hält fest, was ihn aufdeckt:
+
+| Variante | Symptom | Aufgedeckt durch |
+| --- | --- | --- |
+| `no_mask` | Zukunftsmasse `179,05` statt `0,0` | Kausalitätsprüfung |
+| `no_scaling` | Gewichtsentropie `1,82` statt `2,11` — zu spitze Attention | Entropievergleich |
+| `wrong_transpose` | Score-Matrix `[d_k,d_k]` | Shape-Prüfung |
+| `softmax_over_queries` | Zeilensummen um `3,82` daneben | Normierungsprüfung |
+
+Der Transpose-Defekt fliegt nur auf, wenn `T != d_k`. `silent_transpose_case()`
+setzt beides auf 4: Nichts wirft eine Exception, die Shape stimmt, und erst der
+Wertevergleich zeigt eine maximale Differenz von `1,007` und eine Zukunftsmasse
+von `1,21`. Ein Test, der nur Shapes prüft, ginge bei einem Modell durch, das
+die Zukunft liest.
+
+Beantworte für jede Variante: Welcher deiner Tests wäre zuerst rot geworden?
+
+## Messen · Die Heatmap lesen [#messen-die-heatmap-lesen]
+
+Öffne `artifacts/attention/heatmap-head-0.svg`. Zeilen sind Query-Positionen,
+Spalten sind Keys; oben rechts bleibt es leer wegen der Maske. Frühe Positionen
+müssen ihr Gewicht auf wenige Keys konzentrieren — Position 0 hat genau eine
+Wahl —, während spätere Zeilen es verteilen.
+
+Ändere einen Faktor und sage die Wirkung zuerst voraus:
+
+```
+python examples/run_attention_lab.py --heads 1
+python examples/run_attention_lab.py --heads 8
+```
+
+Mehr Heads bei gleicher Breite bedeuten kleineres `head_dim`; jeder Head
+vergleicht also in einem schmaleren Raum. Die Parameterzahl bleibt bei
+`embedding_dim=16` unabhängig von der Head-Zahl `1024` — Heads teilen Kapazität
+auf, sie fügen keine hinzu.
+
+Referenzwerte und Änderungsprotokoll stehen in der versionierten
+[Attention-Referenz](/llm-engineering-course-pages/reference/attention-v1).
+
+## Erklären · Dein Attention-Absatz [#erklaren-dein-attention-absatz]
+
+Schreibe einen Absatz, der benennt:
+
+- Shape und Bedeutung von Queries, Keys, Values, Scores, Weights und Output;
+- warum die Scores mit <InlineMath tex={"\\sqrt{d_k}"} /> skaliert werden;
+- wie die Maske Kausalität erzwingt und an welcher Stelle sie greift;
+- was das Aufteilen in Heads ändert und was nicht;
+- die Messung, die jeden der vier Defekte aufdeckt;
+- die beiden Referenzen, gegen die deine Implementierung geprüft wurde.
+
+## Abschluss-Gate [#abschluss-gate]
+
+Du bestehst, wenn du eine Zeile der Attention-Matrix von Hand herleiten kannst
+und dein Report die Implementierung belegt. Erforderliche Nachweise:
+
+- deine eigene Rechnung für Zeile 2 passend zu `hand_check` im Report;
+- `[B,H,T,T]`-Gewichte mit Zeilensummen 1 und Zukunftsmasse `0.0`;
+- Übereinstimmung mit der Head-für-Head-Referenz und mit PyTorch (&lt; `1e-5`);
+- ein Gradient Check unter `1e-5` relativem Fehler;
+- alle vier fehlerhaften Varianten samt aufdeckender Messung;
+- eine Heatmap, in zwei Sätzen laut vorgelesen.
+
+Führe die automatischen Vertragstests aus:
+
+```
+pytest tests/test_attention.py
+```
+
+## Wie es weitergeht [#wie-es-weitergeht]
+
+Eine Attention-Schicht mischt Information über Positionen hinweg, kann sie aber
+kaum transformieren. Als Nächstes ergänzt du Residualpfade, Normierung und ein
+Feed-Forward-Netz zu einem vollständigen Decoder-Block und einem Mini-GPT.
+
+[← T03 Datenpipeline](/llm-engineering-course-pages/mkdocs/de/data-pipeline/) · [Kursstart](/llm-engineering-course-pages/mkdocs/de/)
+
+[→ Mini-GPT-Decoder](/llm-engineering-course-pages/mkdocs/de/mini-gpt/) · [Lernleitfaden](/llm-engineering-course-pages/mkdocs/de/learning-guide/)
+
+</CourseContent>

@@ -1,0 +1,151 @@
+---
+title: "Unit 0 — First Tiny-LM Run"
+---
+
+[This lesson in MkDocs](/llm-engineering-course-pages/mkdocs/unit-00/)
+
+<CourseContent>
+
+<span id="unit-0-first-tiny-lm-run" />
+
+
+[← Setup](/llm-engineering-course-pages/setup) · [Course home](/llm-engineering-course-pages/mkdocs/) · [Troubleshooting](/llm-engineering-course-pages/mkdocs/unit-00-troubleshooting/)
+
+## Learning outcome [#learning-outcome]
+
+In 45–60 minutes, you will run a prepared Tiny-LM, generate from your own
+prompt, inspect token IDs, probabilities, shapes, and loss, change one logit,
+and explain the measured effect. No prior ML knowledge, learner data, cloud, or
+accelerator is required.
+
+## 0–10 min · Predict and check setup [#010-min-predict-and-check-setup]
+
+The model sees one character and predicts the next. Before running it, predict
+the continuation of `the ` and whether making `m` more likely after a space will
+change the generated text.
+
+```
+python examples/diagnose_unit0.py
+```
+
+Every check should say `pass`. The command verifies Python, the selected
+CPU/MPS/CUDA backend, writable artifact storage, checkpoint loading, and a smoke
+generation. If it fails, use the [troubleshooting guide](/llm-engineering-course-pages/mkdocs/unit-00-troubleshooting/).
+
+## 10–20 min · First generation [#1020-min-first-generation]
+
+```
+python examples/run_unit0.py
+```
+
+The first run materializes two ignored local artifacts under `artifacts/unit0/`:
+
+- a deterministic 596-byte synthetic corpus dedicated to CC0-1.0;
+- a prepared character-bigram checkpoint derived from adjacent-character counts.
+
+Their hashes and provenance are written to `manifest.json`. They are generated
+locally because datasets and checkpoints must not be committed to Git.
+
+Find these report fields:
+
+- `backend` — cpu, mps, or cuda;
+- `prompt_token_ids` — the concrete character IDs;
+- `baseline.top_next_tokens` — the five next-character probabilities;
+- `baseline.corpus_loss` — mean next-character cross-entropy;
+- `baseline.generation` — greedy continuation from the prepared checkpoint.
+
+## 20–30 min · Trace the model [#2030-min-trace-the-model]
+
+The vocabulary has `V=33` characters. The checkpoint contains a transition
+matrix with shape `[V,V]`. A current token ID selects one row of `V` logits;
+softmax turns that row into next-token probabilities. Greedy decoding chooses
+the largest probability and feeds that character back as the next input.
+
+For a four-character prompt, verify:
+
+```
+from llm_course import run_vertical_slice
+
+report = run_vertical_slice("the ", preferred_device="cpu")
+assert len(report["prompt_token_ids"]) == 4
+assert len(report["baseline"]["top_next_tokens"]) == 5
+assert 0.0 <= report["baseline"]["target_probability"] <= 1.0
+```
+
+The loss compares every corpus character with the character that actually
+followed it. A lower value means the model assigned more probability to the
+observed next characters.
+
+## 30–42 min · Build one controlled change [#3042-min-build-one-controlled-change]
+
+The reference run adds `4.0` to one transition logit: after the prompt's final
+space, make `m` more likely. Compare `baseline` with `controlled_change` and
+locate:
+
+- the target probability before and after;
+- whether the generated continuation changed;
+- whether the corpus loss improved or worsened.
+
+Now use your own prompt and target character:
+
+```
+python examples/run_unit0.py --prompt "a " --target-character t --boost 3
+```
+
+Predict the direction before running. The change affects exactly one cell in
+the `[V,V]` matrix, so it can help one transition while harming the overall
+corpus loss.
+
+## 42–50 min · Break an assumption [#4250-min-break-an-assumption]
+
+Reverse the intervention:
+
+```
+python examples/run_unit0.py --prompt "a " --target-character t --boost -4
+```
+
+The target probability should fall. If your explanation still says the token
+became more likely, your interpretation—not the model—is broken. Then try an
+empty prompt and read the boundary error instead of removing the validation.
+
+## 50–55 min · Measure reproducibility [#5055-min-measure-reproducibility]
+
+Greedy decoding is backend-independent for this model. Seeded sampling is also
+performed on CPU so the same seed follows the same path:
+
+```
+python examples/run_unit0.py --prompt "the " --sample --seed 11
+```
+
+Run it twice and compare the generations. Accelerator users may also run
+`--device cpu`; the mandatory evidence is always available on CPU.
+
+## 55–60 min · Explain [#5560-min-explain]
+
+Complete these sentences in your lab notes:
+
+1. The prompt becomes token IDs by ...
+2. The current token selects logits with shape ...
+3. Softmax is needed because ...
+4. The controlled change moved probability from ... to ...
+5. The generation changed/did not change because ...
+6. Corpus loss changed because the edited transition ...
+
+## Completion gate [#completion-gate]
+
+You pass Unit 0 when the diagnostic is ready, your own prompt generates text,
+you identify tokens/probabilities/loss, and your prediction and explanation
+match the measured intervention. Keep the JSON report as evidence.
+
+Course release acceptance additionally requires the documented
+[five-learner pilot](/llm-engineering-course-pages/reference/unit-00-pilot).
+
+## What's next [#whats-next]
+
+Continue with the [diagnostic and learning-path check](/llm-engineering-course-pages/mkdocs/diagnostic/). It
+determines which foundations you can safely skip and preserves a re-entry link
+for every shortcut.
+
+[← Setup](/llm-engineering-course-pages/setup) · [Troubleshooting](/llm-engineering-course-pages/mkdocs/unit-00-troubleshooting/) · [→ Diagnostic](/llm-engineering-course-pages/mkdocs/diagnostic/)
+
+</CourseContent>

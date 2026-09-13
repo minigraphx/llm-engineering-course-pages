@@ -1,0 +1,208 @@
+---
+title: "T04 — Self-attention as a number experiment"
+---
+
+[This lesson in MkDocs](/llm-engineering-course-pages/mkdocs/attention/)
+
+<CourseContent>
+
+<span id="t04-self-attention-as-a-number-experiment" />
+
+
+[← T03 data pipeline](/llm-engineering-course-pages/mkdocs/data-pipeline/) · [Course home](/llm-engineering-course-pages/mkdocs/)
+
+## Learning outcome [#learning-outcome]
+
+In 90–110 minutes, you will implement scaled dot-product attention from
+first principles, verify it against a hand calculation and against PyTorch's
+fused reference, prove that a causal mask blocks the future, extend one head to
+several, and diagnose four deliberately broken variants by measurement rather
+than by intuition.
+
+The lab runs on the embedded batches from T03, so attention operates on real
+tokens rather than on random noise.
+
+## Predict · What can a position know? [#predict-what-can-a-position-know]
+
+Before running anything, predict:
+
+1. what shape the score matrix has for a batch `[B,T,D]` with `H` heads;
+2. why the scores are divided by <InlineMath tex={"\\sqrt{d_k}"} /> and what happens without it;
+3. whether attention weights in row `t` may be non-zero to the right of `t`.
+
+Then run the CPU reference:
+
+```
+python examples/run_attention_lab.py
+```
+
+It prints the report and writes `artifacts/attention/heatmap-head-0.svg`
+(both stay out of Git).
+
+## Trace · Compute one example by hand [#trace-compute-one-example-by-hand]
+
+`hand_check_example()` uses three tokens in two dimensions, with queries, keys,
+and values all equal to
+
+$$
+X=\begin{pmatrix}1&0\\0&1\\1&1\end{pmatrix}.
+$$
+
+Attention is five explicit steps:
+
+$$
+S=\frac{QK^\top}{\sqrt{d_k}},\qquad
+S'=\mathrm{mask}(S),\qquad
+A=\mathrm{softmax}(S'),\qquad
+Y=AV
+$$
+
+With <InlineMath tex={"d_k = 2"} />, row 1 compares scores <InlineMath tex={"0"} /> and <InlineMath tex={"1/\\sqrt{2}"} />, so its weights are
+
+$$
+\left[\frac{1}{1+e^{1/\sqrt{2}}},\ \frac{e^{1/\sqrt{2}}}{1+e^{1/\sqrt{2}}}\right]
+= [0.330,\ 0.670].
+$$
+
+Row 0 may only read itself and therefore returns <InlineMath tex={"V_0=[1,0]"} /> unchanged. Compute
+row 2 yourself and compare it against the report before continuing. If your
+number differs, you have found either your error or the code's.
+
+
+
+## Interactive · One attention row
+
+<AttentionDemo locale="en" />
+
+## Build · One head [#build-one-head]
+
+`SingleHeadSelfAttention` holds three projections and nothing else. Trace the
+shapes for a batch `[4,23,16]` with `head_dim=8`:
+
+| Value | Shape | Meaning |
+| --- | --- | --- |
+| `inputs` | `[4,23,16]` | embedded tokens from T03 |
+| `queries`, `keys`, `values` | `[4,23,8]` | what each position asks, offers, and carries |
+| `scores` | `[4,23,23]` | similarity of every query to every key |
+| `weights` | `[4,23,23]` | row-normalized; each row sums to 1 |
+| `output` | `[4,23,8]` | value mixture per position |
+
+Two properties are asserted, not assumed: every row sums to one, and
+`future_attention_mass(weights)` is exactly `0.0`. The second is the causal
+mask doing its job — a `[T,T]` boolean lower triangle that sets blocked scores
+to <InlineMath tex={"-\\infty"} /> **before** the softmax, so they receive exactly zero weight rather
+than a small one.
+
+
+Additional boolean masks restrict the causal mask by intersection: `True` means
+allowed, but cannot unlock a future key when `causal=True`. Masks must cover
+`[T,T]`; for per-example multi-head masks use `[B,1,T,T]`. Every query must retain
+at least one allowed key; fully blocked rows raise `ValueError` before softmax.
+To study unrestricted attention, explicitly set `causal=False`.
+
+The JSON report represents masked scores as the string `"-inf"`, because JSON
+has no infinity number. Computation still uses floating-point negative infinity.
+Heatmap labels follow the selected batch sequence (the CLI uses sequence 0).
+
+## Build · Several heads [#build-several-heads]
+
+`MultiHeadSelfAttention` projects to the full width, splits it into `H` heads of
+`D/H` dimensions, attends per head, merges, and mixes the result once more:
+
+| Value | Shape | Meaning |
+| --- | --- | --- |
+| `queries` | `[4,4,23,4]` | `[B,H,T,D/H]` after `split_heads` |
+| `weights` | `[4,4,23,23]` | one attention matrix per head |
+| `output` | `[4,23,16]` | merged heads, projected back to model width |
+
+The reshape is the part that fails silently, because a wrong `view`/`transpose`
+order still produces the correct shape. `head_by_head_reference` therefore
+recomputes the same result with an explicit Python loop over heads and no
+reshape at all. The reference configuration reaches a maximum difference of
+`0.000`; PyTorch's fused `scaled_dot_product_attention` differs by `2.4e-7`,
+which is float32 arithmetic, not a bug.
+
+`gradient_check` compares autograd's input gradients with central finite
+differences in float64 and reports a maximum relative error of `3.3e-11`.
+
+## Break · Four defects, four measurements [#break-four-defects-four-measurements]
+
+`diagnose_broken_variants` runs each defect on the same inputs and records what
+catches it:
+
+| Variant | Symptom | Caught by |
+| --- | --- | --- |
+| `no_mask` | future attention mass `179.05` instead of `0.0` | causality check |
+| `no_scaling` | weight entropy `1.82` versus `2.11` — attention too peaked | entropy comparison |
+| `wrong_transpose` | `[d_k,d_k]` score matrix | shape check |
+| `softmax_over_queries` | row sums off by `3.82` | normalization check |
+
+The transpose defect only raises when `T != d_k`. `silent_transpose_case()`
+sets both to 4: nothing raises, the shape matches, and only comparing values
+reveals a maximum difference of `1.007` and a future mass of `1.21`. A test that
+checks shapes alone would pass on a model that reads the future.
+
+For each variant, answer: which of your tests would have failed first?
+
+## Measure · Read the heatmap [#measure-read-the-heatmap]
+
+Open `artifacts/attention/heatmap-head-0.svg`. Rows are query positions,
+columns are keys; the upper right is empty because of the mask. Early positions
+must concentrate their weight on few keys — position 0 has exactly one choice —
+while later rows spread it out.
+
+Change one factor and predict the effect first:
+
+```
+python examples/run_attention_lab.py --heads 1
+python examples/run_attention_lab.py --heads 8
+```
+
+More heads at the same width mean a smaller `head_dim`, so each head compares
+in a narrower space. The parameter count stays at `1024` for `embedding_dim=16`
+regardless of the head count — heads split capacity, they do not add it.
+
+See the versioned
+[attention reference](/llm-engineering-course-pages/reference/attention-v1)
+for the reference values and the change protocol.
+
+## Explain · Your attention paragraph [#explain-your-attention-paragraph]
+
+Write one paragraph that names:
+
+- the shape and meaning of queries, keys, values, scores, weights, and output;
+- why the scores are scaled by <InlineMath tex={"\\sqrt{d_k}"} />;
+- how the mask enforces causality, and at which step it is applied;
+- what splitting into heads changes and what it does not;
+- the measurement that catches each of the four defects;
+- the two references your implementation was checked against.
+
+## Completion gate [#completion-gate]
+
+You pass when you can derive one row of the attention matrix by hand and your
+report proves the implementation. Required evidence:
+
+- your own row-2 calculation matching `hand_check` in the report;
+- `[B,H,T,T]` weights with row sums of 1 and future mass `0.0`;
+- agreement with the head-by-head reference and with PyTorch (&lt; `1e-5`);
+- a gradient check below `1e-5` relative error;
+- all four broken variants with the measurement that catches each;
+- one heatmap, read out loud in two sentences.
+
+Run the automated contract checks:
+
+```
+pytest tests/test_attention.py
+```
+
+## What's next [#whats-next]
+
+One attention layer mixes information across positions but cannot transform it
+much. Next, you will add residual paths, normalization, and a feed-forward
+network to build a full decoder block and a Mini-GPT.
+
+[← T03 data pipeline](/llm-engineering-course-pages/mkdocs/data-pipeline/) · [Course home](/llm-engineering-course-pages/mkdocs/)
+
+[→ Mini-GPT decoder](/llm-engineering-course-pages/mkdocs/mini-gpt/) · [Learning guide](/llm-engineering-course-pages/mkdocs/learning-guide/)
+
+</CourseContent>

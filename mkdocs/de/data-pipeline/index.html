@@ -1,0 +1,1970 @@
+
+<!doctype html>
+<html lang="de" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Understand, build, train, evaluate, align, and serve language models">
+      
+      
+      
+        <link rel="canonical" href="https://minigraphx.github.io/llm-engineering-course-pages/mkdocs/de/data-pipeline/">
+      
+      
+        <link rel="prev" href="../bpe-tokenizer/">
+      
+      
+        <link rel="next" href="../attention/">
+      
+      
+        
+          <link rel="alternate" href="../../data-pipeline/" hreflang="en">
+        
+          <link rel="alternate" href="./" hreflang="de">
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>T03 — Datenpipeline & Embeddings - LLM-Engineering-Kurs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="teal">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#t03-datenpipeline-embeddings" class="md-skip">
+          Zum Inhalt
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Kopfzeile">
+    <a href="../" title="LLM-Engineering-Kurs" class="md-header__button md-logo" aria-label="LLM-Engineering-Kurs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            LLM-Engineering-Kurs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              T03 — Datenpipeline & Embeddings
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+      <div class="md-header__option">
+  <div class="md-select">
+    
+    <button class="md-header__button md-icon" aria-label="Sprache wechseln">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg>
+    </button>
+    <div class="md-select__inner">
+      <ul class="md-select__list">
+        
+          <li class="md-select__item">
+            <a href="../../data-pipeline/" hreflang="en" class="md-select__link">
+              English
+            </a>
+          </li>
+        
+          <li class="md-select__item">
+            <a href="./" hreflang="de" class="md-select__link">
+              Deutsch
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</div>
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Suche" placeholder="Suche" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Suche">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Zurücksetzen" aria-label="Zurücksetzen" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Suche wird initialisiert
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Hauptnavigation" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Start
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../setup/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Einrichtung
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../learning-guide/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Lernleitfaden
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../unit-00/" class="md-tabs__link">
+          
+  
+  
+  Kurs
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../glossary/" class="md-tabs__link">
+          
+  
+  
+  Referenz
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../" title="LLM-Engineering-Kurs" class="md-nav__button md-logo" aria-label="LLM-Engineering-Kurs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    LLM-Engineering-Kurs
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Einrichtung
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../learning-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lernleitfaden
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kurs
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Kurs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../unit-00/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Einheit 0 — Erster Tiny-LM-Lauf
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../unit-00-troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fehlerbehebung für Einheit 0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../diagnostic/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Diagnose & Lernpfad
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../foundations-01-python-numpy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    F01 — Python & NumPy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../foundations-02-shapes/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    F02 — Tensoren & Shapes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../foundations-03-probability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    F03 — Wahrscheinlichkeit & Loss
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../foundations-04-neuron/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    F04 — Neuron & Gradient Descent
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../foundations-05-mlp-autograd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    F05 — MLP, Backprop & Autograd
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../foundations-06-pytorch-checkpoint/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    F06 — PyTorch & Checkpoint
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../foundations-godot-rl-bridge/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    B01 — Godot-RL-Brücke
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bigram-baseline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    T01 — Bigramm-Baseline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bpe-tokenizer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    T02 — Byte-Level-BPE
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    T03 — Datenpipeline & Embeddings
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    T03 — Datenpipeline & Embeddings
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Inhaltsverzeichnis">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Inhaltsverzeichnis
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#lernziel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lernziel
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vorhersagen-woher-kommt-ein-batch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vorhersagen · Woher kommt ein Batch?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verfolgen-von-rohtext-zu-token-ids" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verfolgen · Von Rohtext zu Token-IDs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bauen-zwei-wege-zu-einer-festen-shape" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bauen · Zwei Wege zu einer festen Shape
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bauen-token-und-positions-embeddings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bauen · Token- und Positions-Embeddings
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#brechen-erst-fenster-dann-split" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Brechen · Erst Fenster, dann Split
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#messen-welche-shape-gewinnt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Messen · Welche Shape gewinnt
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#erklaren-dein-pipeline-absatz" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Erklären · Dein Pipeline-Absatz
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#abschluss-gate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Abschluss-Gate
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wie-es-weitergeht" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Wie es weitergeht
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../attention/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    T04 — Self-Attention
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mini-gpt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    M2 — Mini-GPT
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mini-gpt-gate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    M2 — Kerngate
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pretraining/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    E01 — Reproduzierbares Training
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data-quality/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    E02 — Datenqualität
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../evaluation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    E03 — Evaluation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../profiling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    E04 — Profiling & Budgets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../company-strategy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    C01 — Firmenstrategie
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../company-data/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    M4 — Firmendaten
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../company-evaluation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    M4 — Geschützte Evaluation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../continued-pretraining/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    M4 — Continued Pretraining
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sft-lora/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    M5 — SFT & LoRA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adaptation-comparison/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    M5 — Adaptationsvergleich
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dpo/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    M5 — DPO
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rlhf-bridge/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    M5 — RLHF-Brücke
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../company-capstone/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Capstone — Firmenmodell
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Referenz
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Referenz
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../glossary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Glossar
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../hardware/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Hardware & Cloud-Sicherheit
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data-policy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Datenrichtlinie
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="t03-datenpipeline-embeddings">T03 — Datenpipeline &amp; Embeddings</h1>
+<p><a href="../bpe-tokenizer/">← T02 Byte-Level-BPE</a> · <a href="../">Kursstart</a></p>
+<h2 id="lernziel">Lernziel</h2>
+<p>In 75–90 Minuten baust du eine versionierte Mini-Datenpipeline, die Rohtext in
+eingebettete Batches verwandelt, und kannst Shape und Bedeutung jedes Tensors
+auf diesem Weg benennen. Du splittest Dokumente vor der Fenstererzeugung,
+packst einen Tokenstrom, paddst variabel lange Sequenzen, maskierst Padding aus
+dem Loss, seedest den DataLoader und misst Leakage, statt es zu vermuten.</p>
+<p>Die Pipeline läuft mit zwei Encodern: dem Zeichenvokabular aus Einheit 0 plus
+drei Sondertokens oder dem Byte-Level-BPE-Tokenizer aus T02. Nur das
+<code>DocumentEncoder</code>-Objekt wechselt; alle späteren Stufen laufen unverändert
+weiter — genau das macht die Grenze zwischen Tokenisierung und Pipeline
+sichtbar.</p>
+<h2 id="vorhersagen-woher-kommt-ein-batch">Vorhersagen · Woher kommt ein Batch?</h2>
+<p>Sage vor dem ersten Lauf voraus:</p>
+<ol>
+<li>wie viele <code>[4,12]</code>-Batches aus 470 Trainingstokens entstehen;</li>
+<li>welche Positionen eines gepaddeten Batches den Loss nicht erreichen dürfen;</li>
+<li>ob das zufällige Splitten fester Fenster genauso sicher ist wie das
+   zufällige Splitten von Dokumenten.</li>
+</ol>
+<p>Starte dann die CPU-Referenz:</p>
+<div class="highlight"><pre><span></span><code>python examples/run_data_pipeline.py
+</code></pre></div>
+<p>Bewahre die JSON-Ausgabe auf. Sie enthält Version, Konfiguration, Split-Hashes,
+Fensteranzahl, Batch-Shapes, Füllraten, Batch-Hashes, Embedding-Trace und
+Leakage-Zahlen.</p>
+<h2 id="verfolgen-von-rohtext-zu-token-ids">Verfolgen · Von Rohtext zu Token-IDs</h2>
+<p><code>normalize_documents</code> entfernt Leerraum, verwirft leere Zeilen und behält von
+jedem exakten Duplikat die erste Kopie. Die Deduplizierung passiert <strong>vor</strong> dem
+Split: Ein doppelt vorhandenes Dokument landete sonst in zwei Partitionen und
+ließe Auswendiglernen wie Generalisierung aussehen.</p>
+<p><code>encode_document</code> rahmt anschließend jedes Dokument mit den Grenztokens des
+Encoders:</p>
+<table>
+<thead>
+<tr>
+<th>Token</th>
+<th style="text-align: right;">Zeichen-ID</th>
+<th style="text-align: right;">BPE-ID</th>
+<th>Bedeutung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Inhalt</td>
+<td style="text-align: right;">0–32</td>
+<td style="text-align: right;">0–295</td>
+<td>Bytes, gemergte Stücke oder Zeichen</td>
+</tr>
+<tr>
+<td>pad</td>
+<td style="text-align: right;">33</td>
+<td style="text-align: right;">296</td>
+<td>Füllung; trägt nie zum Loss bei</td>
+</tr>
+<tr>
+<td>bos</td>
+<td style="text-align: right;">34</td>
+<td style="text-align: right;">297</td>
+<td>Dokumentanfang</td>
+</tr>
+<tr>
+<td>eos</td>
+<td style="text-align: right;">35</td>
+<td style="text-align: right;">298</td>
+<td>Dokumentende</td>
+</tr>
+</tbody>
+</table>
+<p><code>decode_tokens</code> gibt Sondertokens mit Namen aus, sodass <code>&lt;bos&gt;a token&lt;eos&gt;</code>
+lesbarer Nachweis statt rätselhafter Ganzzahl ist.</p>
+<p><code>build_encoder</code> trainiert BPE <strong>nur auf den Trainingsdokumenten</strong>. Ein auf dem
+gesamten Korpus trainierter Tokenizer trüge Validierungs- und Teststatistik in
+jede spätere Messung — ein Leck, das kein späterer Split repariert.</p>
+<h2 id="bauen-zwei-wege-zu-einer-festen-shape">Bauen · Zwei Wege zu einer festen Shape</h2>
+<p>Ein Modell braucht rechteckige Batches, Dokumente haben aber verschiedene
+Längen. Die Pipeline implementiert beide Standardantworten und misst sie.</p>
+<p><strong>Packing.</strong> <code>build_token_stream</code> verkettet die kodierten Trainingsdokumente zu
+einem Strom aus 470 Tokens. <code>SequenceWindowDataset</code> schneidet daraus Fenster aus
+<code>block_size + 1</code> Tokens und verschiebt sie um eins:</p>
+<table>
+<thead>
+<tr>
+<th>Wert</th>
+<th>Shape</th>
+<th>Bedeutung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>input_ids</code></td>
+<td><code>[4,12]</code></td>
+<td>IDs der aktuellen Tokens</td>
+</tr>
+<tr>
+<td><code>labels</code></td>
+<td><code>[4,12]</code></td>
+<td>dasselbe Fenster um eins verschoben</td>
+</tr>
+<tr>
+<td><code>attention_mask</code></td>
+<td><code>[4,12]</code></td>
+<td>nur Einsen; jede Position ist echt</td>
+</tr>
+</tbody>
+</table>
+<p>Mit <code>stride=12</code> überlappen die Fenster nicht und 1 Resttoken entfällt. Mit
+<code>--stride 6</code> entstehen etwa doppelt so viele Fenster über denselben Tokens —
+zum Preis korrelierter Beispiele.</p>
+<p><strong>Padding.</strong> <code>PaddedDocumentDataset</code> behält ein Dokument pro Sample, und
+<code>collate_batch</code> füllt einen Batch rechts bis zur längsten Sequenz auf:</p>
+<table>
+<thead>
+<tr>
+<th>Wert</th>
+<th>Shape</th>
+<th>Bedeutung</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>input_ids</code></td>
+<td><code>[4,39]</code></td>
+<td>Tokens, danach <code>&lt;pad&gt;</code></td>
+</tr>
+<tr>
+<td><code>labels</code></td>
+<td><code>[4,39]</code></td>
+<td>Ziele, danach <code>-100</code></td>
+</tr>
+<tr>
+<td><code>attention_mask</code></td>
+<td><code>[4,39]</code></td>
+<td>1 für echte Tokens, 0 für Padding</td>
+</tr>
+</tbody>
+</table>
+<p><code>-100</code> ist der Standard-<code>ignore_index</code> von PyTorch: Cross-Entropy überspringt
+diese Positionen vollständig. Padding, das den Loss erreicht, bringt dem Modell
+bei, <code>&lt;pad&gt;</code> vorherzusagen.</p>
+<p><code>make_batch_loader</code> verpackt beide Datasets in einen Single-Worker-<code>DataLoader</code>
+mit explizit geseedetem <code>torch.Generator</code>; die Batchreihenfolge gehört damit zum
+Vertrag.</p>
+<h2 id="bauen-token-und-positions-embeddings">Bauen · Token- und Positions-Embeddings</h2>
+<p><code>TokenPositionEmbedding</code> hält zwei Tabellen:</p>
+<ul>
+<li><code>token_embedding</code>: <code>[36,16]</code> — ein Vektor je Tokenidentität;</li>
+<li><code>position_embedding</code>: <code>[64,16]</code> — ein Vektor je Positionsindex.</li>
+</ul>
+<p>Der Forward-Pass addiert sie und nullt gepaddete Positionen:</p>
+<div class="arithmatex">\[
+h_{b,t} = E_{\text{token}}[x_{b,t}] + E_{\text{pos}}[t]
+\]</div>
+<p>Die Tokentabelle allein ist positionsblind: Dieselbe ID erhält an Position 0 und
+an Position 30 denselben Vektor. Erst die Summe erlaubt einer späteren
+Attention-Schicht, <code>the model</code> von <code>model the</code> zu unterscheiden. Referenzgrößen:
+Aus <code>[4,39]</code> IDs werden <code>[4,39,16]</code> Embeddings aus 1600 Parametern, und
+<code>embedding.trace(batch)</code> gibt die vollständige Kette mit Bedeutungen aus.</p>
+<h2 id="brechen-erst-fenster-dann-split">Brechen · Erst Fenster, dann Split</h2>
+<p>Starte die absichtlich falsche Reihenfolge, die derselbe Report unter
+<code>leakage.window_split_demo</code> festhält: zuerst alle 601 Schiebefenster bilden,
+dann zufällig splitten. Ergebnis: 63 von 151 Holdout-Fenstern stehen wörtlich im
+Training, und 149 von 151 überlappen Trainingstext um ein bis zwei Positionen.</p>
+<p>Eine Evaluation auf diesem Split misst Kopieren, nicht Lernen. Vergleiche sie
+mit dem Dokumentsplit unter <code>leakage.document_split</code>: 0 geteilte Dokumente und
+eine gemessene Fensterüberlappung von 0,300 (Validierung) und 0,216 (Test) —
+innerhalb des Budgets von 0,5.</p>
+<p>Erzwinge danach einen Fehlschlag, um das Gate zu sehen:</p>
+<div class="highlight"><pre><span></span><code>python examples/run_data_pipeline.py --max-window-overlap 0.0
+</code></pre></div>
+<p><code>assert_no_leakage</code> löst <code>LeakageError</code> aus. Überlappung auf schablonenhaft
+erzeugtem Text ist erwartbar und wird berichtet; unbegrenzte Überlappung nicht.</p>
+<h2 id="messen-welche-shape-gewinnt">Messen · Welche Shape gewinnt</h2>
+<table>
+<thead>
+<tr>
+<th>Loader</th>
+<th>Batch-Shape</th>
+<th style="text-align: right;">Echte Positionen</th>
+<th style="text-align: right;">Füllrate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>gepackt</td>
+<td><code>[4,12]</code></td>
+<td style="text-align: right;">468 / 468</td>
+<td style="text-align: right;">1,000</td>
+</tr>
+<tr>
+<td>gepaddet</td>
+<td><code>[4,39]</code></td>
+<td style="text-align: right;">458 / 480</td>
+<td style="text-align: right;">0,954</td>
+</tr>
+</tbody>
+</table>
+<p>Packing verschwendet nichts, überschreitet aber Dokumentgrenzen: Ein Fenster
+kann den Anfang eines Dokuments aus dem Ende eines anderen vorhersagen; <code>&lt;eos&gt;</code>
+ist das Signal, das dies lernbar macht. Padding respektiert Grenzen, zahlt aber
+in jedem Batch für die längste Sequenz — die Kosten wachsen mit der
+Längenvarianz, nicht mit der Dokumentzahl.</p>
+<p>Wechsle nun ausschließlich den Encoder:</p>
+<div class="highlight"><pre><span></span><code>python examples/run_data_pipeline.py --encoder bpe
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Messwert</th>
+<th style="text-align: right;">Zeichen</th>
+<th style="text-align: right;">Byte-Level-BPE</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Trainingstokens</td>
+<td style="text-align: right;">470</td>
+<td style="text-align: right;">223</td>
+</tr>
+<tr>
+<td>gepackte Fenster</td>
+<td style="text-align: right;">39</td>
+<td style="text-align: right;">18</td>
+</tr>
+<tr>
+<td>gepaddete Batch-Shape</td>
+<td style="text-align: right;"><code>[4,39]</code></td>
+<td style="text-align: right;"><code>[4,19]</code></td>
+</tr>
+<tr>
+<td>Padding-Füllrate</td>
+<td style="text-align: right;">0,954</td>
+<td style="text-align: right;">0,894</td>
+</tr>
+<tr>
+<td>Embedding-Parameter</td>
+<td style="text-align: right;">1600</td>
+<td style="text-align: right;">5824</td>
+</tr>
+<tr>
+<td>Fensterüberlappung (Validierung)</td>
+<td style="text-align: right;">0,300</td>
+<td style="text-align: right;">0,000</td>
+</tr>
+</tbody>
+</table>
+<p>Subwörter halbieren die Sequenzlänge für denselben Text; eine feste
+<code>block_size</code> deckt also rund doppelt so viel Inhalt ab — deshalb wird
+Kontextlänge in Tokens angegeben, nicht in Zeichen. Das Vokabular wächst von 36
+auf 300, und die Tokentabelle wächst mit. Die Split-Hashes bleiben identisch,
+weil der Split auf Text erfolgt und nicht vom Encoder abhängt.</p>
+<p>Auch Determinismus ist messbar: <code>batch_stream_fingerprint</code> hasht jeden Batch
+eines vollen Durchlaufs. Zwei Läufe mit gleicher Version, Konfiguration und
+gleichem Seed müssen dieselben Hashes liefern. Referenzwerte und
+Änderungsprotokoll stehen in der versionierten
+<a href="https://github.com/minigraphx/llm-engineering-course/blob/main/docs/baselines/data-pipeline-v1.md">Datenpipeline-Referenz</a>.</p>
+<h2 id="erklaren-dein-pipeline-absatz">Erklären · Dein Pipeline-Absatz</h2>
+<p>Schreibe einen Absatz, der benennt:</p>
+<ul>
+<li>jede Stufe von Rohtext bis Embedding mit Tensor-Shapes;</li>
+<li>warum Deduplizierung und Split vor der Fenstererzeugung stattfinden;</li>
+<li>was <code>attention_mask</code> und <code>-100</code> jeweils schützen;</li>
+<li>den Kompromiss zwischen Packing und Padding, ausgedrückt in Füllrate;</li>
+<li>was sich beim Encoder-Wechsel ändert und was identisch bleibt;</li>
+<li>welche Zahlen belegen, dass deine Batches deterministisch sind;</li>
+<li>wie hoch dein Leakage-Budget ist und warum es hier nicht null beträgt.</li>
+</ul>
+<h2 id="abschluss-gate">Abschluss-Gate</h2>
+<p>Du bestehst, wenn du die Kette
+Text → Dokumente → Split → Tokens → Fenster/Padding → Batch → Embeddings
+ohne Vorlage aufzeichnen kannst und dein gespeicherter Report sie belegt.
+Erforderliche Nachweise:</p>
+<ul>
+<li>Dokumentanzahlen und SHA-256-Hashes der Splits;</li>
+<li><code>[B,T]</code> für Inputs, Labels und Maske sowie <code>[B,T,D]</code> für Embeddings;</li>
+<li>gepaddete Positionen mit <code>&lt;pad&gt;</code> in den Inputs und <code>-100</code> in den Labels;</li>
+<li>identische Batch-Hashes über zwei Läufe mit gleichem Seed;</li>
+<li>Füllrate 1,0 beim Packing gegenüber der gemessenen Padding-Füllrate;</li>
+<li>je einen Lauf mit Zeichen- und mit BPE-Encoder auf demselben Korpus;</li>
+<li>0 geteilte Dokumente und eine berichtete Fensterüberlappung im Budget.</li>
+</ul>
+<p>Führe die automatischen Vertragstests aus:</p>
+<div class="highlight"><pre><span></span><code>pytest tests/test_data_pipeline.py
+</code></pre></div>
+<h2 id="wie-es-weitergeht">Wie es weitergeht</h2>
+<p>Die Batches tragen jetzt Bedeutung pro Position, aber noch keine Möglichkeit,
+Positionen miteinander zu vergleichen. Als Nächstes baust du Self-Attention als
+sichtbares Zahlenexperiment und gibst diesen Embeddings Kontext.</p>
+<p><a href="../bpe-tokenizer/">← T02 Byte-Level-BPE</a> · <a href="../">Kursstart</a></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Zurück zum Seitenanfang
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "content.code.copy", "toc.integrate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "In Zwischenablage kopiert", "clipboard.copy": "In Zwischenablage kopieren", "search.result.more.one": "1 weiteres Suchergebnis auf dieser Seite", "search.result.more.other": "# weitere Suchergebnisse auf dieser Seite", "search.result.none": "Keine Suchergebnisse", "search.result.one": "1 Suchergebnis", "search.result.other": "# Suchergebnisse", "search.result.placeholder": "Suchbegriff eingeben", "search.result.term.missing": "Es fehlt", "select.version": "Version ausw\u00e4hlen"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

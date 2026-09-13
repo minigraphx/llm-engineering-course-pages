@@ -1,0 +1,145 @@
+---
+title: "Setup — from a fresh computer to the first run"
+---
+
+[This lesson in MkDocs](/llm-engineering-course-pages/mkdocs/setup/)
+
+<span id="setup-from-a-fresh-computer-to-the-first-run" />
+
+
+[Course home](/llm-engineering-course-pages/mkdocs/) · [Learning guide](/llm-engineering-course-pages/mkdocs/learning-guide/) · [→ Unit 0](/llm-engineering-course-pages/unit-00)
+
+Allow 20–40 minutes for the first installation. A **terminal** is a window where
+commands run; a **repository** is the course folder plus its change history.
+Commands in this course run from that folder. Copy only the command, without a
+leading `$` or `>>>`. Python code blocks go into a `.py` file, not the terminal.
+
+## 1. Get Python and Git [#1-get-python-and-git]
+
+Install Python 3.11 or newer and Git if they are missing. On Windows, enable the
+Python installer's PATH option. Open Terminal (macOS/Linux) or PowerShell
+(Windows), then check:
+
+```bash
+python3 --version
+git --version
+```
+
+On Windows use `py --version`. If neither Python command works, finish installing
+Python and reopen the terminal. A CPU is sufficient; no GPU or cloud account is
+needed. Installation downloads dependencies; the required new training labs
+then run offline.
+
+## 2. Get the course [#2-get-the-course]
+
+```bash
+git clone https://github.com/minigraphx/llm-engineering-course.git
+cd llm-engineering-course
+```
+
+During the private pilot you need access to this GitHub repository. A `Repository
+not found` message can mean missing access, not a broken Python installation.
+If you already have the course folder, open a terminal there and skip cloning.
+The folder should contain `README.md`, `pyproject.toml`, `examples`, and `src`.
+
+## 3. Create an isolated Python environment [#3-create-an-isolated-python-environment]
+
+A **virtual environment** keeps the course libraries separate from other
+projects. Create it once; activate it again in every new terminal.
+
+macOS/Linux:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -e ".[dev,docs]"
+```
+
+Windows PowerShell:
+
+```powershell
+py -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install -e ".[dev,docs]"
+```
+
+If PowerShell blocks activation, run `.\.venv\Scripts\python.exe` instead of
+`python`; activation is a convenience and is not required. Use
+`.\.venv\Scripts\python.exe -m pip install -e ".[dev,docs]"` in that case.
+On macOS/Linux the equivalent full interpreter path is `.venv/bin/python`.
+`-e` makes edits to the course package immediately available; `dev,docs` adds
+testing and documentation tools. Wait until installation finishes successfully.
+
+The first full test run or byte-pair-encoding (BPE) comparison may need internet
+once: the pre-existing tokenizer lab loads the public `cl100k_base` encoding table
+and caches it locally. Installing the Python packages does not pre-cache that
+table. The mandatory M2/M3 model, training, evaluation and profiling experiments
+use locally generated data and remain offline after installation.
+
+### Shell conventions for all lessons [#shell-conventions]
+
+After activation, use the active `python` command on every platform. Some older
+examples or reference records show full macOS/Linux environment paths:
+
+| Written command | With the environment active, including PowerShell |
+| --- | --- |
+| `.venv/bin/python script.py` | `python script.py` |
+| `.venv/bin/pytest tests/...` | `python -m pytest tests/...` |
+
+Blocks beginning with `python - <<'PY'` use **heredoc** syntax: Bash/Zsh send the
+following Python lines to the interpreter until the closing `PY`. PowerShell does
+not understand that wrapper. The portable alternative works on all platforms:
+
+1. Create the folder with `python -c "from pathlib import Path; Path('artifacts/my-work').mkdir(parents=True, exist_ok=True)"`.
+2. Copy only the Python lines between `python - <<'PY'` and the final `PY` into
+   `artifacts/my-work/check.py` using your editor. Do not copy either marker or the
+   Markdown backticks. Save the file.
+3. Run `python artifacts/my-work/check.py` from the repository root.
+
+If activation is unavailable on Windows, replace `python` in these commands with
+`.\.venv\Scripts\python.exe`. The same Python body produces the same result;
+only the way the shell passes it to Python changes.
+
+## 4. Check installation and get a first result [#4-check-installation-and-get-a-first-result]
+
+```bash
+python examples/check_device.py
+python examples/diagnose_unit0.py
+python examples/run_unit0.py --device cpu
+```
+
+The diagnostic's checks should report `pass`. The final command prints a JSON
+report: braces contain named fields. Find `baseline.generation` (generated text)
+and `baseline.corpus_loss` (prediction error). Nonsense text is expected from
+this tiny teaching model. [Unit 0](/llm-engineering-course-pages/unit-00) explains the report step by step.
+Generated files live in `artifacts/`; you can recreate them with the same command.
+
+## 5. Check the course and open the lessons [#5-check-the-course-and-open-the-lessons]
+
+```bash
+python -m pytest
+python -m mkdocs build --strict
+python -m mkdocs serve
+```
+
+Tests end with a count of passed tests. The docs build must finish without an
+error. The server prints a local address, usually `http://127.0.0.1:8000`; open
+it in your browser. Press Ctrl+C in the terminal to stop it. EN/DE switches the
+lesson language. Start the [learning guide](/llm-engineering-course-pages/mkdocs/learning-guide/), then Unit 0.
+
+## If something fails [#if-something-fails]
+
+| Message or symptom | Check and repair |
+| --- | --- |
+| `No such file` for an example | Run from the course folder, after `cd llm-engineering-course`. |
+| `No module named llm_course` | Use the environment's Python and repeat the editable install. |
+| `No module named torch` | Installation did not finish or a different interpreter is running. |
+| No output while installing | Large packages can take minutes; wait for completion or an actual error. |
+| Accelerator error | Add `--device cpu` to the lab command. |
+| Can't type commands after `mkdocs serve` | It is running; open a second terminal or stop with Ctrl+C. |
+
+Record the command and the last error lines when diagnosing a problem. Never
+paste credentials into a report. More: [Unit 0 troubleshooting](/llm-engineering-course-pages/mkdocs/unit-00-troubleshooting/)
+and [hardware profiles](/llm-engineering-course-pages/mkdocs/hardware/).

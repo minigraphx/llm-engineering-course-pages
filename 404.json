@@ -1,0 +1,26 @@
+{
+  "code": "PAGE_NOT_FOUND",
+  "detail": "We couldn't find the page you're looking for.",
+  "resolution": "Where to look next: https://minigraphx.github.io/llm-engineering-course-pages, https://minigraphx.github.io/llm-engineering-course-pages/sitemap.xml, https://minigraphx.github.io/llm-engineering-course-pages/llms.txt, https://minigraphx.github.io/llm-engineering-course-pages/openapi.json",
+  "status": 404,
+  "title": "Page not found",
+  "type": "about:blank",
+  "links": [
+    {
+      "href": "https://minigraphx.github.io/llm-engineering-course-pages",
+      "label": "Back to home"
+    },
+    {
+      "href": "https://minigraphx.github.io/llm-engineering-course-pages/sitemap.xml",
+      "label": "Sitemap"
+    },
+    {
+      "href": "https://minigraphx.github.io/llm-engineering-course-pages/llms.txt",
+      "label": "Docs index for AI agents (llms.txt)"
+    },
+    {
+      "href": "https://minigraphx.github.io/llm-engineering-course-pages/openapi.json",
+      "label": "JSON API description (openapi.json)"
+    }
+  ]
+}

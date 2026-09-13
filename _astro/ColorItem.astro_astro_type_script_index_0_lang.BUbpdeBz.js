@@ -1,0 +1,1 @@
+import{i as e,n as t}from"./copy-feedback.m5J4LIzS.js";var n=window;n.__blumeColorCopy||(n.__blumeColorCopy=!0,document.addEventListener(`click`,async n=>{let r=n.target;if(!(r instanceof Element))return;let i=r.closest(`[data-blume-color-copy]`);if(!i||!await t(i.dataset.blumeColorCopy??``))return;let a=i.querySelector(`[data-blume-color-status]`);a&&e(a,`Copied`)}));

@@ -1,0 +1,19 @@
+{
+  "linkset": [
+    {
+      "anchor": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs",
+      "service-desc": [
+        {
+          "href": "https://minigraphx.github.io/llm-engineering-course-pages/openapi.json",
+          "type": "application/json"
+        }
+      ],
+      "service-doc": [
+        {
+          "href": "https://minigraphx.github.io/llm-engineering-course-pages",
+          "type": "text/html"
+        }
+      ]
+    }
+  ]
+}

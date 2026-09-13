@@ -1,0 +1,129 @@
+{
+  "count": 12,
+  "generator": "blume@1.6.4",
+  "pages": [
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/index.json",
+      "lastModified": null,
+      "locale": "en",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/index.md",
+      "route": "/",
+      "title": "Learn by tracing the numbers",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages",
+      "description": "Four complete lessons, setup, and two languages. One small model at a time."
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/attention.json",
+      "lastModified": null,
+      "locale": "en",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/attention.md",
+      "route": "/attention",
+      "title": "T04 — Self-attention as a number experiment",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/attention"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/de.json",
+      "lastModified": null,
+      "locale": "de",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de.md",
+      "route": "/de",
+      "title": "Lernen, indem du die Zahlen nachvollziehst",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/de",
+      "description": "Vier vollständige Lektionen, Einrichtung und zwei Sprachen. Ein kleines Modell nach dem anderen."
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/de/attention.json",
+      "lastModified": null,
+      "locale": "de",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de/attention.md",
+      "route": "/de/attention",
+      "title": "T04 — Self-Attention als Zahlenexperiment",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/de/attention"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/de/mini-gpt-gate.json",
+      "lastModified": null,
+      "locale": "de",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de/mini-gpt-gate.md",
+      "route": "/de/mini-gpt-gate",
+      "title": "M2-Kernprüfung: programmieren, Fehler finden, erklären",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/de/mini-gpt-gate"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/de/setup.json",
+      "lastModified": null,
+      "locale": "de",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de/setup.md",
+      "route": "/de/setup",
+      "title": "Einrichtung — vom frischen Computer zum ersten Lauf",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/de/setup"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/de/sft-lora.json",
+      "lastModified": null,
+      "locale": "de",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de/sft-lora.md",
+      "route": "/de/sft-lora",
+      "title": "SFT und LoRA: Antworten lernen, Basismodell erhalten",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/de/sft-lora"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/de/unit-00.json",
+      "lastModified": null,
+      "locale": "de",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de/unit-00.md",
+      "route": "/de/unit-00",
+      "title": "Einheit 0 — Erster Tiny-LM-Lauf",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/de/unit-00"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/mini-gpt-gate.json",
+      "lastModified": null,
+      "locale": "en",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/mini-gpt-gate.md",
+      "route": "/mini-gpt-gate",
+      "title": "M2 core gate: code, diagnose, explain",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/mini-gpt-gate"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/setup.json",
+      "lastModified": null,
+      "locale": "en",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/setup.md",
+      "route": "/setup",
+      "title": "Setup — from a fresh computer to the first run",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/setup"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/sft-lora.json",
+      "lastModified": null,
+      "locale": "en",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/sft-lora.md",
+      "route": "/sft-lora",
+      "title": "SFT and LoRA: teach a response, preserve a base",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/sft-lora"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/unit-00.json",
+      "lastModified": null,
+      "locale": "en",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/unit-00.md",
+      "route": "/unit-00",
+      "title": "Unit 0 — First Tiny-LM Run",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/unit-00"
+    }
+  ],
+  "site": "https://minigraphx.github.io"
+}

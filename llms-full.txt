@@ -1,0 +1,1646 @@
+# LLM Engineering · Pilot
+
+> Unit 0 · Attention · SFT / LoRA · Mini-GPT core gate
+
+# Learn by tracing the numbers
+Source: https://minigraphx.github.io/llm-engineering-course-pages
+
+Start with a tiny language model, trace attention by hand, then teach a model a
+response with SFT and LoRA. Every required experiment runs on CPU.
+
+## Choose your lesson
+
+- [Unit 0 · Your first Tiny-LM run](/llm-engineering-course-pages/unit-00) — 45–60 minutes, no ML background required.
+- [Attention · From scores to weighted values](/llm-engineering-course-pages/attention) — 90–110 minutes, including an interactive hand calculation.
+- [SFT / LoRA · Teach a response, preserve a base](/llm-engineering-course-pages/sft-lora) — trace the response mask and build a low-rank update.
+
+- [Mini-GPT core gate · Code, diagnose, explain](/llm-engineering-course-pages/mini-gpt-gate) — 60–90 minutes, with staged hints and complete reference code.
+
+## Your entry path
+
+[Start from setup](/llm-engineering-course-pages/setup) or enter through the
+[Godot-RL bridge](/llm-engineering-course-pages/mkdocs/foundations-godot-rl-bridge/).
+Use the [learning guide](/llm-engineering-course-pages/mkdocs/learning-guide/) to choose prerequisites.
+
+## Compare the reading experience
+
+This is the Blume pilot. The [complete MkDocs course](/llm-engineering-course-pages/mkdocs/) remains available.
+Each lesson links to its MkDocs counterpart. Use the language menu to switch
+between English and German on the same lesson; search covers these pilot pages.
+
+[Portable shell conventions](/llm-engineering-course-pages/setup#shell-conventions).
+
+---
+
+# T04 — Self-attention as a number experiment
+Source: https://minigraphx.github.io/llm-engineering-course-pages/attention
+
+[This lesson in MkDocs](/llm-engineering-course-pages/mkdocs/attention/)
+
+<span id="t04-self-attention-as-a-number-experiment" />
+
+
+[← T03 data pipeline](/llm-engineering-course-pages/mkdocs/data-pipeline/) · [Course home](/llm-engineering-course-pages/mkdocs/)
+
+## Learning outcome [#learning-outcome]
+
+In 90–110 minutes, you will implement scaled dot-product attention from
+first principles, verify it against a hand calculation and against PyTorch's
+fused reference, prove that a causal mask blocks the future, extend one head to
+several, and diagnose four deliberately broken variants by measurement rather
+than by intuition.
+
+The lab runs on the embedded batches from T03, so attention operates on real
+tokens rather than on random noise.
+
+## Predict · What can a position know? [#predict-what-can-a-position-know]
+
+Before running anything, predict:
+
+1. what shape the score matrix has for a batch `[B,T,D]` with `H` heads;
+2. why the scores are divided by $\sqrt{d_k}$ and what happens without it;
+3. whether attention weights in row `t` may be non-zero to the right of `t`.
+
+Then run the CPU reference:
+
+```
+python examples/run_attention_lab.py
+```
+
+It prints the report and writes `artifacts/attention/heatmap-head-0.svg`
+(both stay out of Git).
+
+## Trace · Compute one example by hand [#trace-compute-one-example-by-hand]
+
+`hand_check_example()` uses three tokens in two dimensions, with queries, keys,
+and values all equal to
+
+$$
+X=\begin{pmatrix}1&0\\0&1\\1&1\end{pmatrix}.
+$$
+
+Attention is five explicit steps:
+
+$$
+S=\frac{QK^\top}{\sqrt{d_k}},\qquad
+S'=\mathrm{mask}(S),\qquad
+A=\mathrm{softmax}(S'),\qquad
+Y=AV
+$$
+
+With $d_k = 2$, row 1 compares scores $0$ and $1/\sqrt{2}$, so its weights are
+
+$$
+\left[\frac{1}{1+e^{1/\sqrt{2}}},\ \frac{e^{1/\sqrt{2}}}{1+e^{1/\sqrt{2}}}\right]
+= [0.330,\ 0.670].
+$$
+
+Row 0 may only read itself and therefore returns $V_0=[1,0]$ unchanged. Compute
+row 2 yourself and compare it against the report before continuing. If your
+number differs, you have found either your error or the code's.
+
+
+
+## Interactive · One attention row
+
+**Interactive attention hand calculation.** Q = K = V = [[1,0],[0,1],[1,1]]. Query 1, causal mask on, scaling by √2, temperature 1: weights 0.330 / 0.670 / 0.000, output 0.330 / 0.670, future mass 0. Change query, mask, scaling or temperature in the browser and compare scores, softmax and weighted values. These numbers describe the initial setting.
+
+## Build · One head [#build-one-head]
+
+`SingleHeadSelfAttention` holds three projections and nothing else. Trace the
+shapes for a batch `[4,23,16]` with `head_dim=8`:
+
+| Value | Shape | Meaning |
+| --- | --- | --- |
+| `inputs` | `[4,23,16]` | embedded tokens from T03 |
+| `queries`, `keys`, `values` | `[4,23,8]` | what each position asks, offers, and carries |
+| `scores` | `[4,23,23]` | similarity of every query to every key |
+| `weights` | `[4,23,23]` | row-normalized; each row sums to 1 |
+| `output` | `[4,23,8]` | value mixture per position |
+
+Two properties are asserted, not assumed: every row sums to one, and
+`future_attention_mass(weights)` is exactly `0.0`. The second is the causal
+mask doing its job — a `[T,T]` boolean lower triangle that sets blocked scores
+to $-\infty$ **before** the softmax, so they receive exactly zero weight rather
+than a small one.
+
+
+Additional boolean masks restrict the causal mask by intersection: `True` means
+allowed, but cannot unlock a future key when `causal=True`. Masks must cover
+`[T,T]`; for per-example multi-head masks use `[B,1,T,T]`. Every query must retain
+at least one allowed key; fully blocked rows raise `ValueError` before softmax.
+To study unrestricted attention, explicitly set `causal=False`.
+
+The JSON report represents masked scores as the string `"-inf"`, because JSON
+has no infinity number. Computation still uses floating-point negative infinity.
+Heatmap labels follow the selected batch sequence (the CLI uses sequence 0).
+
+## Build · Several heads [#build-several-heads]
+
+`MultiHeadSelfAttention` projects to the full width, splits it into `H` heads of
+`D/H` dimensions, attends per head, merges, and mixes the result once more:
+
+| Value | Shape | Meaning |
+| --- | --- | --- |
+| `queries` | `[4,4,23,4]` | `[B,H,T,D/H]` after `split_heads` |
+| `weights` | `[4,4,23,23]` | one attention matrix per head |
+| `output` | `[4,23,16]` | merged heads, projected back to model width |
+
+The reshape is the part that fails silently, because a wrong `view`/`transpose`
+order still produces the correct shape. `head_by_head_reference` therefore
+recomputes the same result with an explicit Python loop over heads and no
+reshape at all. The reference configuration reaches a maximum difference of
+`0.000`; PyTorch's fused `scaled_dot_product_attention` differs by `2.4e-7`,
+which is float32 arithmetic, not a bug.
+
+`gradient_check` compares autograd's input gradients with central finite
+differences in float64 and reports a maximum relative error of `3.3e-11`.
+
+## Break · Four defects, four measurements [#break-four-defects-four-measurements]
+
+`diagnose_broken_variants` runs each defect on the same inputs and records what
+catches it:
+
+| Variant | Symptom | Caught by |
+| --- | --- | --- |
+| `no_mask` | future attention mass `179.05` instead of `0.0` | causality check |
+| `no_scaling` | weight entropy `1.82` versus `2.11` — attention too peaked | entropy comparison |
+| `wrong_transpose` | `[d_k,d_k]` score matrix | shape check |
+| `softmax_over_queries` | row sums off by `3.82` | normalization check |
+
+The transpose defect only raises when `T != d_k`. `silent_transpose_case()`
+sets both to 4: nothing raises, the shape matches, and only comparing values
+reveals a maximum difference of `1.007` and a future mass of `1.21`. A test that
+checks shapes alone would pass on a model that reads the future.
+
+For each variant, answer: which of your tests would have failed first?
+
+## Measure · Read the heatmap [#measure-read-the-heatmap]
+
+Open `artifacts/attention/heatmap-head-0.svg`. Rows are query positions,
+columns are keys; the upper right is empty because of the mask. Early positions
+must concentrate their weight on few keys — position 0 has exactly one choice —
+while later rows spread it out.
+
+Change one factor and predict the effect first:
+
+```
+python examples/run_attention_lab.py --heads 1
+python examples/run_attention_lab.py --heads 8
+```
+
+More heads at the same width mean a smaller `head_dim`, so each head compares
+in a narrower space. The parameter count stays at `1024` for `embedding_dim=16`
+regardless of the head count — heads split capacity, they do not add it.
+
+See the versioned
+[attention reference](/llm-engineering-course-pages/reference/attention-v1)
+for the reference values and the change protocol.
+
+## Explain · Your attention paragraph [#explain-your-attention-paragraph]
+
+Write one paragraph that names:
+
+- the shape and meaning of queries, keys, values, scores, weights, and output;
+- why the scores are scaled by $\sqrt{d_k}$;
+- how the mask enforces causality, and at which step it is applied;
+- what splitting into heads changes and what it does not;
+- the measurement that catches each of the four defects;
+- the two references your implementation was checked against.
+
+## Completion gate [#completion-gate]
+
+You pass when you can derive one row of the attention matrix by hand and your
+report proves the implementation. Required evidence:
+
+- your own row-2 calculation matching `hand_check` in the report;
+- `[B,H,T,T]` weights with row sums of 1 and future mass `0.0`;
+- agreement with the head-by-head reference and with PyTorch (&lt; `1e-5`);
+- a gradient check below `1e-5` relative error;
+- all four broken variants with the measurement that catches each;
+- one heatmap, read out loud in two sentences.
+
+Run the automated contract checks:
+
+```
+pytest tests/test_attention.py
+```
+
+## What's next [#whats-next]
+
+One attention layer mixes information across positions but cannot transform it
+much. Next, you will add residual paths, normalization, and a feed-forward
+network to build a full decoder block and a Mini-GPT.
+
+[← T03 data pipeline](/llm-engineering-course-pages/mkdocs/data-pipeline/) · [Course home](/llm-engineering-course-pages/mkdocs/)
+
+[→ Mini-GPT decoder](/llm-engineering-course-pages/mkdocs/mini-gpt/) · [Learning guide](/llm-engineering-course-pages/mkdocs/learning-guide/)
+
+---
+
+# Lernen, indem du die Zahlen nachvollziehst
+Source: https://minigraphx.github.io/llm-engineering-course-pages/de
+
+Starte mit einem winzigen Sprachmodell, rechne Attention von Hand und bringe einem
+Modell mit SFT und LoRA eine Antwort bei. Alle Pflichtversuche laufen auf der CPU.
+
+## Wähle deine Lektion
+
+- [Einheit 0 · Dein erster Tiny-LM-Lauf](/llm-engineering-course-pages/de/unit-00) — 45–60 Minuten, keine ML-Vorkenntnisse nötig.
+- [Attention · Von Scores zu gewichteten Values](/llm-engineering-course-pages/de/attention) — 90–110 Minuten, mit interaktiver Handrechnung.
+- [SFT / LoRA · Eine Antwort lernen, die Basis bewahren](/llm-engineering-course-pages/de/sft-lora) — Response-Maske nachvollziehen und ein Low-Rank-Update bauen.
+
+- [Mini-GPT-Kerngate · Implementieren, diagnostizieren, erklären](/llm-engineering-course-pages/de/mini-gpt-gate) — 60–90 Minuten, mit gestuften Hinweisen und vollständigem Referenzcode.
+
+## Dein Einstieg
+
+[Beginne mit der Einrichtung](/llm-engineering-course-pages/de/setup) oder nutze die
+[Godot-RL-Brücke](/llm-engineering-course-pages/mkdocs/de/foundations-godot-rl-bridge/).
+Der [Lernleitfaden](/llm-engineering-course-pages/mkdocs/de/learning-guide/) hilft dir bei den Voraussetzungen.
+
+## Vergleiche das Leseerlebnis
+
+Dies ist der Blume-Pilot. Der [vollständige MkDocs-Kurs](/llm-engineering-course-pages/mkdocs/de/) bleibt verfügbar.
+Jede Lektion verlinkt ihre MkDocs-Fassung. Das Sprachmenü wechselt auf derselben
+Lektion zwischen Deutsch und Englisch; die Suche umfasst die Pilotseiten.
+
+[Portable Shell-Konventionen](/llm-engineering-course-pages/de/setup#shell-conventions).
+
+---
+
+# T04 — Self-Attention als Zahlenexperiment
+Source: https://minigraphx.github.io/llm-engineering-course-pages/de/attention
+
+[Diese Lektion in MkDocs](/llm-engineering-course-pages/mkdocs/de/attention/)
+
+<span id="t04-self-attention-als-zahlenexperiment" />
+
+
+[← T03 Datenpipeline](/llm-engineering-course-pages/mkdocs/de/data-pipeline/) · [Kursstart](/llm-engineering-course-pages/mkdocs/de/)
+
+## Lernziel [#lernziel]
+
+In 90–110 Minuten implementierst du Scaled Dot-Product Attention von Grund auf,
+prüfst sie gegen eine Handrechnung und gegen die fusionierte PyTorch-Referenz,
+weist nach, dass die Causal Mask die Zukunft blockiert, erweiterst einen Head zu
+mehreren und diagnostizierst vier absichtlich fehlerhafte Varianten über
+Messungen statt über Intuition.
+
+Das Lab läuft auf den eingebetteten Batches aus T03; Attention arbeitet also auf
+echten Tokens und nicht auf Rauschen.
+
+## Vorhersagen · Was darf eine Position wissen? [#vorhersagen-was-darf-eine-position-wissen]
+
+Sage vor dem ersten Lauf voraus:
+
+1. welche Shape die Score-Matrix für einen Batch `[B,T,D]` mit `H` Heads hat;
+2. warum die Scores durch $\sqrt{d_k}$ geteilt werden und was ohne passiert;
+3. ob Attention-Gewichte in Zeile `t` rechts von `t` ungleich null sein dürfen.
+
+Starte dann die CPU-Referenz:
+
+```
+python examples/run_attention_lab.py
+```
+
+Sie druckt den Report und schreibt `artifacts/attention/heatmap-head-0.svg`
+(beides bleibt außerhalb von Git).
+
+## Verfolgen · Ein Beispiel von Hand rechnen [#verfolgen-ein-beispiel-von-hand-rechnen]
+
+`hand_check_example()` nutzt drei Tokens in zwei Dimensionen; Queries, Keys und
+Values sind identisch:
+
+$$
+X=\begin{pmatrix}1&0\\0&1\\1&1\end{pmatrix}.
+$$
+
+Attention besteht aus fünf sichtbaren Schritten:
+
+$$
+S=\frac{QK^\top}{\sqrt{d_k}},\qquad
+S'=\mathrm{mask}(S),\qquad
+A=\mathrm{softmax}(S'),\qquad
+Y=AV
+$$
+
+Mit $d_k = 2$ vergleicht Zeile 1 die Scores $0$ und $1/\sqrt{2}$; ihre Gewichte
+sind
+
+$$
+\left[\frac{1}{1+e^{1/\sqrt{2}}},\ \frac{e^{1/\sqrt{2}}}{1+e^{1/\sqrt{2}}}\right]
+= [0{,}330,\ 0{,}670].
+$$
+
+Zeile 0 darf nur sich selbst lesen und gibt daher $V_0=[1,0]$ unverändert
+zurück. Rechne Zeile 2 selbst und vergleiche sie mit dem Report, bevor du
+weitermachst. Weicht deine Zahl ab, hast du entweder deinen Fehler oder den des
+Codes gefunden.
+
+
+
+## Interaktiv · Eine Attention-Zeile
+
+**Interaktive Attention-Handrechnung.** Q = K = V = [[1,0],[0,1],[1,1]]. Query 1, kausale Maske an, Skalierung durch √2, Temperatur 1: Gewichte 0,330 / 0,670 / 0,000, Ausgabe 0,330 / 0,670, Zukunftsmasse 0. Ändere im Browser Query, Maske, Skalierung oder Temperatur und vergleiche Scores, Softmax und gewichtete Values. Die Zahlen zeigen die Ausgangseinstellung.
+
+## Bauen · Ein Head [#bauen-ein-head]
+
+`SingleHeadSelfAttention` enthält drei Projektionen und sonst nichts. Verfolge
+die Shapes für einen Batch `[4,23,16]` mit `head_dim=8`:
+
+| Wert | Shape | Bedeutung |
+| --- | --- | --- |
+| `inputs` | `[4,23,16]` | eingebettete Tokens aus T03 |
+| `queries`, `keys`, `values` | `[4,23,8]` | was jede Position fragt, anbietet und trägt |
+| `scores` | `[4,23,23]` | Ähnlichkeit jeder Query zu jedem Key |
+| `weights` | `[4,23,23]` | zeilennormiert; jede Zeile summiert zu 1 |
+| `output` | `[4,23,8]` | Value-Mischung pro Position |
+
+Zwei Eigenschaften werden geprüft, nicht angenommen: Jede Zeile summiert zu
+eins, und `future_attention_mass(weights)` ist exakt `0.0`. Letzteres ist die
+Wirkung der Causal Mask — eine boolesche untere Dreiecksmatrix `[T,T]`, die
+gesperrte Scores **vor** dem Softmax auf $-\infty$ setzt, sodass sie exakt null
+Gewicht bekommen statt eines kleinen.
+
+
+Zusätzliche boolesche Masken schränken die kausale Maske durch Schnittbildung
+ein: `True` bedeutet erlaubt, kann bei `causal=True` aber keinen zukünftigen Key
+freigeben. Masken müssen `[T,T]` abdecken; pro Batch-Beispiel mit mehreren Heads
+verwende `[B,1,T,T]`. Jede Query benötigt mindestens einen erlaubten Key;
+vollständig gesperrte Zeilen lösen vor Softmax einen `ValueError` aus.
+Für unbeschränkte Attention setzt du ausdrücklich `causal=False`.
+
+Im JSON-Report steht für gesperrte Scores die Zeichenfolge `"-inf"`, da JSON
+keine unendlichen Zahlen kennt. Die Berechnung nutzt weiterhin negative
+Unendlichkeit. Heatmap-Labels gehören zur ausgewählten Batch-Sequenz
+(die CLI verwendet Sequenz 0).
+
+## Bauen · Mehrere Heads [#bauen-mehrere-heads]
+
+`MultiHeadSelfAttention` projiziert auf die volle Breite, teilt sie in `H` Heads
+zu je `D/H` Dimensionen, rechnet Attention pro Head, führt zusammen und mischt
+einmal nach:
+
+| Wert | Shape | Bedeutung |
+| --- | --- | --- |
+| `queries` | `[4,4,23,4]` | `[B,H,T,D/H]` nach `split_heads` |
+| `weights` | `[4,4,23,23]` | eine Attention-Matrix je Head |
+| `output` | `[4,23,16]` | zusammengeführte Heads, zurück auf Modellbreite |
+
+Genau das Reshape scheitert lautlos, denn eine falsche `view`/`transpose`-
+Reihenfolge liefert trotzdem die richtige Shape. `head_by_head_reference`
+rechnet dasselbe Ergebnis deshalb mit einer expliziten Python-Schleife über die
+Heads und ganz ohne Reshape nach. Die Referenzkonfiguration erreicht eine
+maximale Differenz von `0.000`; PyTorchs fusioniertes
+`scaled_dot_product_attention` weicht um `2.4e-7` ab — Float32-Arithmetik, kein
+Fehler.
+
+`gradient_check` vergleicht die Input-Gradienten von Autograd mit zentralen
+Differenzen in Float64 und meldet einen maximalen relativen Fehler von
+`3.3e-11`.
+
+## Brechen · Vier Defekte, vier Messungen [#brechen-vier-defekte-vier-messungen]
+
+`diagnose_broken_variants` führt jeden Defekt auf denselben Eingaben aus und
+hält fest, was ihn aufdeckt:
+
+| Variante | Symptom | Aufgedeckt durch |
+| --- | --- | --- |
+| `no_mask` | Zukunftsmasse `179,05` statt `0,0` | Kausalitätsprüfung |
+| `no_scaling` | Gewichtsentropie `1,82` statt `2,11` — zu spitze Attention | Entropievergleich |
+| `wrong_transpose` | Score-Matrix `[d_k,d_k]` | Shape-Prüfung |
+| `softmax_over_queries` | Zeilensummen um `3,82` daneben | Normierungsprüfung |
+
+Der Transpose-Defekt fliegt nur auf, wenn `T != d_k`. `silent_transpose_case()`
+setzt beides auf 4: Nichts wirft eine Exception, die Shape stimmt, und erst der
+Wertevergleich zeigt eine maximale Differenz von `1,007` und eine Zukunftsmasse
+von `1,21`. Ein Test, der nur Shapes prüft, ginge bei einem Modell durch, das
+die Zukunft liest.
+
+Beantworte für jede Variante: Welcher deiner Tests wäre zuerst rot geworden?
+
+## Messen · Die Heatmap lesen [#messen-die-heatmap-lesen]
+
+Öffne `artifacts/attention/heatmap-head-0.svg`. Zeilen sind Query-Positionen,
+Spalten sind Keys; oben rechts bleibt es leer wegen der Maske. Frühe Positionen
+müssen ihr Gewicht auf wenige Keys konzentrieren — Position 0 hat genau eine
+Wahl —, während spätere Zeilen es verteilen.
+
+Ändere einen Faktor und sage die Wirkung zuerst voraus:
+
+```
+python examples/run_attention_lab.py --heads 1
+python examples/run_attention_lab.py --heads 8
+```
+
+Mehr Heads bei gleicher Breite bedeuten kleineres `head_dim`; jeder Head
+vergleicht also in einem schmaleren Raum. Die Parameterzahl bleibt bei
+`embedding_dim=16` unabhängig von der Head-Zahl `1024` — Heads teilen Kapazität
+auf, sie fügen keine hinzu.
+
+Referenzwerte und Änderungsprotokoll stehen in der versionierten
+[Attention-Referenz](/llm-engineering-course-pages/reference/attention-v1).
+
+## Erklären · Dein Attention-Absatz [#erklaren-dein-attention-absatz]
+
+Schreibe einen Absatz, der benennt:
+
+- Shape und Bedeutung von Queries, Keys, Values, Scores, Weights und Output;
+- warum die Scores mit $\sqrt{d_k}$ skaliert werden;
+- wie die Maske Kausalität erzwingt und an welcher Stelle sie greift;
+- was das Aufteilen in Heads ändert und was nicht;
+- die Messung, die jeden der vier Defekte aufdeckt;
+- die beiden Referenzen, gegen die deine Implementierung geprüft wurde.
+
+## Abschluss-Gate [#abschluss-gate]
+
+Du bestehst, wenn du eine Zeile der Attention-Matrix von Hand herleiten kannst
+und dein Report die Implementierung belegt. Erforderliche Nachweise:
+
+- deine eigene Rechnung für Zeile 2 passend zu `hand_check` im Report;
+- `[B,H,T,T]`-Gewichte mit Zeilensummen 1 und Zukunftsmasse `0.0`;
+- Übereinstimmung mit der Head-für-Head-Referenz und mit PyTorch (&lt; `1e-5`);
+- ein Gradient Check unter `1e-5` relativem Fehler;
+- alle vier fehlerhaften Varianten samt aufdeckender Messung;
+- eine Heatmap, in zwei Sätzen laut vorgelesen.
+
+Führe die automatischen Vertragstests aus:
+
+```
+pytest tests/test_attention.py
+```
+
+## Wie es weitergeht [#wie-es-weitergeht]
+
+Eine Attention-Schicht mischt Information über Positionen hinweg, kann sie aber
+kaum transformieren. Als Nächstes ergänzt du Residualpfade, Normierung und ein
+Feed-Forward-Netz zu einem vollständigen Decoder-Block und einem Mini-GPT.
+
+[← T03 Datenpipeline](/llm-engineering-course-pages/mkdocs/de/data-pipeline/) · [Kursstart](/llm-engineering-course-pages/mkdocs/de/)
+
+[→ Mini-GPT-Decoder](/llm-engineering-course-pages/mkdocs/de/mini-gpt/) · [Lernleitfaden](/llm-engineering-course-pages/mkdocs/de/learning-guide/)
+
+---
+
+# M2-Kernprüfung: programmieren, Fehler finden, erklären
+Source: https://minigraphx.github.io/llm-engineering-course-pages/de/mini-gpt-gate
+
+[Diese Lektion in MkDocs](/llm-engineering-course-pages/mkdocs/de/mini-gpt-gate/)
+
+<span id="m2-kernprufung-programmieren-fehler-finden-erklaren" />
+
+
+Bearbeite zuerst [Decoder](/llm-engineering-course-pages/mkdocs/de/mini-gpt/), [Datenpipeline](/llm-engineering-course-pages/mkdocs/de/data-pipeline/) und
+[Attention](/llm-engineering-course-pages/de/attention). Plane 60–90 Minuten. Zeige eine eigene Umsetzung;
+das blosse Ausführen der Musterlösung reicht nicht. Speichere eigene Versuche in
+`artifacts/mini-gpt/`; generierte Korpora und Gewichte gehören nicht in Git.
+
+## 1. Einen Pre-Norm-Residualblock programmieren (4 Punkte) [#1-einen-pre-norm-residualblock-programmieren-4-punkte]
+
+Speichere dieses unvollständige Gerüst als `artifacts/mini-gpt/exercise.py`.
+Ersetze den `NotImplementedError` durch deine Berechnung. Nutze die vorhandenen
+Module des Blocks, rufe aber in deiner Funktion nicht `block.forward` auf.
+Erhalte `[B,T,D]`, beide Vor-Normalisierungen, beide Residualpfade und die
+Padding-Isolation. Sage zuerst voraus, was passiert, wenn beide Zweige nur null
+zurückgeben.
+
+```python
+import torch
+from llm_course.attention import causal_mask
+from llm_course.mini_gpt import DecoderBlock, GPTConfig
+
+
+def learner_forward(block, inputs, allowed, valid):
+    # TODO: Norm -> Attention -> Dropout -> Residual -> Padding nullen.
+    # TODO: Norm -> FFN -> Dropout -> Residual -> Padding nullen.
+    raise NotImplementedError("beide Residualzweige implementieren")
+
+
+torch.set_num_threads(1)
+config = GPTConfig(vocab_size=9, block_size=3, embedding_dim=4, heads=2, layers=1)
+block = DecoderBlock(config, index=0).eval()
+valid = torch.tensor([[[1], [1], [0]]], dtype=torch.bool)
+inputs = torch.tensor([[[1., 2., 3., 4.], [4., 3., 2., 1.], [0., 0., 0., 0.]]])
+allowed = causal_mask(3)[None, None] & valid.squeeze(-1)[:, None, None, :]
+allowed |= ~valid[:, None] & torch.eye(3, dtype=torch.bool)[None, None]
+actual = learner_forward(block, inputs, allowed, valid)
+expected = block(inputs, allowed, valid)
+assert actual.shape == (1, 3, 4)
+assert torch.count_nonzero(actual[:, 2]) == 0
+assert torch.isfinite(actual).all()
+torch.testing.assert_close(actual, expected)
+print("Residualblock stimmt; jetzt den Kausalitätstest ergänzen")
+```
+
+```bash
+python artifacts/mini-gpt/exercise.py
+python -m pytest tests/test_mini_gpt.py -q
+```
+
+Ergänze einen eigenen Test: Verändere das letzte **gültige** Token einer Sequenz
+mit drei Tokens und prüfe, dass frühere Ausgaben gleich bleiben. Verwende dafür
+nur gültige Positionen und `eval()`, damit Dropout nicht stört. Erkläre, warum ein
+reiner Formvergleich Attention entlang der falschen Achse nicht erkennen würde.
+
+Je ein Punkt: Pre-Norm-Attention, erster Residualpfad, Pre-Norm-FFN mit zweitem
+Residualpfad sowie eigene Kausalitäts-/Padding-Prüfung. Der anfängliche Fehler ist
+beabsichtigt. Blosses Entfernen der Ausnahme ohne Berechnungen zählt nicht.
+Halte Code und fehlgeschlagene/erfolgreiche Ausgaben fest, bevor du Antworten öffnest.
+
+## 2. Eingebaute Fehler diagnostizieren (3 Punkte) [#2-eingebaute-fehler-diagnostizieren-3-punkte]
+
+Nenne für jeden Defekt ein Gegenbeispiel, ein erwartetes beobachtbares Symptom und
+eine Korrektur. Nur alle drei zusammen ergeben den jeweiligen Punkt.
+
+| Defekt in einer lokalen Kopie | Erwarteter Nachweis |
+| --- | --- |
+| Datensatz setzt `labels = input_ids.clone()` | Sehr kleiner Loss kann nur sichtbare Tokens kopieren messen |
+| `allowed` komplett True **und** `block.attention.causal=False` | Frühere Logits reagieren auf einen geänderten zukünftigen Suffix |
+| Gültige Verluste zusammen mit Padding-Nullen mitteln | Zusätzliches Padding senkt den angezeigten Mittelwert künstlich |
+
+Beim dritten Defekt: zwei gültige Verluste 2 und 4 sowie zwei Padding-Plätze
+ergeben fälschlich `(2+4+0+0)/4=1.5`; korrekt ist 3. Warum braucht eine komplett
+gepaddete Zeile Behandlung schon vor Softmax und zusätzlich beim Loss? Stelle nach
+den Messungen alle korrekten Varianten wieder her.
+
+## 3. Erklären und vergleichen (3 Punkte) [#3-erklaren-und-vergleichen-3-punkte]
+
+Gib eine kurze mündliche oder schriftliche Erklärung mit eigenen Zahlen:
+
+- Verfolge IDs `[2,3]`, Embeddings `[2,3,4]`, zwei Köpfe `[2,2,3,2]`, Scores
+  `[2,2,3,3]`, FFN `[2,3,16]` und Logits `[2,3,5]`. Unterscheide Merkmals- von
+  Positionsmischung und begründe, weshalb die Ziele genau einmal verschoben werden.
+- Warum müssen reproduzierbare Blöcke unterschiedliche Anfangsgewichte haben?
+  Warum nutzt Sampling vorübergehend `eval()`? Warum reichen gespeicherte Gewichte
+  nicht zum exakten Fortsetzen von AdamW? Nenne zusätzliche Informationen für M3.
+- Führe die drei Seeds der Lektion aus. Berichte jede gepaarte Differenz der
+  Validierungs-NLL „ohne Norm minus mit Norm“, Mittelwert und Stichproben-
+  Standardabweichung. Warum beweisen zwei Validierungsdokumente und drei Seeds
+  keine allgemeine Überlegenheit?
+
+Jede vollständige Erklärung ergibt einen Punkt. **Bestanden:** mindestens 8/10,
+darunter alle 4 Programmierpunkte und alle 3 Diagnosepunkte, erfolgreiche
+mitgelieferte Tests, Tiny-Batch-NLL &lt;0.1 und exakt gleiche Logits nach Neuladen.
+Die letzten beiden Prüfungen sind in den Tests enthalten; bewahre ihre Ausgabe
+auf. Bei Lücken die passende Voraussetzung wiederholen und neu erklären.
+
+## Hinweise — erst nach einem eigenen Versuch öffnen [#hinweise-erst-nach-einem-eigenen-versuch-offnen]
+
+<details>
+<summary>Hinweis 1: die Residualpfade trennen</summary>
+
+Lasse `inputs` unverändert, während du den normalisierten Attention-Beitrag
+berechnest. Attention mit `mask=allowed` liefert `(output, weights)`; nur die erste
+Komponente wird addiert. Der zweite normalisierte Zweig verwendet den aktualisierten
+Zustand statt der ursprünglichen Eingabe. `valid` hat Form `[B,T,1]` und wird über
+Merkmale verteilt.
+
+</details>
+
+<details>
+<summary>Hinweis 2: die zwei Masken unterscheiden</summary>
+
+Die Attention-Maske bestimmt vor Softmax, welche Schlüssel beitragen dürfen. Die
+Loss-Maske legt fest, welche Ziele im Lernziel zählen. Eine ersetzt nicht die
+andere. Eine Score-Zeile nur aus `-inf` ergibt eine undefinierte Verteilung, auch
+wenn ihr Ziel später ignoriert wird.
+
+</details>
+
+## Referenzantworten — nach dem eigenen Nachweis vergleichen [#referenzantworten-nach-dem-eigenen-nachweis-vergleichen]
+
+<details>
+<summary>Referenzimplementierung des Blocks</summary>
+
+```python
+def learner_forward(block, inputs, allowed, valid):
+    attended, _ = block.attention(block.norm_attention(inputs), mask=allowed)
+    hidden = (inputs + block.dropout(attended)) * valid
+    update = block.ffn(block.norm_ffn(hidden))
+    return (hidden + block.dropout(update)) * valid
+```
+
+Bei Null-Zweigen entspricht die gültige Ausgabe der Eingabe; Padding bleibt null.
+GELU und FFN wirken je Position auf Merkmale; maskierte Attention erlaubt
+Information früherer Positionen. Verschiedene Block-Seeds vermeiden gleiche
+Anfangsprojektionen bei trotzdem reproduzierbarem Gesamtlauf.
+
+</details>
+
+<details>
+<summary>Referenzdiagnose und Erklärung</summary>
+
+1. Sichtbare Eingabe `c` mit Ziel `c` belohnt Kopieren. Ziel sollte `a` sein.
+   Im Datensatz einmal `tokens[:-1]` und `tokens[1:]` verwenden.
+2. Für `[1,2,3]` und `[1,2,8]` müssen die ersten beiden Logits gleich bleiben.
+   Kausales Dreieck und gültige Schlüssel wieder kombinieren. Beide Schutzstellen
+   müssen für den absichtlichen Defekt dieser Implementierung ausgeschaltet sein.
+3. Nur NLL für `labels != -100` summieren und durch deren Anzahl teilen. Komplett
+   ignorierte Ziele liefern differenzierbare null. Vor Softmax gepaddeten Anfragen
+   einen sicheren diagonalen Platz geben, danach deren Ausgaben nullen.
+
+Sampling verwendet den Auswertungsmodus, damit Dropout den lokalen Seed nicht
+unterläuft, und stellt danach jeden Modulmodus wieder her. Exaktes Fortsetzen
+braucht Optimierermomente, gegebenenfalls Scheduler-/Scaler-Zustand, Schritt- und
+Batchposition, Zufallszustände, Konfiguration und Datenidentität. Die Norm-Differenzen
+sind 2.389516, 1.105527 und 1.325092; Mittelwert 1.606712, Stichproben-
+Standardabweichung 0.686760. Das beschreibt den kleinen festen Validierungsversuch,
+keinen Sicherheits-, Fakten- oder allgemeinen Sprachbenchmark.
+
+</details>
+
+---
+
+# Einrichtung — vom frischen Computer zum ersten Lauf
+Source: https://minigraphx.github.io/llm-engineering-course-pages/de/setup
+
+[Diese Lektion in MkDocs](/llm-engineering-course-pages/mkdocs/de/setup/)
+
+<span id="einrichtung-vom-frischen-computer-zum-ersten-lauf" />
+
+
+[Kursstart](/llm-engineering-course-pages/mkdocs/de/) · [Lernleitfaden](/llm-engineering-course-pages/mkdocs/de/learning-guide/) · [→ Einheit 0](/llm-engineering-course-pages/de/unit-00)
+
+Plane für die erste Installation 20–40 Minuten ein. Ein **Terminal** ist ein
+Fenster zum Ausführen von Befehlen. Ein **Repository** ist der Kursordner samt
+Änderungsverlauf. Führe Kursbefehle in diesem Ordner aus. Kopiere nur den Befehl,
+kein vorangestelltes `$` oder `>>>`. Python-Code gehört in eine `.py`-Datei,
+nicht direkt ins Terminal.
+
+## 1. Python und Git bereitstellen [#1-python-und-git-bereitstellen]
+
+Installiere Python ab Version 3.11 und Git, falls sie fehlen. Aktiviere unter
+Windows die PATH-Option des Python-Installers. Öffne Terminal (macOS/Linux)
+oder PowerShell (Windows) und prüfe:
+
+```bash
+python3 --version
+git --version
+```
+
+Unter Windows heißt der Python-Aufruf `py --version`. Wird keiner der Befehle
+gefunden, schließe die Python-Installation ab und öffne das Terminal neu.
+Eine CPU genügt; du brauchst keine GPU und kein Cloudkonto. Die Installation
+lädt Bibliotheken herunter; die neuen Pflicht-Trainingslabs laufen danach offline.
+
+## 2. Den Kurs holen [#2-den-kurs-holen]
+
+```bash
+git clone https://github.com/minigraphx/llm-engineering-course.git
+cd llm-engineering-course
+```
+
+Während des privaten Piloten benötigst du Zugriff auf dieses GitHub-Repository.
+`Repository not found` kann fehlenden Zugriff bedeuten und ist dann kein
+Python-Fehler. Hast du den Kursordner bereits, öffne darin ein Terminal und
+überspringe das Klonen. Dort liegen `README.md`, `pyproject.toml`, `examples`
+und `src`.
+
+## 3. Eigene Python-Umgebung erstellen [#3-eigene-python-umgebung-erstellen]
+
+Eine **virtuelle Umgebung** trennt die Kursbibliotheken von anderen Projekten.
+Erstelle sie einmal und aktiviere sie in jedem neuen Terminal erneut.
+
+macOS/Linux:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -e ".[dev,docs]"
+```
+
+Windows PowerShell:
+
+```powershell
+py -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install -e ".[dev,docs]"
+```
+
+Blockiert PowerShell die Aktivierung, verwende
+`.\.venv\Scripts\python.exe` anstelle von `python`. Aktivierung ist nur eine
+Abkürzung. Installiere dann mit
+`.\.venv\Scripts\python.exe -m pip install -e ".[dev,docs]"`.
+Unter macOS/Linux lautet der volle Interpreterpfad `.venv/bin/python`.
+`-e` macht Änderungen am Kurspaket sofort verfügbar; `dev,docs` ergänzt Tests
+und Dokumentationswerkzeuge. Warte auf den erfolgreichen Abschluss.
+
+Der erste vollständige Testlauf oder Byte-Pair-Encoding-Vergleich (BPE) kann
+einmalig Internet benötigen: Das vorhandene Tokenizer-Labor lädt die öffentliche
+Codierungstabelle `cl100k_base` und speichert sie lokal zwischen. Die Installation
+der Python-Pakete lädt diese Tabelle noch nicht vorab. Die verpflichtenden
+M2/M3-Modell-, Trainings-, Evaluations- und Profiling-Experimente verwenden lokal
+erzeugte Daten und laufen nach der Installation offline.
+
+### Shell-Konventionen für alle Lektionen [#shell-conventions]
+
+Nach der Aktivierung verwendest du auf jeder Plattform das aktive `python`.
+Ältere Beispiele oder Referenzprotokolle enthalten manchmal vollständige
+macOS-/Linux-Pfade:
+
+| Geschriebener Befehl | Bei aktivierter Umgebung, auch in PowerShell |
+| --- | --- |
+| `.venv/bin/python script.py` | `python script.py` |
+| `.venv/bin/pytest tests/...` | `python -m pytest tests/...` |
+
+Ein Block mit `python - <<'PY'` verwendet **Heredoc**-Syntax: Bash/Zsh übergeben
+alle folgenden Python-Zeilen bis zum abschließenden `PY` an den Interpreter.
+PowerShell versteht diese Hülle nicht. Diese Alternative funktioniert überall:
+
+1. Erstelle den Ordner mit `python -c "from pathlib import Path; Path('artifacts/my-work').mkdir(parents=True, exist_ok=True)"`.
+2. Kopiere ausschließlich die Python-Zeilen zwischen `python - <<'PY'` und dem
+   letzten `PY` im Editor in `artifacts/my-work/check.py`. Kopiere weder diese
+   Begrenzungszeilen noch die Markdown-Backticks. Speichere die Datei.
+3. Führe im Repository-Stamm `python artifacts/my-work/check.py` aus.
+
+Ohne Aktivierung unter Windows ersetzt du `python` durch
+`.\.venv\Scripts\python.exe`. Der Python-Inhalt bleibt gleich; nur seine
+Übergabe durch die Shell ändert sich.
+
+## 4. Installation prüfen und erstes Ergebnis sehen [#4-installation-prufen-und-erstes-ergebnis-sehen]
+
+```bash
+python examples/check_device.py
+python examples/diagnose_unit0.py
+python examples/run_unit0.py --device cpu
+```
+
+Die Diagnoseprüfungen sollen `pass` melden. Der letzte Befehl gibt einen
+JSON-Bericht aus: In geschweiften Klammern stehen benannte Felder. Suche
+`baseline.generation` (erzeugter Text) und `baseline.corpus_loss`
+(Vorhersagefehler). Unsinniger Text ist bei diesem winzigen Lehrmodell normal.
+[Einheit 0](/llm-engineering-course-pages/de/unit-00) erklärt den Bericht Schritt für Schritt. Erzeugte Dateien
+liegen in `artifacts/` und lassen sich mit demselben Befehl neu herstellen.
+
+## 5. Kurs prüfen und Lektionen öffnen [#5-kurs-prufen-und-lektionen-offnen]
+
+```bash
+python -m pytest
+python -m mkdocs build --strict
+python -m mkdocs serve
+```
+
+Die Tests enden mit der Zahl bestandener Tests. Der Dokumentationsbau muss ohne
+Fehler enden. Der Server nennt eine lokale Adresse, meist
+`http://127.0.0.1:8000`; öffne sie im Browser. Ctrl+C im Terminal beendet den
+Server. EN/DE wechselt die Sprache. Beginne mit dem
+[Lernleitfaden](/llm-engineering-course-pages/mkdocs/de/learning-guide/), dann mit Einheit 0.
+
+## Wenn etwas fehlschlägt [#wenn-etwas-fehlschlagt]
+
+| Meldung oder Symptom | Prüfung und Abhilfe |
+| --- | --- |
+| `No such file` beim Beispiel | Nach `cd llm-engineering-course` im Kursordner ausführen. |
+| `No module named llm_course` | Python aus der Kursumgebung verwenden und Installation wiederholen. |
+| `No module named torch` | Installation unvollständig oder falscher Interpreter. |
+| Installation bleibt still | Große Pakete brauchen Minuten; Abschluss oder Fehlermeldung abwarten. |
+| Fehler des Beschleunigers | Das Lab mit `--device cpu` starten. |
+| Nach `mkdocs serve` keine Eingabe möglich | Der Server läuft; zweites Terminal öffnen oder Ctrl+C drücken. |
+
+Notiere bei Fehlern den Befehl und die letzten Fehlerzeilen. Zugangsdaten gehören
+nicht in Berichte. Weitere Hilfe:
+[Fehlerbehebung für Einheit 0](/llm-engineering-course-pages/mkdocs/de/unit-00-troubleshooting/) und
+[Hardwareprofile](/llm-engineering-course-pages/mkdocs/de/hardware/).
+
+---
+
+# SFT und LoRA: Antworten lernen, Basismodell erhalten
+Source: https://minigraphx.github.io/llm-engineering-course-pages/de/sft-lora
+
+[Diese Lektion in MkDocs](/llm-engineering-course-pages/mkdocs/de/sft-lora/)
+
+<span id="sft-und-lora-antworten-lernen-basismodell-erhalten" />
+
+
+Voraussetzungen: [Decoder](/llm-engineering-course-pages/mkdocs/de/mini-gpt/), [Training](/llm-engineering-course-pages/mkdocs/de/pretraining/) sowie die Daten-
+und Evaluationsverträge der fiktiven Firma. Zuerst den expliziten CPU-Versuch
+verstehen, danach den optionalen Versuch mit einem vortrainierten Modell ausführen.
+Beide Wege benötigen weder private Daten noch eine kostenpflichtige Lehrer-API.
+
+## Antwortmaske nachvollziehen [#antwortmaske-nachvollziehen]
+
+Der Prompt konditioniert die Antwort, wird aber nicht als gewünschte Antwort
+bewertet. Aus Token-IDs `[11, 12 | 21, 22]` entstehen unverschobene Labels
+`[-100, -100, 21, 22]`. `logits[1]` sagt 21 voraus, `logits[2]` sagt 22 voraus.
+Die Loss-Funktion verschiebt genau einmal. Bereits verschobene Labels würden den
+falschen Übergang trainieren. Padding erhält ebenfalls −100 und Attention-Maske 0.
+
+Bei Zielwahrscheinlichkeiten 0,5 und 0,25 beträgt die mittlere Antwort-NLL
+`(-log(0,5) - log(0,25))/2 = 1,0397`. Zehn zusätzliche Prompt-Tokens dürfen diesen
+Mittelwert nicht verdünnen. Bei festen Logits ändert ein maskiertes Ziel den Loss
+nicht; veränderte Prompt-Eingaben können trotzdem andere Antwort-Logits erzeugen.
+
+Prompt und Antwort werden getrennt tokenisiert, damit die Grenze explizit bleibt.
+Der Assistant-Header gehört zum Prompt, das End-of-turn-Token zur Antwort.
+Zu lange Beispiele werden abgelehnt: Abschneiden könnte die Sicherheitsregel oder
+Antwort entfernen.
+
+## Niedrigrang-Update vor PEFT bauen [#niedrigrang-update-vor-peft-bauen]
+
+Vollständiges SFT verändert alle Gewichte. LoRA berechnet
+`y = Wx + (alpha/r)BAx`, mit A der Form `[r, Eingang]` und B `[Ausgang, r]`.
+W und Bias bleiben eingefroren. Bei 512×512 Gewichten und Rang 4 enthalten die
+Faktoren `4×512 + 512×4 = 4.096` Parameter statt 262.144, also 1,5625%.
+Andere Schichten, Bias, Optimizer-Zustand und Aktivierungen fehlen in diesem Anteil.
+
+A startet zufällig, B mit null. Das angepasste Modell reproduziert zunächst exakt
+das Basismodell. Beim ersten Rückwärtslauf kann B einen Gradienten haben, A wegen
+B=0 aber noch nicht. Nachdem B verändert wurde, lernt auch A. Ein Test auf einen
+von null verschiedenen A-Gradienten im ersten Schritt wäre falsch.
+
+`LoRALinear.merged()` kopiert `W + (alpha/r)BA` in eine neue lineare Schicht.
+Adapterdateien enthalten Version und Hash der exakten Basisgewichte. Eine andere
+Basis gleicher Dimension wird abgelehnt. Der Kern lädt mit
+`torch.load(weights_only=True)`, PEFT verwendet safetensors. Nichtendliche Werte
+werden beim Merge abgelehnt. Die unveränderte Basis ermöglicht den Rollback.
+
+## Ausführen und messen [#ausfuhren-und-messen]
+
+```bash
+.venv/bin/pytest tests/test_post_training.py -q
+.venv/bin/python examples/run_sft_lora.py --steps 120
+.venv/bin/pip install -e '.[post-training]'
+.venv/bin/python examples/run_open_model_lora.py --download --device cpu
+.venv/bin/python examples/run_open_model_lora.py --device mps --output artifacts/open-model-lora-mps
+```
+
+Der MiniGPT-Versuch vergleicht vollständiges SFT und manuelles LoRA ab derselben
+zufälligen Initialisierung: gleiche Splits, Seed, Optimizer, Lernrate, Schritte
+und Batchgröße. Der Bibliotheksversuch lädt das echte Apache-2.0-Modell
+[SmolLM2-135M-Instruct](https://huggingface.co/HuggingFaceTB/SmolLM2-135M-Instruct),
+Revision `12fd25f77366fa6b3b4b768ec3050bf629380bac`. Nur freigegebene Konfigurations-
+und Tokenizerdateien sowie `model.safetensors` werden heruntergeladen.
+`trust_remote_code=False`; Rang-4-Adapter an q/v trainieren in float32.
+
+Alle Methoden nutzen Trainingsanweisungen und separat verfasste Entwicklungsfälle,
+niemals Gold. Derselbe Evaluator bewertet generierte Antworten vor/nach Training.
+Antwort-NLL und exakte/Format-/Sicherheitsmetriken messen Verschiedenes: Bessere NLL
+unter Teacher Forcing garantiert keine brauchbaren Antworten. Reload und Merge
+werden gegen den trainierten Adapter geprüft. Messwerte und Grenzen stehen im
+[Anpassungsvergleich](/llm-engineering-course-pages/mkdocs/de/adaptation-comparison/) und in `docs/baselines/sft-lora-v1.md`.
+
+## Vorhersagen → Nachvollziehen → Bauen → Beschädigen → Messen → Erklären [#vorhersagen-nachvollziehen-bauen-beschadigen-messen-erklaren]
+
+1. **Vorhersagen:** Welches Token erhält den ersten Antwort-Loss? Wie groß ist A's erster Gradient?
+2. **Nachvollziehen:** IDs, Labels und Attention-Masken unterschiedlich langer Beispiele ausgeben.
+3. **Bauen:** `response_batch`, `sft_loss` und `LoRALinear` aus den Formeln implementieren.
+4. **Beschädigen:** W freigeben, Verschiebung entfernen oder falsche Basis laden; Tests prüfen.
+5. **Messen:** Train/Dev-NLL, Formatfehler, allgemeine Kontroll-NLL, Laufzeit und Parameter zählen.
+6. **Erklären:** Adapter behalten oder zurückrollen? Regressionen sind Entscheidungsevidenz.
+
+### Eigenständige Aufgabe [#eigenstandige-aufgabe]
+
+Eine Schicht hat 12 Eingänge, 8 Ausgänge, Rang 2 und alpha 6. Parameterzahl und
+Skalierung berechnen. Bei festen Logits ein Prompt- und ein Antwortziel getrennt
+ändern und den Loss testen. Nach zwei Optimizer-Schritten speichern, laden und
+mergen; die Basis darf keine Gradienten erhalten.
+
+<details>
+<summary>Hinweis</summary>
+
+Beide rechteckigen Faktoren zählen. Das Ziel an Position t wird aus Logits an
+t−1 vorhergesagt. Maske und Ziel müssen gemeinsam verschoben werden.
+
+
+</details>
+
+<details>
+<summary>Referenzantwort</summary>
+
+A: 24, B: 16, zusammen 40 statt 96 Basisgewichte. Skalierung: 3.
+Maskierte Promptziele ändern den Loss nicht. Antwortziele ändern ihn bei
+verschiedenen Ziel-Logwahrscheinlichkeiten. A lernt, nachdem B verändert wurde.
+
+
+</details>
+
+Checkpoint: Loss-Ausrichtung ohne Trainer erklären; anfängliches Null-Update,
+eingefrorene Basis sowie sicheres Laden/Mergen belegen; verfehlte Qualitätsziele
+klar benennen. Quellen: [LoRA](https://arxiv.org/abs/2106.09685),
+[PEFT](https://huggingface.co/docs/peft/v0.18.0/index).
+
+---
+
+# Einheit 0 — Erster Tiny-LM-Lauf
+Source: https://minigraphx.github.io/llm-engineering-course-pages/de/unit-00
+
+[Diese Lektion in MkDocs](/llm-engineering-course-pages/mkdocs/de/unit-00/)
+
+<span id="einheit-0-erster-tiny-lm-lauf" />
+
+
+[← Einrichtung](/llm-engineering-course-pages/de/setup) · [Kursstart](/llm-engineering-course-pages/mkdocs/de/) · [Fehlerbehebung](/llm-engineering-course-pages/mkdocs/de/unit-00-troubleshooting/)
+
+## Lernziel [#lernziel]
+
+In 45–60 Minuten startest du ein vorbereitetes Tiny-LM, generierst mit einer
+eigenen Eingabe, untersuchst Token-IDs, Wahrscheinlichkeiten, Shapes und Loss,
+änderst einen Logit und erklärst die gemessene Wirkung. Du benötigst keine
+ML-Vorkenntnisse, eigenen Daten, Cloud oder Beschleuniger.
+
+## 0–10 Min. · Vorhersagen und Einrichtung prüfen [#010-min-vorhersagen-und-einrichtung-prufen]
+
+Das Modell sieht ein Zeichen und sagt das nächste voraus. Sage vor dem Lauf die
+Fortsetzung von `the ` voraus und ob ein wahrscheinlicheres `m` nach einem
+Leerzeichen die Generierung ändern wird.
+
+```
+python examples/diagnose_unit0.py
+```
+
+Jede Prüfung soll `pass` melden. Der Befehl prüft Python, CPU/MPS/CUDA,
+beschreibbaren Artefaktspeicher, das Laden des Checkpoints und eine
+Testgenerierung. Bei einem Fehler hilft die
+[Fehlerbehebung](/llm-engineering-course-pages/mkdocs/de/unit-00-troubleshooting/).
+
+## 10–20 Min. · Erste Generierung [#1020-min-erste-generierung]
+
+```
+python examples/run_unit0.py
+```
+
+Der erste Lauf erzeugt zwei von Git ignorierte Dateien unter `artifacts/unit0/`:
+
+- einen deterministischen synthetischen 596-Byte-Korpus unter CC0-1.0;
+- einen vorbereiteten Zeichen-Bigramm-Checkpoint aus benachbarten Zeichen.
+
+Hashes und Herkunft stehen in `manifest.json`. Die Dateien entstehen lokal,
+weil Datensätze und Checkpoints nicht in Git gehören.
+
+Suche im Bericht:
+
+- `backend` — cpu, mps oder cuda;
+- `prompt_token_ids` — konkrete Zeichen-IDs;
+- `baseline.top_next_tokens` — fünf Wahrscheinlichkeiten;
+- `baseline.corpus_loss` — mittlere Next-Character-Cross-Entropy;
+- `baseline.generation` — Greedy-Fortsetzung des Checkpoints.
+
+## 20–30 Min. · Modell verfolgen [#2030-min-modell-verfolgen]
+
+Das Vokabular besitzt `V=33` Zeichen. Der Checkpoint enthält eine
+Übergangsmatrix `[V,V]`. Die aktuelle Token-ID wählt eine Zeile mit `V` Logits;
+Softmax macht daraus Wahrscheinlichkeiten. Greedy Decoding wählt das Maximum
+und verwendet das Zeichen als nächste Eingabe.
+
+Prüfe für einen Prompt mit vier Zeichen:
+
+```
+from llm_course import run_vertical_slice
+
+report = run_vertical_slice("the ", preferred_device="cpu")
+assert len(report["prompt_token_ids"]) == 4
+assert len(report["baseline"]["top_next_tokens"]) == 5
+assert 0.0 <= report["baseline"]["target_probability"] <= 1.0
+```
+
+Der Loss vergleicht jedes Korpuszeichen mit seinem echten Folgezeichen. Ein
+kleinerer Wert bedeutet mehr Wahrscheinlichkeit auf den beobachteten Folgen.
+
+## 30–42 Min. · Kontrollierte Änderung bauen [#3042-min-kontrollierte-anderung-bauen]
+
+Der Referenzlauf addiert `4.0` auf genau einen Übergangslogit: Nach dem letzten
+Leerzeichen des Prompts wird `m` wahrscheinlicher. Vergleiche `baseline` und
+`controlled_change`: Zielwahrscheinlichkeit, Generierung und Korpus-Loss.
+
+Nutze dann eine eigene Eingabe:
+
+```
+python examples/run_unit0.py --prompt "a " --target-character t --boost 3
+```
+
+Sage die Richtung vorher. Nur eine Zelle in `[V,V]` ändert sich; das kann einen
+Übergang verbessern und gleichzeitig den gesamten Korpus-Loss verschlechtern.
+
+## 42–50 Min. · Annahme brechen [#4250-min-annahme-brechen]
+
+Kehre den Eingriff um:
+
+```
+python examples/run_unit0.py --prompt "a " --target-character t --boost -4
+```
+
+Die Zielwahrscheinlichkeit soll fallen. Behauptet deine Erklärung weiter das
+Gegenteil, ist deine Interpretation defekt. Probiere danach einen leeren Prompt
+und lies die Grenzfehlermeldung, statt die Prüfung zu entfernen.
+
+## 50–55 Min. · Reproduzierbarkeit messen [#5055-min-reproduzierbarkeit-messen]
+
+Greedy Decoding ist für dieses Modell backend-unabhängig. Seeded Sampling läuft
+auf CPU, damit derselbe Seed denselben Pfad nutzt:
+
+```
+python examples/run_unit0.py --prompt "the " --sample --seed 11
+```
+
+Starte zweimal und vergleiche. Auch mit Beschleuniger bleibt `--device cpu` der
+verbindliche Pflichtnachweis.
+
+## 55–60 Min. · Erklären [#5560-min-erklaren]
+
+Vervollständige in deinen Notizen:
+
+1. Der Prompt wird zu Token-IDs durch ...
+2. Das aktuelle Token wählt Logits mit Shape ...
+3. Softmax wird benötigt, weil ...
+4. Die Änderung verschob Wahrscheinlichkeit von ... auf ...
+5. Die Generierung änderte sich/nicht, weil ...
+6. Der Korpus-Loss änderte sich, weil der Übergang ...
+
+## Abschluss-Gate [#abschluss-gate]
+
+Du bestehst, wenn die Diagnose bereit ist, dein eigener Prompt Text generiert,
+du Tokens/Wahrscheinlichkeiten/Loss findest und Erklärung sowie Vorhersage zur
+Messung passen. Bewahre den JSON-Bericht als Nachweis auf.
+
+Die Kursfreigabe verlangt zusätzlich den dokumentierten Pilot mit fünf
+Lernenden.
+
+## Wie geht es weiter? [#wie-geht-es-weiter]
+
+Weiter mit [Diagnose und Lernpfad](/llm-engineering-course-pages/mkdocs/de/diagnostic/). Dort bestimmst du sicher
+überspringbare Grundlagen und behältst für jede Abkürzung einen Re-Entry-Link.
+
+[← Einrichtung](/llm-engineering-course-pages/de/setup) · [Fehlerbehebung](/llm-engineering-course-pages/mkdocs/de/unit-00-troubleshooting/) · [→ Diagnose](/llm-engineering-course-pages/mkdocs/de/diagnostic/)
+
+---
+
+# M2 core gate: code, diagnose, explain
+Source: https://minigraphx.github.io/llm-engineering-course-pages/mini-gpt-gate
+
+[This lesson in MkDocs](/llm-engineering-course-pages/mkdocs/mini-gpt-gate/)
+
+<span id="m2-core-gate-code-diagnose-explain" />
+
+
+Take this after [the decoder lesson](/llm-engineering-course-pages/mkdocs/mini-gpt/), [the data pipeline](/llm-engineering-course-pages/mkdocs/data-pipeline/)
+and [attention](/llm-engineering-course-pages/attention). Allow 60–90 minutes. The goal is to demonstrate an
+independent implementation, not just run the supplied solution. Keep your work in
+`artifacts/mini-gpt/`; no generated corpus or weights belong in Git.
+
+## 1. Code a pre-norm residual block (4 points) [#1-code-a-pre-norm-residual-block-4-points]
+
+Save this incomplete scaffold as `artifacts/mini-gpt/exercise.py`. Replace the
+`NotImplementedError` with your implementation. Use the provided block's modules
+but do not call `block.forward` inside your function. Keep the shape `[B,T,D]`,
+apply both pre-normalizations, both residual paths and padding isolation.
+Before coding, predict the result if both update branches always return zero.
+
+```python
+import torch
+from llm_course.attention import causal_mask
+from llm_course.mini_gpt import DecoderBlock, GPTConfig
+
+
+def learner_forward(block, inputs, allowed, valid):
+    # TODO: normalize -> attention -> dropout -> residual -> zero padding.
+    # TODO: normalize -> FFN -> dropout -> residual -> zero padding.
+    raise NotImplementedError("implement both residual branches")
+
+
+torch.set_num_threads(1)
+config = GPTConfig(vocab_size=9, block_size=3, embedding_dim=4, heads=2, layers=1)
+block = DecoderBlock(config, index=0).eval()
+valid = torch.tensor([[[1], [1], [0]]], dtype=torch.bool)
+inputs = torch.tensor([[[1., 2., 3., 4.], [4., 3., 2., 1.], [0., 0., 0., 0.]]])
+allowed = causal_mask(3)[None, None] & valid.squeeze(-1)[:, None, None, :]
+allowed |= ~valid[:, None] & torch.eye(3, dtype=torch.bool)[None, None]
+actual = learner_forward(block, inputs, allowed, valid)
+expected = block(inputs, allowed, valid)
+assert actual.shape == (1, 3, 4)
+assert torch.count_nonzero(actual[:, 2]) == 0
+assert torch.isfinite(actual).all()
+torch.testing.assert_close(actual, expected)
+print("residual block matches; now add the suffix-invariance test")
+```
+
+```bash
+python artifacts/mini-gpt/exercise.py
+python -m pytest tests/test_mini_gpt.py -q
+```
+
+Add your own test: change the final **valid** token of a three-token input and
+verify earlier outputs stay unchanged. Use all-valid masks for that test and
+`eval()` to remove dropout noise. Explain why merely checking the output shape
+would fail to detect attention over the wrong axis.
+
+Award one point each for pre-norm attention, the first residual, pre-norm FFN with
+the second residual, and an independent causality/padding assertion. The initial
+`NotImplementedError` is expected; removing it without both computations earns no
+credit. Record your code and failing-then-passing output before revealing answers.
+
+## 2. Diagnose deliberate defects (3 points) [#2-diagnose-deliberate-defects-3-points]
+
+For each defect, write a counterexample, predict an observable symptom and propose
+a correction. One point each requires all three, not just naming the defect.
+
+| Defect in a local copy | Evidence to predict |
+| --- | --- |
+| Dataset returns `labels = input_ids.clone()` | Very low loss can measure copying the visible token |
+| Replace `allowed` with all-True **and** set `block.attention.causal=False` | Earlier logits depend on a changed future suffix |
+| Average valid losses together with zeros for padded positions | Appending padding makes the reported mean artificially smaller |
+
+Numerical check for the third defect: two valid losses 2 and 4 with two padded
+slots give the wrong value `(2+4+0+0)/4=1.5`, while the correct value is 3.
+Why does an entirely padded row require special treatment before softmax as well
+as after the loss? Restore every defect after collecting its evidence.
+
+## 3. Explain and compare (3 points) [#3-explain-and-compare-3-points]
+
+Give a short written or spoken explanation with your own numbers:
+
+- Follow IDs `[2,3]` through embeddings `[2,3,4]`, two heads `[2,2,3,2]`, score
+  matrices `[2,2,3,3]`, FFN `[2,3,16]`, and logits `[2,3,5]`. Distinguish feature
+  mixing from position mixing, and explain why labels are shifted only once.
+- Explain why reproducible initialization must produce different blocks, why
+  sampling temporarily uses `eval()`, and why saving only weights cannot resume
+  AdamW training exactly. Name the information M3 must also save.
+- Run the three-seed command from the lesson. Report each paired no-norm minus norm
+  validation NLL difference, its mean and sample standard deviation. Explain why
+  two validation documents and three seeds cannot establish general superiority.
+
+Each complete explanation earns one point. **Pass:** at least 8/10, including all
+4 coding points and all 3 defect points, plus a successful supplied test suite,
+tiny-batch NLL &lt;0.1 and exact reload evidence. The supplied tests include these last
+two checks; preserve their output. If the gate fails, revisit the relevant
+prerequisite and repeat with a fresh explanation, not a copied answer.
+
+## Hints — open only after an attempt [#hints-open-only-after-an-attempt]
+
+<details>
+<summary>Hint 1: separate the two residual paths</summary>
+
+Keep `inputs` unchanged while computing the normalized attention update.
+Call attention with `mask=allowed`; it returns `(output, weights)`. Only the first
+is added to the residual. The second normalized branch uses the updated hidden
+state, not the original input. `valid` broadcasts `[B,T,1]` across features.
+
+</details>
+
+<details>
+<summary>Hint 2: distinguish the two masks</summary>
+
+The attention mask determines which keys may contribute before softmax. The loss
+mask decides which target predictions count in the objective. One cannot replace
+the other. An attention row of only `-inf` produces an undefined distribution even
+when its target is later ignored.
+
+</details>
+
+## Reference answers — compare after recording your evidence [#reference-answers-compare-after-recording-your-evidence]
+
+<details>
+<summary>Reference block implementation</summary>
+
+```python
+def learner_forward(block, inputs, allowed, valid):
+    attended, _ = block.attention(block.norm_attention(inputs), mask=allowed)
+    hidden = (inputs + block.dropout(attended)) * valid
+    update = block.ffn(block.norm_ffn(hidden))
+    return (hidden + block.dropout(update)) * valid
+```
+
+With zero branches, valid output equals input; padded output is zero. GELU and the
+FFN act on features independently at each time position; masked attention permits
+information from earlier positions. The model's distinct block seeds prevent
+identical initial projection weights while preserving whole-run reproducibility.
+
+</details>
+
+<details>
+<summary>Reference diagnosis and explanation</summary>
+
+1. Visible input `c` with target `c` rewards copying; use next-token `a` instead.
+   Fix the dataset to provide `tokens[:-1]` and `tokens[1:]` once.
+2. For `[1,2,3]` versus `[1,2,8]`, a correct decoder has identical first two logits.
+   Restore the causal triangle combined with valid keys. Both safeguards must be
+   disabled to demonstrate the deliberate defect in this implementation.
+3. Sum NLL only for `labels != -100`, divide by their count. An all-ignored loss is
+   differentiable zero. Give padded queries a safe dummy diagonal before softmax,
+   then zero their outputs so dummy values cannot influence real tokens.
+
+Sampling uses evaluation mode so dropout does not interfere with the local sample
+seed, then restores each module's mode. Exact training resume also requires
+optimizer moments, scheduler/scaler state if present, step/batch position, RNG
+state, configuration and a data identity check. The norm-ablation differences are
+2.389516, 1.105527 and 1.325092; mean 1.606712, sample standard deviation 0.686760.
+This result describes the fixed toy validation probe. It is not a safety,
+factuality or broad language benchmark.
+
+</details>
+
+---
+
+# Setup — from a fresh computer to the first run
+Source: https://minigraphx.github.io/llm-engineering-course-pages/setup
+
+[This lesson in MkDocs](/llm-engineering-course-pages/mkdocs/setup/)
+
+<span id="setup-from-a-fresh-computer-to-the-first-run" />
+
+
+[Course home](/llm-engineering-course-pages/mkdocs/) · [Learning guide](/llm-engineering-course-pages/mkdocs/learning-guide/) · [→ Unit 0](/llm-engineering-course-pages/unit-00)
+
+Allow 20–40 minutes for the first installation. A **terminal** is a window where
+commands run; a **repository** is the course folder plus its change history.
+Commands in this course run from that folder. Copy only the command, without a
+leading `$` or `>>>`. Python code blocks go into a `.py` file, not the terminal.
+
+## 1. Get Python and Git [#1-get-python-and-git]
+
+Install Python 3.11 or newer and Git if they are missing. On Windows, enable the
+Python installer's PATH option. Open Terminal (macOS/Linux) or PowerShell
+(Windows), then check:
+
+```bash
+python3 --version
+git --version
+```
+
+On Windows use `py --version`. If neither Python command works, finish installing
+Python and reopen the terminal. A CPU is sufficient; no GPU or cloud account is
+needed. Installation downloads dependencies; the required new training labs
+then run offline.
+
+## 2. Get the course [#2-get-the-course]
+
+```bash
+git clone https://github.com/minigraphx/llm-engineering-course.git
+cd llm-engineering-course
+```
+
+During the private pilot you need access to this GitHub repository. A `Repository
+not found` message can mean missing access, not a broken Python installation.
+If you already have the course folder, open a terminal there and skip cloning.
+The folder should contain `README.md`, `pyproject.toml`, `examples`, and `src`.
+
+## 3. Create an isolated Python environment [#3-create-an-isolated-python-environment]
+
+A **virtual environment** keeps the course libraries separate from other
+projects. Create it once; activate it again in every new terminal.
+
+macOS/Linux:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -e ".[dev,docs]"
+```
+
+Windows PowerShell:
+
+```powershell
+py -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install -e ".[dev,docs]"
+```
+
+If PowerShell blocks activation, run `.\.venv\Scripts\python.exe` instead of
+`python`; activation is a convenience and is not required. Use
+`.\.venv\Scripts\python.exe -m pip install -e ".[dev,docs]"` in that case.
+On macOS/Linux the equivalent full interpreter path is `.venv/bin/python`.
+`-e` makes edits to the course package immediately available; `dev,docs` adds
+testing and documentation tools. Wait until installation finishes successfully.
+
+The first full test run or byte-pair-encoding (BPE) comparison may need internet
+once: the pre-existing tokenizer lab loads the public `cl100k_base` encoding table
+and caches it locally. Installing the Python packages does not pre-cache that
+table. The mandatory M2/M3 model, training, evaluation and profiling experiments
+use locally generated data and remain offline after installation.
+
+### Shell conventions for all lessons [#shell-conventions]
+
+After activation, use the active `python` command on every platform. Some older
+examples or reference records show full macOS/Linux environment paths:
+
+| Written command | With the environment active, including PowerShell |
+| --- | --- |
+| `.venv/bin/python script.py` | `python script.py` |
+| `.venv/bin/pytest tests/...` | `python -m pytest tests/...` |
+
+Blocks beginning with `python - <<'PY'` use **heredoc** syntax: Bash/Zsh send the
+following Python lines to the interpreter until the closing `PY`. PowerShell does
+not understand that wrapper. The portable alternative works on all platforms:
+
+1. Create the folder with `python -c "from pathlib import Path; Path('artifacts/my-work').mkdir(parents=True, exist_ok=True)"`.
+2. Copy only the Python lines between `python - <<'PY'` and the final `PY` into
+   `artifacts/my-work/check.py` using your editor. Do not copy either marker or the
+   Markdown backticks. Save the file.
+3. Run `python artifacts/my-work/check.py` from the repository root.
+
+If activation is unavailable on Windows, replace `python` in these commands with
+`.\.venv\Scripts\python.exe`. The same Python body produces the same result;
+only the way the shell passes it to Python changes.
+
+## 4. Check installation and get a first result [#4-check-installation-and-get-a-first-result]
+
+```bash
+python examples/check_device.py
+python examples/diagnose_unit0.py
+python examples/run_unit0.py --device cpu
+```
+
+The diagnostic's checks should report `pass`. The final command prints a JSON
+report: braces contain named fields. Find `baseline.generation` (generated text)
+and `baseline.corpus_loss` (prediction error). Nonsense text is expected from
+this tiny teaching model. [Unit 0](/llm-engineering-course-pages/unit-00) explains the report step by step.
+Generated files live in `artifacts/`; you can recreate them with the same command.
+
+## 5. Check the course and open the lessons [#5-check-the-course-and-open-the-lessons]
+
+```bash
+python -m pytest
+python -m mkdocs build --strict
+python -m mkdocs serve
+```
+
+Tests end with a count of passed tests. The docs build must finish without an
+error. The server prints a local address, usually `http://127.0.0.1:8000`; open
+it in your browser. Press Ctrl+C in the terminal to stop it. EN/DE switches the
+lesson language. Start the [learning guide](/llm-engineering-course-pages/mkdocs/learning-guide/), then Unit 0.
+
+## If something fails [#if-something-fails]
+
+| Message or symptom | Check and repair |
+| --- | --- |
+| `No such file` for an example | Run from the course folder, after `cd llm-engineering-course`. |
+| `No module named llm_course` | Use the environment's Python and repeat the editable install. |
+| `No module named torch` | Installation did not finish or a different interpreter is running. |
+| No output while installing | Large packages can take minutes; wait for completion or an actual error. |
+| Accelerator error | Add `--device cpu` to the lab command. |
+| Can't type commands after `mkdocs serve` | It is running; open a second terminal or stop with Ctrl+C. |
+
+Record the command and the last error lines when diagnosing a problem. Never
+paste credentials into a report. More: [Unit 0 troubleshooting](/llm-engineering-course-pages/mkdocs/unit-00-troubleshooting/)
+and [hardware profiles](/llm-engineering-course-pages/mkdocs/hardware/).
+
+---
+
+# SFT and LoRA: teach a response, preserve a base
+Source: https://minigraphx.github.io/llm-engineering-course-pages/sft-lora
+
+[This lesson in MkDocs](/llm-engineering-course-pages/mkdocs/sft-lora/)
+
+<span id="sft-and-lora-teach-a-response-preserve-a-base" />
+
+
+Prerequisites: [the decoder](/llm-engineering-course-pages/mkdocs/mini-gpt/), [training](/llm-engineering-course-pages/mkdocs/pretraining/), and the fictional
+company data/evaluation contracts. Run the explicit CPU mechanism before the
+optional pretrained lab. Both entry paths need no private data or teacher API.
+
+## Trace the response mask before training [#trace-the-response-mask-before-training]
+
+An instruction contains a prompt and a desired response. The prompt conditions the
+response but is not itself the answer we want to score. For token IDs
+`[11, 12 | 21, 22]`, construct unshifted labels `[-100, -100, 21, 22]`.
+`logits[1]` predicts 21 and `logits[2]` predicts 22. The loss function shifts once;
+passing already shifted labels would silently teach the wrong transition.
+Padding is also `-100`, while its attention mask is zero.
+
+If the two correct-token probabilities are 0.5 and 0.25, response mean NLL is
+`(-log(0.5) - log(0.25)) / 2 = 1.0397`. Adding ten prompt tokens must not dilute
+that mean. Changing masked target content leaves this loss unchanged for fixed
+logits; changing a prompt input can still change the model's response logits.
+
+The code tokenizes prompt and response separately to make the boundary explicit.
+It includes the assistant chat header in the prompt and the end-of-turn token in
+the response. A record that exceeds the context is rejected instead of truncating
+away a safety instruction or its answer.
+
+## Build the low-rank update before PEFT [#build-the-low-rank-update-before-peft]
+
+Full SFT updates all weights. LoRA computes
+`y = Wx + (alpha / r) BAx`, where `A` is `[r, input]` and `B` is `[output, r]`.
+The original `W` and bias are frozen. For a 512×512 layer with rank 4, full weight
+training uses 262,144 parameters; A and B use `4×512 + 512×4 = 4,096`, or 1.5625%.
+This ratio excludes other layers, biases, optimizer state and activations.
+
+Initialize A randomly and B to zero: the initial adapted output equals the base.
+On the first backward pass B can receive a gradient while A's gradient is zero
+because B is zero. After B changes, A can learn too. A test that demands a nonzero
+A gradient on the very first step misunderstands the mechanism.
+
+`LoRALinear.merged()` copies `W + (alpha/r)BA` into a fresh linear layer. Adapter
+files contain a version and a hash of the exact base weights; another base with
+the same dimensions is rejected. Core checkpoints use `torch.load(weights_only=True)`;
+the productive library path uses safetensors. Merge checks reject nonfinite weights.
+Preserve the immutable base to roll back.
+
+## Run and measure [#run-and-measure]
+
+```bash
+.venv/bin/pytest tests/test_post_training.py -q
+.venv/bin/python examples/run_sft_lora.py --steps 120
+.venv/bin/pip install -e '.[post-training]'
+.venv/bin/python examples/run_open_model_lora.py --download --device cpu
+.venv/bin/python examples/run_open_model_lora.py --device mps --output artifacts/open-model-lora-mps
+```
+
+The first experiment pairs random MiniGPT full SFT and manual LoRA with the same
+training/development examples, seed, optimizer, learning rate, steps and batch
+size. The pretrained experiment uses the real Apache-2.0
+[SmolLM2-135M-Instruct model](https://huggingface.co/HuggingFaceTB/SmolLM2-135M-Instruct),
+fixed at revision `12fd25f77366fa6b3b4b768ec3050bf629380bac`. It downloads only
+allowlisted configuration/tokenizer files and `model.safetensors`, loads with
+`trust_remote_code=False`, and trains rank-4 q/v adapters in float32.
+
+All methods consume training instructions and separately authored development
+cases; none opens gold. The same evaluator checks actual generated predictions
+before/after. Response NLL and exact/format/safety metrics answer different
+questions. A lower teacher-forced NLL does not prove usable generated answers.
+Reload and merged outputs are checked against the trained adapter. See the
+[adaptation comparison](/llm-engineering-course-pages/mkdocs/adaptation-comparison/) and `docs/baselines/sft-lora-v1.md`
+for measured results, runtime, memory scope and limitations.
+
+## Predict → Trace → Build → Break → Measure → Explain [#predict-trace-build-break-measure-explain]
+
+1. **Predict:** Which token receives the first response loss? What is A's first gradient?
+2. **Trace:** Print IDs, labels and attention masks for unequal-length examples.
+3. **Build:** Implement `response_batch`, `sft_loss` and `LoRALinear` from the formulas.
+4. **Break:** Unfreeze W, remove the label shift, or load onto a different base. Observe a test fail.
+5. **Measure:** Record train/dev NLL, format failures, general-control NLL, time and trainable count.
+6. **Explain:** Decide whether to keep the adapter. A regression is evidence for rollback.
+
+### Independent exercise [#independent-exercise]
+
+Use a 12-input, 8-output layer, rank 2 and alpha 6. Compute adapter count and scale.
+Then replace the target of a prompt token and a response token separately while
+holding logits fixed. Add a test proving which edit affects loss. Save, reload and
+merge after two optimizer steps; verify base gradients remain absent.
+
+<details>
+<summary>Hint</summary>
+
+Count both rectangular factors. The response label at position t is predicted
+by logits at t−1. Do not move the mask independently of its target.
+
+
+</details>
+
+<details>
+<summary>Reference answer</summary>
+
+A has 24 and B has 16 parameters: 40 total versus 96 base weights; scale is 3.
+Masked prompt target edits leave loss unchanged. Response target edits usually
+change loss; choose unequal log-probabilities to make the assertion meaningful.
+A learns after the zero-initialized B has begun changing.
+
+
+</details>
+
+Checkpoint: explain loss alignment without a Trainer; demonstrate zero initial
+LoRA delta, frozen base, safe reload and merge; report a failed quality gate honestly.
+The mechanism follows [LoRA](https://arxiv.org/abs/2106.09685); production wrappers
+are documented by [PEFT](https://huggingface.co/docs/peft/v0.18.0/index).
+
+---
+
+# Unit 0 — First Tiny-LM Run
+Source: https://minigraphx.github.io/llm-engineering-course-pages/unit-00
+
+[This lesson in MkDocs](/llm-engineering-course-pages/mkdocs/unit-00/)
+
+<span id="unit-0-first-tiny-lm-run" />
+
+
+[← Setup](/llm-engineering-course-pages/setup) · [Course home](/llm-engineering-course-pages/mkdocs/) · [Troubleshooting](/llm-engineering-course-pages/mkdocs/unit-00-troubleshooting/)
+
+## Learning outcome [#learning-outcome]
+
+In 45–60 minutes, you will run a prepared Tiny-LM, generate from your own
+prompt, inspect token IDs, probabilities, shapes, and loss, change one logit,
+and explain the measured effect. No prior ML knowledge, learner data, cloud, or
+accelerator is required.
+
+## 0–10 min · Predict and check setup [#010-min-predict-and-check-setup]
+
+The model sees one character and predicts the next. Before running it, predict
+the continuation of `the ` and whether making `m` more likely after a space will
+change the generated text.
+
+```
+python examples/diagnose_unit0.py
+```
+
+Every check should say `pass`. The command verifies Python, the selected
+CPU/MPS/CUDA backend, writable artifact storage, checkpoint loading, and a smoke
+generation. If it fails, use the [troubleshooting guide](/llm-engineering-course-pages/mkdocs/unit-00-troubleshooting/).
+
+## 10–20 min · First generation [#1020-min-first-generation]
+
+```
+python examples/run_unit0.py
+```
+
+The first run materializes two ignored local artifacts under `artifacts/unit0/`:
+
+- a deterministic 596-byte synthetic corpus dedicated to CC0-1.0;
+- a prepared character-bigram checkpoint derived from adjacent-character counts.
+
+Their hashes and provenance are written to `manifest.json`. They are generated
+locally because datasets and checkpoints must not be committed to Git.
+
+Find these report fields:
+
+- `backend` — cpu, mps, or cuda;
+- `prompt_token_ids` — the concrete character IDs;
+- `baseline.top_next_tokens` — the five next-character probabilities;
+- `baseline.corpus_loss` — mean next-character cross-entropy;
+- `baseline.generation` — greedy continuation from the prepared checkpoint.
+
+## 20–30 min · Trace the model [#2030-min-trace-the-model]
+
+The vocabulary has `V=33` characters. The checkpoint contains a transition
+matrix with shape `[V,V]`. A current token ID selects one row of `V` logits;
+softmax turns that row into next-token probabilities. Greedy decoding chooses
+the largest probability and feeds that character back as the next input.
+
+For a four-character prompt, verify:
+
+```
+from llm_course import run_vertical_slice
+
+report = run_vertical_slice("the ", preferred_device="cpu")
+assert len(report["prompt_token_ids"]) == 4
+assert len(report["baseline"]["top_next_tokens"]) == 5
+assert 0.0 <= report["baseline"]["target_probability"] <= 1.0
+```
+
+The loss compares every corpus character with the character that actually
+followed it. A lower value means the model assigned more probability to the
+observed next characters.
+
+## 30–42 min · Build one controlled change [#3042-min-build-one-controlled-change]
+
+The reference run adds `4.0` to one transition logit: after the prompt's final
+space, make `m` more likely. Compare `baseline` with `controlled_change` and
+locate:
+
+- the target probability before and after;
+- whether the generated continuation changed;
+- whether the corpus loss improved or worsened.
+
+Now use your own prompt and target character:
+
+```
+python examples/run_unit0.py --prompt "a " --target-character t --boost 3
+```
+
+Predict the direction before running. The change affects exactly one cell in
+the `[V,V]` matrix, so it can help one transition while harming the overall
+corpus loss.
+
+## 42–50 min · Break an assumption [#4250-min-break-an-assumption]
+
+Reverse the intervention:
+
+```
+python examples/run_unit0.py --prompt "a " --target-character t --boost -4
+```
+
+The target probability should fall. If your explanation still says the token
+became more likely, your interpretation—not the model—is broken. Then try an
+empty prompt and read the boundary error instead of removing the validation.
+
+## 50–55 min · Measure reproducibility [#5055-min-measure-reproducibility]
+
+Greedy decoding is backend-independent for this model. Seeded sampling is also
+performed on CPU so the same seed follows the same path:
+
+```
+python examples/run_unit0.py --prompt "the " --sample --seed 11
+```
+
+Run it twice and compare the generations. Accelerator users may also run
+`--device cpu`; the mandatory evidence is always available on CPU.
+
+## 55–60 min · Explain [#5560-min-explain]
+
+Complete these sentences in your lab notes:
+
+1. The prompt becomes token IDs by ...
+2. The current token selects logits with shape ...
+3. Softmax is needed because ...
+4. The controlled change moved probability from ... to ...
+5. The generation changed/did not change because ...
+6. Corpus loss changed because the edited transition ...
+
+## Completion gate [#completion-gate]
+
+You pass Unit 0 when the diagnostic is ready, your own prompt generates text,
+you identify tokens/probabilities/loss, and your prediction and explanation
+match the measured intervention. Keep the JSON report as evidence.
+
+Course release acceptance additionally requires the documented
+[five-learner pilot](/llm-engineering-course-pages/reference/unit-00-pilot).
+
+## What's next [#whats-next]
+
+Continue with the [diagnostic and learning-path check](/llm-engineering-course-pages/mkdocs/diagnostic/). It
+determines which foundations you can safely skip and preserves a re-entry link
+for every shortcut.
+
+[← Setup](/llm-engineering-course-pages/setup) · [Troubleshooting](/llm-engineering-course-pages/mkdocs/unit-00-troubleshooting/) · [→ Diagnostic](/llm-engineering-course-pages/mkdocs/diagnostic/)

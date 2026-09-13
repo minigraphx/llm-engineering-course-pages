@@ -1,0 +1,12 @@
+{
+  "contentType": "doc",
+  "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/index.json",
+  "lastModified": null,
+  "locale": "en",
+  "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/index.md",
+  "route": "/",
+  "title": "Learn by tracing the numbers",
+  "url": "https://minigraphx.github.io/llm-engineering-course-pages",
+  "description": "Four complete lessons, setup, and two languages. One small model at a time.",
+  "markdown": "---\ntitle: Learn by tracing the numbers\ndescription: Four complete lessons, setup, and two languages. One small model at a time.\n---\n\nStart with a tiny language model, trace attention by hand, then teach a model a\nresponse with SFT and LoRA. Every required experiment runs on CPU.\n\n## Choose your lesson\n\n- [Unit 0 · Your first Tiny-LM run](/llm-engineering-course-pages/unit-00) — 45–60 minutes, no ML background required.\n- [Attention · From scores to weighted values](/llm-engineering-course-pages/attention) — 90–110 minutes, including an interactive hand calculation.\n- [SFT / LoRA · Teach a response, preserve a base](/llm-engineering-course-pages/sft-lora) — trace the response mask and build a low-rank update.\n\n- [Mini-GPT core gate · Code, diagnose, explain](/llm-engineering-course-pages/mini-gpt-gate) — 60–90 minutes, with staged hints and complete reference code.\n\n## Your entry path\n\n[Start from setup](/llm-engineering-course-pages/setup) or enter through the\n[Godot-RL bridge](/llm-engineering-course-pages/mkdocs/foundations-godot-rl-bridge/).\nUse the [learning guide](/llm-engineering-course-pages/mkdocs/learning-guide/) to choose prerequisites.\n\n## Compare the reading experience\n\nThis is the Blume pilot. The [complete MkDocs course](/llm-engineering-course-pages/mkdocs/) remains available.\nEach lesson links to its MkDocs counterpart. Use the language menu to switch\nbetween English and German on the same lesson; search covers these pilot pages.\n\n[Portable shell conventions](/llm-engineering-course-pages/setup#shell-conventions).\n"
+}

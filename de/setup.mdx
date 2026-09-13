@@ -1,0 +1,157 @@
+---
+title: "Einrichtung — vom frischen Computer zum ersten Lauf"
+---
+
+[Diese Lektion in MkDocs](/llm-engineering-course-pages/mkdocs/de/setup/)
+
+<CourseContent>
+
+<span id="einrichtung-vom-frischen-computer-zum-ersten-lauf" />
+
+
+[Kursstart](/llm-engineering-course-pages/mkdocs/de/) · [Lernleitfaden](/llm-engineering-course-pages/mkdocs/de/learning-guide/) · [→ Einheit 0](/llm-engineering-course-pages/de/unit-00)
+
+Plane für die erste Installation 20–40 Minuten ein. Ein **Terminal** ist ein
+Fenster zum Ausführen von Befehlen. Ein **Repository** ist der Kursordner samt
+Änderungsverlauf. Führe Kursbefehle in diesem Ordner aus. Kopiere nur den Befehl,
+kein vorangestelltes `$` oder `>>>`. Python-Code gehört in eine `.py`-Datei,
+nicht direkt ins Terminal.
+
+## 1. Python und Git bereitstellen [#1-python-und-git-bereitstellen]
+
+Installiere Python ab Version 3.11 und Git, falls sie fehlen. Aktiviere unter
+Windows die PATH-Option des Python-Installers. Öffne Terminal (macOS/Linux)
+oder PowerShell (Windows) und prüfe:
+
+```bash
+python3 --version
+git --version
+```
+
+Unter Windows heißt der Python-Aufruf `py --version`. Wird keiner der Befehle
+gefunden, schließe die Python-Installation ab und öffne das Terminal neu.
+Eine CPU genügt; du brauchst keine GPU und kein Cloudkonto. Die Installation
+lädt Bibliotheken herunter; die neuen Pflicht-Trainingslabs laufen danach offline.
+
+## 2. Den Kurs holen [#2-den-kurs-holen]
+
+```bash
+git clone https://github.com/minigraphx/llm-engineering-course.git
+cd llm-engineering-course
+```
+
+Während des privaten Piloten benötigst du Zugriff auf dieses GitHub-Repository.
+`Repository not found` kann fehlenden Zugriff bedeuten und ist dann kein
+Python-Fehler. Hast du den Kursordner bereits, öffne darin ein Terminal und
+überspringe das Klonen. Dort liegen `README.md`, `pyproject.toml`, `examples`
+und `src`.
+
+## 3. Eigene Python-Umgebung erstellen [#3-eigene-python-umgebung-erstellen]
+
+Eine **virtuelle Umgebung** trennt die Kursbibliotheken von anderen Projekten.
+Erstelle sie einmal und aktiviere sie in jedem neuen Terminal erneut.
+
+macOS/Linux:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -e ".[dev,docs]"
+```
+
+Windows PowerShell:
+
+```powershell
+py -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install -e ".[dev,docs]"
+```
+
+Blockiert PowerShell die Aktivierung, verwende
+`.\.venv\Scripts\python.exe` anstelle von `python`. Aktivierung ist nur eine
+Abkürzung. Installiere dann mit
+`.\.venv\Scripts\python.exe -m pip install -e ".[dev,docs]"`.
+Unter macOS/Linux lautet der volle Interpreterpfad `.venv/bin/python`.
+`-e` macht Änderungen am Kurspaket sofort verfügbar; `dev,docs` ergänzt Tests
+und Dokumentationswerkzeuge. Warte auf den erfolgreichen Abschluss.
+
+Der erste vollständige Testlauf oder Byte-Pair-Encoding-Vergleich (BPE) kann
+einmalig Internet benötigen: Das vorhandene Tokenizer-Labor lädt die öffentliche
+Codierungstabelle `cl100k_base` und speichert sie lokal zwischen. Die Installation
+der Python-Pakete lädt diese Tabelle noch nicht vorab. Die verpflichtenden
+M2/M3-Modell-, Trainings-, Evaluations- und Profiling-Experimente verwenden lokal
+erzeugte Daten und laufen nach der Installation offline.
+
+### Shell-Konventionen für alle Lektionen [#shell-conventions]
+
+Nach der Aktivierung verwendest du auf jeder Plattform das aktive `python`.
+Ältere Beispiele oder Referenzprotokolle enthalten manchmal vollständige
+macOS-/Linux-Pfade:
+
+| Geschriebener Befehl | Bei aktivierter Umgebung, auch in PowerShell |
+| --- | --- |
+| `.venv/bin/python script.py` | `python script.py` |
+| `.venv/bin/pytest tests/...` | `python -m pytest tests/...` |
+
+Ein Block mit `python - <<'PY'` verwendet **Heredoc**-Syntax: Bash/Zsh übergeben
+alle folgenden Python-Zeilen bis zum abschließenden `PY` an den Interpreter.
+PowerShell versteht diese Hülle nicht. Diese Alternative funktioniert überall:
+
+1. Erstelle den Ordner mit `python -c "from pathlib import Path; Path('artifacts/my-work').mkdir(parents=True, exist_ok=True)"`.
+2. Kopiere ausschließlich die Python-Zeilen zwischen `python - <<'PY'` und dem
+   letzten `PY` im Editor in `artifacts/my-work/check.py`. Kopiere weder diese
+   Begrenzungszeilen noch die Markdown-Backticks. Speichere die Datei.
+3. Führe im Repository-Stamm `python artifacts/my-work/check.py` aus.
+
+Ohne Aktivierung unter Windows ersetzt du `python` durch
+`.\.venv\Scripts\python.exe`. Der Python-Inhalt bleibt gleich; nur seine
+Übergabe durch die Shell ändert sich.
+
+## 4. Installation prüfen und erstes Ergebnis sehen [#4-installation-prufen-und-erstes-ergebnis-sehen]
+
+```bash
+python examples/check_device.py
+python examples/diagnose_unit0.py
+python examples/run_unit0.py --device cpu
+```
+
+Die Diagnoseprüfungen sollen `pass` melden. Der letzte Befehl gibt einen
+JSON-Bericht aus: In geschweiften Klammern stehen benannte Felder. Suche
+`baseline.generation` (erzeugter Text) und `baseline.corpus_loss`
+(Vorhersagefehler). Unsinniger Text ist bei diesem winzigen Lehrmodell normal.
+[Einheit 0](/llm-engineering-course-pages/de/unit-00) erklärt den Bericht Schritt für Schritt. Erzeugte Dateien
+liegen in `artifacts/` und lassen sich mit demselben Befehl neu herstellen.
+
+## 5. Kurs prüfen und Lektionen öffnen [#5-kurs-prufen-und-lektionen-offnen]
+
+```bash
+python -m pytest
+python -m mkdocs build --strict
+python -m mkdocs serve
+```
+
+Die Tests enden mit der Zahl bestandener Tests. Der Dokumentationsbau muss ohne
+Fehler enden. Der Server nennt eine lokale Adresse, meist
+`http://127.0.0.1:8000`; öffne sie im Browser. Ctrl+C im Terminal beendet den
+Server. EN/DE wechselt die Sprache. Beginne mit dem
+[Lernleitfaden](/llm-engineering-course-pages/mkdocs/de/learning-guide/), dann mit Einheit 0.
+
+## Wenn etwas fehlschlägt [#wenn-etwas-fehlschlagt]
+
+| Meldung oder Symptom | Prüfung und Abhilfe |
+| --- | --- |
+| `No such file` beim Beispiel | Nach `cd llm-engineering-course` im Kursordner ausführen. |
+| `No module named llm_course` | Python aus der Kursumgebung verwenden und Installation wiederholen. |
+| `No module named torch` | Installation unvollständig oder falscher Interpreter. |
+| Installation bleibt still | Große Pakete brauchen Minuten; Abschluss oder Fehlermeldung abwarten. |
+| Fehler des Beschleunigers | Das Lab mit `--device cpu` starten. |
+| Nach `mkdocs serve` keine Eingabe möglich | Der Server läuft; zweites Terminal öffnen oder Ctrl+C drücken. |
+
+Notiere bei Fehlern den Befehl und die letzten Fehlerzeilen. Zugangsdaten gehören
+nicht in Berichte. Weitere Hilfe:
+[Fehlerbehebung für Einheit 0](/llm-engineering-course-pages/mkdocs/de/unit-00-troubleshooting/) und
+[Hardwareprofile](/llm-engineering-course-pages/mkdocs/de/hardware/).
+
+</CourseContent>

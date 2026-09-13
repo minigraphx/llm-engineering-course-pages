@@ -1,0 +1,32 @@
+# LLM Engineering · Pilot
+
+> Unit 0 · Attention · SFT / LoRA · Mini-GPT core gate
+
+## Docs
+
+- [Learn by tracing the numbers](https://minigraphx.github.io/llm-engineering-course-pages): Four complete lessons, setup, and two languages. One small model at a time.
+- [Unit 0 — First Tiny-LM Run](https://minigraphx.github.io/llm-engineering-course-pages/unit-00)
+- [T04 — Self-attention as a number experiment](https://minigraphx.github.io/llm-engineering-course-pages/attention)
+- [SFT and LoRA: teach a response, preserve a base](https://minigraphx.github.io/llm-engineering-course-pages/sft-lora)
+- [M2 core gate: code, diagnose, explain](https://minigraphx.github.io/llm-engineering-course-pages/mini-gpt-gate)
+- [Setup — from a fresh computer to the first run](https://minigraphx.github.io/llm-engineering-course-pages/setup)
+
+## Deutsch
+
+### Docs
+
+- [Lernen, indem du die Zahlen nachvollziehst](https://minigraphx.github.io/llm-engineering-course-pages/de): Vier vollständige Lektionen, Einrichtung und zwei Sprachen. Ein kleines Modell nach dem anderen.
+- [Einheit 0 — Erster Tiny-LM-Lauf](https://minigraphx.github.io/llm-engineering-course-pages/de/unit-00)
+- [T04 — Self-Attention als Zahlenexperiment](https://minigraphx.github.io/llm-engineering-course-pages/de/attention)
+- [SFT und LoRA: Antworten lernen, Basismodell erhalten](https://minigraphx.github.io/llm-engineering-course-pages/de/sft-lora)
+- [M2-Kernprüfung: programmieren, Fehler finden, erklären](https://minigraphx.github.io/llm-engineering-course-pages/de/mini-gpt-gate)
+- [Einrichtung — vom frischen Computer zum ersten Lauf](https://minigraphx.github.io/llm-engineering-course-pages/de/setup)
+
+## Agent resources
+
+- [llms-full.txt](https://minigraphx.github.io/llm-engineering-course-pages/llms-full.txt): The full Markdown of every page in one file.
+- [Page Markdown](https://minigraphx.github.io/llm-engineering-course-pages/index.md): Append `.md` to any page URL to fetch that page as raw Markdown.
+- [JSON API](https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages.json): Page index of the JSON docs API; each entry links the page's JSON and Markdown forms. Described by the OpenAPI document at https://minigraphx.github.io/llm-engineering-course-pages/openapi.json.
+- [API catalog](https://minigraphx.github.io/llm-engineering-course-pages/.well-known/api-catalog): RFC 9727 linkset of the APIs documented here.
+- [agent-readability.json](https://minigraphx.github.io/llm-engineering-course-pages/agent-readability.json): Manifest of every agent-facing artifact on this site.
+- [Sitemap](https://minigraphx.github.io/llm-engineering-course-pages/sitemap.xml): Every indexable page URL with its last-modified date.

@@ -1,0 +1,24 @@
+{
+  "artifacts": {
+    "markdown": {
+      "pattern": "https://minigraphx.github.io/llm-engineering-course-pages/{route}.md"
+    },
+    "api": {
+      "openapi": "https://minigraphx.github.io/llm-engineering-course-pages/openapi.json",
+      "pages": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages.json"
+    },
+    "llmsFullTxt": "https://minigraphx.github.io/llm-engineering-course-pages/llms-full.txt",
+    "llmsTxt": "https://minigraphx.github.io/llm-engineering-course-pages/llms.txt",
+    "apiCatalog": "https://minigraphx.github.io/llm-engineering-course-pages/.well-known/api-catalog",
+    "sitemap": "https://minigraphx.github.io/llm-engineering-course-pages/sitemap.xml"
+  },
+  "description": "Unit 0 · Attention · SFT / LoRA · Mini-GPT core gate",
+  "generator": "blume@1.6.4",
+  "name": "LLM Engineering · Pilot",
+  "site": "https://minigraphx.github.io",
+  "contentUsage": {
+    "search": true,
+    "ai-input": true,
+    "ai-train": true
+  }
+}

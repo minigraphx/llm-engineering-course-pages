@@ -1,0 +1,145 @@
+---
+title: "Einheit 0 — Erster Tiny-LM-Lauf"
+---
+
+[Diese Lektion in MkDocs](/llm-engineering-course-pages/mkdocs/de/unit-00/)
+
+<CourseContent>
+
+<span id="einheit-0-erster-tiny-lm-lauf" />
+
+
+[← Einrichtung](/llm-engineering-course-pages/de/setup) · [Kursstart](/llm-engineering-course-pages/mkdocs/de/) · [Fehlerbehebung](/llm-engineering-course-pages/mkdocs/de/unit-00-troubleshooting/)
+
+## Lernziel [#lernziel]
+
+In 45–60 Minuten startest du ein vorbereitetes Tiny-LM, generierst mit einer
+eigenen Eingabe, untersuchst Token-IDs, Wahrscheinlichkeiten, Shapes und Loss,
+änderst einen Logit und erklärst die gemessene Wirkung. Du benötigst keine
+ML-Vorkenntnisse, eigenen Daten, Cloud oder Beschleuniger.
+
+## 0–10 Min. · Vorhersagen und Einrichtung prüfen [#010-min-vorhersagen-und-einrichtung-prufen]
+
+Das Modell sieht ein Zeichen und sagt das nächste voraus. Sage vor dem Lauf die
+Fortsetzung von `the ` voraus und ob ein wahrscheinlicheres `m` nach einem
+Leerzeichen die Generierung ändern wird.
+
+```
+python examples/diagnose_unit0.py
+```
+
+Jede Prüfung soll `pass` melden. Der Befehl prüft Python, CPU/MPS/CUDA,
+beschreibbaren Artefaktspeicher, das Laden des Checkpoints und eine
+Testgenerierung. Bei einem Fehler hilft die
+[Fehlerbehebung](/llm-engineering-course-pages/mkdocs/de/unit-00-troubleshooting/).
+
+## 10–20 Min. · Erste Generierung [#1020-min-erste-generierung]
+
+```
+python examples/run_unit0.py
+```
+
+Der erste Lauf erzeugt zwei von Git ignorierte Dateien unter `artifacts/unit0/`:
+
+- einen deterministischen synthetischen 596-Byte-Korpus unter CC0-1.0;
+- einen vorbereiteten Zeichen-Bigramm-Checkpoint aus benachbarten Zeichen.
+
+Hashes und Herkunft stehen in `manifest.json`. Die Dateien entstehen lokal,
+weil Datensätze und Checkpoints nicht in Git gehören.
+
+Suche im Bericht:
+
+- `backend` — cpu, mps oder cuda;
+- `prompt_token_ids` — konkrete Zeichen-IDs;
+- `baseline.top_next_tokens` — fünf Wahrscheinlichkeiten;
+- `baseline.corpus_loss` — mittlere Next-Character-Cross-Entropy;
+- `baseline.generation` — Greedy-Fortsetzung des Checkpoints.
+
+## 20–30 Min. · Modell verfolgen [#2030-min-modell-verfolgen]
+
+Das Vokabular besitzt `V=33` Zeichen. Der Checkpoint enthält eine
+Übergangsmatrix `[V,V]`. Die aktuelle Token-ID wählt eine Zeile mit `V` Logits;
+Softmax macht daraus Wahrscheinlichkeiten. Greedy Decoding wählt das Maximum
+und verwendet das Zeichen als nächste Eingabe.
+
+Prüfe für einen Prompt mit vier Zeichen:
+
+```
+from llm_course import run_vertical_slice
+
+report = run_vertical_slice("the ", preferred_device="cpu")
+assert len(report["prompt_token_ids"]) == 4
+assert len(report["baseline"]["top_next_tokens"]) == 5
+assert 0.0 <= report["baseline"]["target_probability"] <= 1.0
+```
+
+Der Loss vergleicht jedes Korpuszeichen mit seinem echten Folgezeichen. Ein
+kleinerer Wert bedeutet mehr Wahrscheinlichkeit auf den beobachteten Folgen.
+
+## 30–42 Min. · Kontrollierte Änderung bauen [#3042-min-kontrollierte-anderung-bauen]
+
+Der Referenzlauf addiert `4.0` auf genau einen Übergangslogit: Nach dem letzten
+Leerzeichen des Prompts wird `m` wahrscheinlicher. Vergleiche `baseline` und
+`controlled_change`: Zielwahrscheinlichkeit, Generierung und Korpus-Loss.
+
+Nutze dann eine eigene Eingabe:
+
+```
+python examples/run_unit0.py --prompt "a " --target-character t --boost 3
+```
+
+Sage die Richtung vorher. Nur eine Zelle in `[V,V]` ändert sich; das kann einen
+Übergang verbessern und gleichzeitig den gesamten Korpus-Loss verschlechtern.
+
+## 42–50 Min. · Annahme brechen [#4250-min-annahme-brechen]
+
+Kehre den Eingriff um:
+
+```
+python examples/run_unit0.py --prompt "a " --target-character t --boost -4
+```
+
+Die Zielwahrscheinlichkeit soll fallen. Behauptet deine Erklärung weiter das
+Gegenteil, ist deine Interpretation defekt. Probiere danach einen leeren Prompt
+und lies die Grenzfehlermeldung, statt die Prüfung zu entfernen.
+
+## 50–55 Min. · Reproduzierbarkeit messen [#5055-min-reproduzierbarkeit-messen]
+
+Greedy Decoding ist für dieses Modell backend-unabhängig. Seeded Sampling läuft
+auf CPU, damit derselbe Seed denselben Pfad nutzt:
+
+```
+python examples/run_unit0.py --prompt "the " --sample --seed 11
+```
+
+Starte zweimal und vergleiche. Auch mit Beschleuniger bleibt `--device cpu` der
+verbindliche Pflichtnachweis.
+
+## 55–60 Min. · Erklären [#5560-min-erklaren]
+
+Vervollständige in deinen Notizen:
+
+1. Der Prompt wird zu Token-IDs durch ...
+2. Das aktuelle Token wählt Logits mit Shape ...
+3. Softmax wird benötigt, weil ...
+4. Die Änderung verschob Wahrscheinlichkeit von ... auf ...
+5. Die Generierung änderte sich/nicht, weil ...
+6. Der Korpus-Loss änderte sich, weil der Übergang ...
+
+## Abschluss-Gate [#abschluss-gate]
+
+Du bestehst, wenn die Diagnose bereit ist, dein eigener Prompt Text generiert,
+du Tokens/Wahrscheinlichkeiten/Loss findest und Erklärung sowie Vorhersage zur
+Messung passen. Bewahre den JSON-Bericht als Nachweis auf.
+
+Die Kursfreigabe verlangt zusätzlich den dokumentierten Pilot mit fünf
+Lernenden.
+
+## Wie geht es weiter? [#wie-geht-es-weiter]
+
+Weiter mit [Diagnose und Lernpfad](/llm-engineering-course-pages/mkdocs/de/diagnostic/). Dort bestimmst du sicher
+überspringbare Grundlagen und behältst für jede Abkürzung einen Re-Entry-Link.
+
+[← Einrichtung](/llm-engineering-course-pages/de/setup) · [Fehlerbehebung](/llm-engineering-course-pages/mkdocs/de/unit-00-troubleshooting/) · [→ Diagnose](/llm-engineering-course-pages/mkdocs/de/diagnostic/)
+
+</CourseContent>
