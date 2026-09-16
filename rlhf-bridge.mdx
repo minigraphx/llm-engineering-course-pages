@@ -1,0 +1,29 @@
+---
+title: "M5 — RLHF bridge: inspect the failure mode"
+sidebar:
+  label: "M5 — RLHF bridge"
+---
+
+<CourseContent>
+
+<span id="m5-rlhf-bridge-inspect-the-failure-mode" />
+
+
+The optional bridge fixes a reference policy, fits a reward model from preference
+pairs, adds a KL penalty and updates a finite-action policy with PPO. The action
+table includes billing, access, export and secret-request routes. A planted
+confidence shortcut makes reward hacking observable.
+
+Read `alignment.py` line by line before using a library trainer. Check three
+quantities after the run: proxy reward, true quality and hack rate. A policy is
+not safer merely because its learned reward increased. Critical routing remains
+an application gate and must be evaluated separately.
+
+Run the CPU recipe from [DPO](/llm-engineering-course-pages/dpo). For an accelerator, keep the same seed,
+data and evaluator; retain the CPU fallback when the accelerator is unavailable.
+
+Checkpoint: describe one monitor that would trigger rollback (for example, a
+critical safety failure or a rising hack rate) and name the immutable reference
+needed to reproduce it.
+
+</CourseContent>

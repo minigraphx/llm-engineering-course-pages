@@ -1,0 +1,51 @@
+---
+title: "M5 — DPO and the small RLHF bridge"
+sidebar:
+  label: "M5 — DPO"
+---
+
+<CourseContent>
+
+<span id="m5-dpo-and-the-small-rlhf-bridge" />
+
+
+Direct Preference Optimization (DPO) learns from a chosen/rejected pair while a
+frozen reference policy supplies a relative baseline. For one pair, the loss is
+`-log sigmoid(beta * ((log p(chosen)-log p(rejected)) - reference_margin))`.
+`response_log_probs` sums only unmasked response tokens; prompt and padding labels
+are `-100`.
+
+The lesson's finite-action bridge makes the other pieces visible: a Bradley–Terry
+reward loss, categorical KL to the reference and PPO's clipped surrogate. The
+example is a contextual bandit, not token-by-token production RLHF.
+
+```bash
+.venv/bin/python examples/run_alignment.py --dpo-steps 80 --ppo-steps 60
+.venv/bin/python examples/compare_dpo_reference.py
+```
+
+The report compares DPO with a reference implementation from pinned TRL 0.26.1:
+loss and policy gradients match to zero at the recorded precision. The PPO
+demonstration plants a shortcut in the reward model: naive PPO raises proxy reward
+but lowers true quality and raises hack rate; KL-controlled PPO improves the true
+quality on this tiny action table. This is a teaching result, not a general safety
+claim.
+
+### Exercise [#exercise]
+
+If the chosen and rejected policy margins equal the reference margin, what is the
+DPO loss? Why must reference tensors be detached?
+
+<details>
+<summary>Reference answer</summary>
+
+The loss is `log(2)`. Detaching keeps the reference policy fixed so gradients
+update only the policy being trained.
+
+
+</details>
+
+Checkpoint: compute one response log-probability sum, identify the clipped PPO
+ratio and explain proxy reward versus task success.
+
+</CourseContent>

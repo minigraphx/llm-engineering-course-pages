@@ -1,15 +1,73 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/adaptation-comparison</loc></url>
   <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/attention</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/bigram-baseline</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/bpe-tokenizer</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/company-capstone</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/company-data</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/company-evaluation</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/company-strategy</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/continued-pretraining</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/data-pipeline</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/data-policy</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/data-quality</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/de/adaptation-comparison</loc></url>
   <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/de/attention</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/de/bigram-baseline</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/de/bpe-tokenizer</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/de/company-capstone</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/de/company-data</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/de/company-evaluation</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/de/company-strategy</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/de/continued-pretraining</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/de/data-pipeline</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/de/data-policy</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/de/data-quality</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/de/diagnostic</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/de/dpo</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/de/evaluation</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/de/foundations-01-python-numpy</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/de/foundations-02-shapes</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/de/foundations-03-probability</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/de/foundations-04-neuron</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/de/foundations-05-mlp-autograd</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/de/foundations-06-pytorch-checkpoint</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/de/foundations-godot-rl-bridge</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/de/glossary</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/de/hardware</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/de/learning-guide</loc></url>
   <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/de/mini-gpt-gate</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/de/mini-gpt</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/de/pretraining</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/de/profiling</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/de/rlhf-bridge</loc></url>
   <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/de/setup</loc></url>
   <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/de/sft-lora</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/de/unit-00-troubleshooting</loc></url>
   <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/de/unit-00</loc></url>
   <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/de</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/diagnostic</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/dpo</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/evaluation</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/foundations-01-python-numpy</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/foundations-02-shapes</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/foundations-03-probability</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/foundations-04-neuron</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/foundations-05-mlp-autograd</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/foundations-06-pytorch-checkpoint</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/foundations-godot-rl-bridge</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/glossary</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/hardware</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/learning-guide</loc></url>
   <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/mini-gpt-gate</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/mini-gpt</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/pretraining</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/profiling</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/rlhf-bridge</loc></url>
   <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/setup</loc></url>
   <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/sft-lora</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/unit-00-troubleshooting</loc></url>
   <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/unit-00</loc></url>
   <url><loc>https://minigraphx.github.io/llm-engineering-course-pages</loc></url>
 </urlset>

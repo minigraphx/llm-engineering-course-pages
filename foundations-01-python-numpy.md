@@ -1,0 +1,165 @@
+---
+title: "F01 — Python and NumPy"
+sidebar:
+  label: "F01 — Python & NumPy"
+---
+
+<span id="f01-python-and-numpy" />
+
+
+[← Diagnostic](/llm-engineering-course-pages/diagnostic) · [Course home](/llm-engineering-course-pages/) · [→ F02](/llm-engineering-course-pages/foundations-02-shapes)
+
+## Learning outcome [#learning-outcome]
+
+In 45–60 minutes, you will turn a small data transformation into a tested
+NumPy program and explain every value it produces. This block is required when
+the diagnostic marked Python and development as Required.
+
+If programming is entirely new, spread this unit across several sessions; the
+45–60 minutes is a guide for the core exercise, not a deadline.
+
+## If this is your first Python program [#if-this-is-your-first-python-program]
+
+Finish [setup](/llm-engineering-course-pages/setup) first. Create `artifacts/my-work` with your file manager,
+then save a plain-text file named `hello.py` there (not `hello.py.txt`). Put this
+Python code in the file:
+
+```python
+name = "tiny model"
+print("Hello", name)
+```
+
+Run `python artifacts/my-work/hello.py` in the terminal from the course root.
+Expected output: `Hello tiny model`. `=` assigns a value to a name, quoted text
+is a string, and `print(...)` displays its arguments. `#` starts a comment.
+Errors name a file and line: fix the first relevant error before continuing.
+
+### Lists, positions, slices, and loops [#lists-positions-slices-and-loops]
+
+```python
+tokens = ["a", "b", "c", "d"]
+print(tokens[0])       # a: Python positions start at zero
+print(tokens[1:3])     # ['b', 'c']: start included, stop excluded
+print(tokens[:-1])     # ['a', 'b', 'c']: omit the final item
+print(tokens[1:])      # ['b', 'c', 'd']: omit the first item
+for token in tokens:
+    print(token)
+```
+
+Square brackets construct a list or select elements. A colon selects a slice;
+`-1` counts from the end. Indented lines belong to the loop. `for` repeats once
+per item. `zip(left, right)` visits corresponding items together; `list(...)`
+collects them. A **function** names a reusable calculation:
+
+```python
+def next_item_pairs(sequence):
+    if len(sequence) < 2:
+        return []
+    return list(zip(sequence[:-1], sequence[1:]))
+
+assert next_item_pairs(["a", "b", "c"]) == [("a", "b"), ("b", "c")]
+assert next_item_pairs([]) == []
+assert next_item_pairs(["a"]) == []
+```
+
+`def` defines the function, `sequence` is its input, and `return` gives a result
+back. `if` runs a branch when a condition is true; `<` compares numbers. `==`
+checks equality; it does not assign. `assert` stops with an `AssertionError`
+when the condition is false. Parenthesized pairs are **tuples**: fixed sequences.
+Change one expected pair to see that the assertion really catches a mistake.
+
+Save your own variation in `artifacts/my-work/test_pairs.py`; place assertions
+inside a function named `test_pairs`. Run
+`python -m pytest artifacts/my-work/test_pairs.py`. A green result means the
+assertions passed; it does not prove untested inputs work. Type hints such as
+`sequence: list[str]` describe expected types for readers/tools; Python does not
+automatically enforce them. A docstring is a triple-quoted explanation just
+inside a function.
+
+### NumPy terms before the next exercise [#numpy-terms-before-the-next-exercise]
+
+`import numpy as np` loads the numerical library with the short name `np`.
+An **array** holds values with a shared numeric type (**dtype**): integers for
+IDs, floating-point numbers for probabilities. `shape` counts items along each
+axis. For `[[1,4,2],[3,0,2]]`, the shape `(2,3)` means two rows of three numbers.
+`np.all(condition)` checks that every element satisfies a condition. A function
+can `raise ValueError("reason")` to explain invalid input instead of calculating
+with it. Start with the concrete example below, then build the validator.
+
+## Predict → Trace → Build → Break → Measure → Explain [#predict-trace-build-break-measure-explain]
+
+Start with adjacent next-item pairs:
+
+```
+tokens = ["a", "b", "c", "d"]
+pairs = list(zip(tokens[:-1], tokens[1:]))
+assert pairs == [("a", "b"), ("b", "c"), ("c", "d")]
+```
+
+Predict the three pairs before running the code. Trace the two slices. Then
+wrap the transformation in a function and test empty, one-item, and normal
+inputs. The loop visits each item at most once, so runtime and output storage
+grow linearly with input length.
+
+## NumPy makes numerical contracts visible [#numpy-makes-numerical-contracts-visible]
+
+```
+import numpy as np
+
+token_ids = np.array([[1, 4, 2], [3, 0, 2]], dtype=np.int64)
+assert token_ids.shape == (2, 3)
+assert token_ids.dtype == np.int64
+assert np.all(token_ids >= 0)
+```
+
+The shape says two examples with three positions each. Break the contract by
+inserting -1, observe which assertion fails, then repair the data rather than
+removing the assertion.
+
+## Build [#build]
+
+Implement `next_item_pairs(sequence)` without importing course code. Add type
+hints, a short docstring, and three tests. Then implement
+`validate_token_batch(array)` that rejects non-integer, negative, or non-2D
+inputs. Record the exact failing value in each error message.
+
+## Completion evidence [#completion-evidence]
+
+- tests cover empty, one-item, normal, and invalid inputs;
+- output order is deterministic;
+- you can explain slicing, iteration, dtype, and each assertion;
+- `ruff check .` and `pytest` pass.
+
+## What's next [#whats-next]
+
+Continue with [F02 — Tensors and shapes](/llm-engineering-course-pages/foundations-02-shapes). Re-enter F01
+whenever Python control flow, tests, exceptions, or NumPy dtypes hide the
+behaviour you need to inspect.
+
+[← Diagnostic](/llm-engineering-course-pages/diagnostic) · [→ F02](/llm-engineering-course-pages/foundations-02-shapes)
+
+<details>
+<summary>Validator hint</summary>
+
+Check `array.ndim != 2`, `np.issubdtype(array.dtype, np.integer)` and
+`np.any(array < 0)`. These answer independent questions: rank, type, values.
+
+
+</details>
+
+<details>
+<summary>Reference validator</summary>
+
+```python
+import numpy as np
+
+def validate_token_batch(array):
+    if array.ndim != 2:
+        raise ValueError(f"expected 2D, got shape {array.shape}")
+    if not np.issubdtype(array.dtype, np.integer):
+        raise ValueError(f"expected integer IDs, got {array.dtype}")
+    if np.any(array < 0):
+        raise ValueError(f"negative IDs: {array[array < 0].tolist()}")
+```
+
+</details>

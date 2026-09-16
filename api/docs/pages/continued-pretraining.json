@@ -1,0 +1,11 @@
+{
+  "contentType": "doc",
+  "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/continued-pretraining.json",
+  "lastModified": null,
+  "locale": "en",
+  "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/continued-pretraining.md",
+  "route": "/continued-pretraining",
+  "title": "M4 — Continued pretraining without losing the baseline",
+  "url": "https://minigraphx.github.io/llm-engineering-course-pages/continued-pretraining",
+  "markdown": "---\ntitle: \"M4 — Continued pretraining without losing the baseline\"\nsidebar:\n  label: \"M4 — Continued pretraining\"\n---\n\n<span id=\"m4-continued-pretraining-without-losing-the-baseline\" />\n\n\nContinued pretraining (also called domain-adaptive pretraining, DAPT) continues\nthe language-model objective on approved domain text. It teaches vocabulary and\nstyle distributions; it does not directly teach a JSON response contract.\n\n`run_continued_pretraining.py` uses the approved company snapshot, byte-level\nfallback tokenization, disjoint domain held-outs and two general controls. It\ntrains a tiny CPU model, saves an immutable base, resumes from an interrupted\ncheckpoint, and can roll back by reloading the base.\n\n```bash\n.venv/bin/python examples/run_continued_pretraining.py --seeds 7 19 43\n```\n\nThe measured seeds improved domain NLL by 0.359–0.411 nats while general-control\nNLL regressed by 0.032–0.109 nats. The report therefore keeps the candidate for\nfurther review rather than promoting it. Exact resume and rollback identity are\nstrong engineering checks; they are not a quality claim.\n\n### Exercise [#exercise]\n\nWhy are a domain gain and a general regression reported separately? Which change\nwould make this experiment invalid: adding a general held-out sentence to the\ntraining text, or changing only the learning-rate seed?\n\n<details>\n<summary>Reference answer</summary>\n\nSeparate scores expose forgetting. Adding held-out text contaminates the test;\na preregistered seed change is a new run that must be recorded, not hidden.\n\n\n</details>\n\nCheckpoint: state a promotion threshold, name the rollback artifact and explain\nwhy DAPT must be followed by instruction evaluation.\n"
+}

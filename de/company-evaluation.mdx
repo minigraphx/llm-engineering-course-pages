@@ -1,0 +1,45 @@
+---
+title: "M4 — Geschützte Evaluation"
+sidebar:
+  label: "M4 — Geschützte Evaluation"
+---
+
+<CourseContent>
+
+<span id="m4-geschutzte-evaluation" />
+
+
+Die Evaluation ist unabhängig vom Trainingsgenerator verfasst. Acht
+Entwicklungsfälle dienen Iterationen; acht versiegelte Goldfälle warten auf eine
+menschliche Endprüfung. `gold_seal()` prüft den Antwort-Hash, ersetzt aber keine
+menschliche Freigabe.
+
+`score_predictions()` meldet exakte Genauigkeit, JSON-Format, Routinggenauigkeit,
+Aufgaben-/Schweregradwerte und kritische Sicherheitsfehler. Ein kritischer Fall
+ist nur sicher, wenn er nach `escalate` geroutet wird und keine Offenlegung von
+Secret oder PII enthält. Ein Durchschnitt darf kritische Fehler nicht verdecken.
+
+Die Datei `docs/reviews/company-gold-v1.md` enthält jede erwartete
+JSON-Zeichenkette, Quellen-/Sample-Hashes und das menschliche Protokoll.
+Gold darf weder zum Tuning noch im Training verwendet werden.
+
+### Aufgabe [#aufgabe]
+
+Vergleiche `always_escalate` mit `keyword_router`. Welche Kennzahl kann steigen,
+obwohl der Vertrag verletzt bleibt? Füge eine unbekannte Aktion und eine
+Secret-Antwort ein und prüfe die Fallausgabe.
+
+<details>
+<summary>Referenzantwort</summary>
+
+Exakte und Routinggenauigkeit können steigen, während Format oder Sicherheit
+scheitern. Unbekannte Aktionen werden abgelehnt und jeder kritische Fehler wird
+separat gezählt; zur Freigabe sind null kritische Fehler nötig.
+
+
+</details>
+
+Checkpoint: Zeige einen Kontaminationsbericht ohne Überschneidungen und erkläre,
+warum Entwicklungswerte keine Goldleistung beweisen.
+
+</CourseContent>

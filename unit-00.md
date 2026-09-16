@@ -1,13 +1,13 @@
 ---
 title: "Unit 0 — First Tiny-LM Run"
+sidebar:
+  label: "Unit 0 — First Tiny-LM Run"
 ---
-
-[This lesson in MkDocs](/llm-engineering-course-pages/mkdocs/unit-00/)
 
 <span id="unit-0-first-tiny-lm-run" />
 
 
-[← Setup](/llm-engineering-course-pages/setup) · [Course home](/llm-engineering-course-pages/mkdocs/) · [Troubleshooting](/llm-engineering-course-pages/mkdocs/unit-00-troubleshooting/)
+[← Setup](/llm-engineering-course-pages/setup) · [Course home](/llm-engineering-course-pages/) · [Troubleshooting](/llm-engineering-course-pages/unit-00-troubleshooting)
 
 ## Learning outcome [#learning-outcome]
 
@@ -28,7 +28,7 @@ python examples/diagnose_unit0.py
 
 Every check should say `pass`. The command verifies Python, the selected
 CPU/MPS/CUDA backend, writable artifact storage, checkpoint loading, and a smoke
-generation. If it fails, use the [troubleshooting guide](/llm-engineering-course-pages/mkdocs/unit-00-troubleshooting/).
+generation. If it fails, use the [troubleshooting guide](/llm-engineering-course-pages/unit-00-troubleshooting).
 
 ## 10–20 min · First generation [#1020-min-first-generation]
 
@@ -136,12 +136,12 @@ you identify tokens/probabilities/loss, and your prediction and explanation
 match the measured intervention. Keep the JSON report as evidence.
 
 Course release acceptance additionally requires the documented
-[five-learner pilot](/llm-engineering-course-pages/reference/unit-00-pilot).
+[five-learner pilot](/llm-engineering-course-pages/sources/unit-00-pilot).
 
 ## What's next [#whats-next]
 
-Continue with the [diagnostic and learning-path check](/llm-engineering-course-pages/mkdocs/diagnostic/). It
+Continue with the [diagnostic and learning-path check](/llm-engineering-course-pages/diagnostic). It
 determines which foundations you can safely skip and preserves a re-entry link
 for every shortcut.
 
-[← Setup](/llm-engineering-course-pages/setup) · [Troubleshooting](/llm-engineering-course-pages/mkdocs/unit-00-troubleshooting/) · [→ Diagnostic](/llm-engineering-course-pages/mkdocs/diagnostic/)
+[← Setup](/llm-engineering-course-pages/setup) · [Troubleshooting](/llm-engineering-course-pages/unit-00-troubleshooting) · [→ Diagnostic](/llm-engineering-course-pages/diagnostic)

@@ -1,15 +1,15 @@
 ---
 title: "SFT and LoRA: teach a response, preserve a base"
+sidebar:
+  label: "M5 — SFT & LoRA"
 ---
-
-[This lesson in MkDocs](/llm-engineering-course-pages/mkdocs/sft-lora/)
 
 <CourseContent>
 
 <span id="sft-and-lora-teach-a-response-preserve-a-base" />
 
 
-Prerequisites: [the decoder](/llm-engineering-course-pages/mkdocs/mini-gpt/), [training](/llm-engineering-course-pages/mkdocs/pretraining/), and the fictional
+Prerequisites: [the decoder](/llm-engineering-course-pages/mini-gpt), [training](/llm-engineering-course-pages/pretraining), and the fictional
 company data/evaluation contracts. Run the explicit CPU mechanism before the
 optional pretrained lab. Both entry paths need no private data or teacher API.
 
@@ -74,7 +74,7 @@ cases; none opens gold. The same evaluator checks actual generated predictions
 before/after. Response NLL and exact/format/safety metrics answer different
 questions. A lower teacher-forced NLL does not prove usable generated answers.
 Reload and merged outputs are checked against the trained adapter. See the
-[adaptation comparison](/llm-engineering-course-pages/mkdocs/adaptation-comparison/) and `docs/baselines/sft-lora-v1.md`
+[adaptation comparison](/llm-engineering-course-pages/adaptation-comparison) and `docs/baselines/sft-lora-v1.md`
 for measured results, runtime, memory scope and limitations.
 
 ## Predict → Trace → Build → Break → Measure → Explain [#predict-trace-build-break-measure-explain]

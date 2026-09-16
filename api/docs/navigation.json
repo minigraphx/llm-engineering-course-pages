@@ -6,41 +6,230 @@
   "selectors": [],
   "sidebar": [
     {
-      "description": "Four complete lessons, setup, and two languages. One small model at a time.",
       "kind": "page",
-      "label": "Learn by tracing the numbers",
+      "label": "Home",
       "pageId": "filesystem:index.mdx",
       "route": "/"
     },
     {
       "kind": "page",
-      "label": "Unit 0 — First Tiny-LM Run",
-      "pageId": "filesystem:unit-00.mdx",
-      "route": "/unit-00"
-    },
-    {
-      "kind": "page",
-      "label": "T04 — Self-attention as a number experiment",
-      "pageId": "filesystem:attention.mdx",
-      "route": "/attention"
-    },
-    {
-      "kind": "page",
-      "label": "SFT and LoRA: teach a response, preserve a base",
-      "pageId": "filesystem:sft-lora.mdx",
-      "route": "/sft-lora"
-    },
-    {
-      "kind": "page",
-      "label": "M2 core gate: code, diagnose, explain",
-      "pageId": "filesystem:mini-gpt-gate.mdx",
-      "route": "/mini-gpt-gate"
-    },
-    {
-      "kind": "page",
-      "label": "Setup — from a fresh computer to the first run",
+      "label": "Setup",
       "pageId": "filesystem:setup.mdx",
       "route": "/setup"
+    },
+    {
+      "kind": "page",
+      "label": "Learning guide",
+      "pageId": "filesystem:learning-guide.mdx",
+      "route": "/learning-guide"
+    },
+    {
+      "children": [
+        {
+          "kind": "page",
+          "label": "Unit 0 — First Tiny-LM Run",
+          "pageId": "filesystem:(course)/unit-00.mdx",
+          "route": "/unit-00"
+        },
+        {
+          "kind": "page",
+          "label": "Unit 0 troubleshooting",
+          "pageId": "filesystem:(course)/unit-00-troubleshooting.mdx",
+          "route": "/unit-00-troubleshooting"
+        },
+        {
+          "kind": "page",
+          "label": "Diagnostic & learning path",
+          "pageId": "filesystem:(course)/diagnostic.mdx",
+          "route": "/diagnostic"
+        },
+        {
+          "kind": "page",
+          "label": "F01 — Python & NumPy",
+          "pageId": "filesystem:(course)/foundations-01-python-numpy.mdx",
+          "route": "/foundations-01-python-numpy"
+        },
+        {
+          "kind": "page",
+          "label": "F02 — Tensors & shapes",
+          "pageId": "filesystem:(course)/foundations-02-shapes.mdx",
+          "route": "/foundations-02-shapes"
+        },
+        {
+          "kind": "page",
+          "label": "F03 — Probability & loss",
+          "pageId": "filesystem:(course)/foundations-03-probability.mdx",
+          "route": "/foundations-03-probability"
+        },
+        {
+          "kind": "page",
+          "label": "F04 — Neuron & gradient descent",
+          "pageId": "filesystem:(course)/foundations-04-neuron.mdx",
+          "route": "/foundations-04-neuron"
+        },
+        {
+          "kind": "page",
+          "label": "F05 — MLP, backprop & autograd",
+          "pageId": "filesystem:(course)/foundations-05-mlp-autograd.mdx",
+          "route": "/foundations-05-mlp-autograd"
+        },
+        {
+          "kind": "page",
+          "label": "F06 — PyTorch & checkpoint",
+          "pageId": "filesystem:(course)/foundations-06-pytorch-checkpoint.mdx",
+          "route": "/foundations-06-pytorch-checkpoint"
+        },
+        {
+          "kind": "page",
+          "label": "B01 — Godot-RL bridge",
+          "pageId": "filesystem:(course)/foundations-godot-rl-bridge.mdx",
+          "route": "/foundations-godot-rl-bridge"
+        },
+        {
+          "kind": "page",
+          "label": "T01 — Bigram baseline",
+          "pageId": "filesystem:(course)/bigram-baseline.mdx",
+          "route": "/bigram-baseline"
+        },
+        {
+          "kind": "page",
+          "label": "T02 — Byte-level BPE",
+          "pageId": "filesystem:(course)/bpe-tokenizer.mdx",
+          "route": "/bpe-tokenizer"
+        },
+        {
+          "kind": "page",
+          "label": "T03 — Data pipeline & embeddings",
+          "pageId": "filesystem:(course)/data-pipeline.mdx",
+          "route": "/data-pipeline"
+        },
+        {
+          "kind": "page",
+          "label": "T04 — Self-attention",
+          "pageId": "filesystem:(course)/attention.mdx",
+          "route": "/attention"
+        },
+        {
+          "kind": "page",
+          "label": "M2 — Mini-GPT",
+          "pageId": "filesystem:(course)/mini-gpt.mdx",
+          "route": "/mini-gpt"
+        },
+        {
+          "kind": "page",
+          "label": "M2 — Core gate",
+          "pageId": "filesystem:(course)/mini-gpt-gate.mdx",
+          "route": "/mini-gpt-gate"
+        },
+        {
+          "kind": "page",
+          "label": "E01 — Reproducible training",
+          "pageId": "filesystem:(course)/pretraining.mdx",
+          "route": "/pretraining"
+        },
+        {
+          "kind": "page",
+          "label": "E02 — Data quality",
+          "pageId": "filesystem:(course)/data-quality.mdx",
+          "route": "/data-quality"
+        },
+        {
+          "kind": "page",
+          "label": "E03 — Evaluation",
+          "pageId": "filesystem:(course)/evaluation.mdx",
+          "route": "/evaluation"
+        },
+        {
+          "kind": "page",
+          "label": "E04 — Profiling & budgets",
+          "pageId": "filesystem:(course)/profiling.mdx",
+          "route": "/profiling"
+        },
+        {
+          "kind": "page",
+          "label": "C01 — Company strategy",
+          "pageId": "filesystem:(course)/company-strategy.mdx",
+          "route": "/company-strategy"
+        },
+        {
+          "kind": "page",
+          "label": "M4 — Company data",
+          "pageId": "filesystem:(course)/company-data.mdx",
+          "route": "/company-data"
+        },
+        {
+          "kind": "page",
+          "label": "M4 — Protected evaluation",
+          "pageId": "filesystem:(course)/company-evaluation.mdx",
+          "route": "/company-evaluation"
+        },
+        {
+          "kind": "page",
+          "label": "M4 — Continued pretraining",
+          "pageId": "filesystem:(course)/continued-pretraining.mdx",
+          "route": "/continued-pretraining"
+        },
+        {
+          "kind": "page",
+          "label": "M5 — SFT & LoRA",
+          "pageId": "filesystem:(course)/sft-lora.mdx",
+          "route": "/sft-lora"
+        },
+        {
+          "kind": "page",
+          "label": "M5 — Adaptation comparison",
+          "pageId": "filesystem:(course)/adaptation-comparison.mdx",
+          "route": "/adaptation-comparison"
+        },
+        {
+          "kind": "page",
+          "label": "M5 — DPO",
+          "pageId": "filesystem:(course)/dpo.mdx",
+          "route": "/dpo"
+        },
+        {
+          "kind": "page",
+          "label": "M5 — RLHF bridge",
+          "pageId": "filesystem:(course)/rlhf-bridge.mdx",
+          "route": "/rlhf-bridge"
+        },
+        {
+          "kind": "page",
+          "label": "Capstone — Company model",
+          "pageId": "filesystem:(course)/company-capstone.mdx",
+          "route": "/company-capstone"
+        }
+      ],
+      "display": "flat",
+      "kind": "group",
+      "label": "Course",
+      "path": "/"
+    },
+    {
+      "children": [
+        {
+          "kind": "page",
+          "label": "Glossary",
+          "pageId": "filesystem:(reference)/glossary.mdx",
+          "route": "/glossary"
+        },
+        {
+          "kind": "page",
+          "label": "Hardware & cloud safety",
+          "pageId": "filesystem:(reference)/hardware.mdx",
+          "route": "/hardware"
+        },
+        {
+          "kind": "page",
+          "label": "Data policy",
+          "pageId": "filesystem:(reference)/data-policy.mdx",
+          "route": "/data-policy"
+        }
+      ],
+      "display": "flat",
+      "kind": "group",
+      "label": "Reference",
+      "path": "/"
     }
   ],
   "tabs": []

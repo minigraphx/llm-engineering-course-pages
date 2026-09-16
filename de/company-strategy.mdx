@@ -1,0 +1,142 @@
+---
+title: "C01 — Vom Firmenproblem zur Modellentscheidung"
+sidebar:
+  label: "C01 — Firmenstrategie"
+---
+
+<CourseContent>
+
+<span id="c01-vom-firmenproblem-zur-modellentscheidung" />
+
+
+[← Evaluation](/llm-engineering-course-pages/de/evaluation) · [Firmendaten →](/llm-engineering-course-pages/de/company-data)
+
+Du kannst inzwischen ein Modell trainieren. Diese Einheit prüft, ob Training der
+richtige nächste Schritt ist. Voraussetzungen: Baseline und Änderung vergleichen,
+Trainings- von Evaluationsdaten unterscheiden und die Grenzen einer niedrigeren
+NLL erklären. Plane zwei Sitzungen: Problem definieren und Messungen auswerten.
+
+## 1. Beginne mit einem Arbeitsablauf [#1-beginne-mit-einem-arbeitsablauf]
+
+**Nordlicht Workspace** ist eine erfundene Firma für Supportsoftware. Ein
+Supportmitarbeiter erhält Anfragen zu Abrechnung, Kontozugang oder Exporten. Das
+System schlägt eine Route als kurze strukturierte Antwort vor. Anfragen nach
+Geheimnissen oder unberechtigten Daten müssen eskaliert werden. Das Modell führt
+keine Kontoänderungen aus. Erfundenes Firmenwissen und synthetische Kennungen
+machen die Übung ohne echte Kundendaten möglich.
+
+Definiere Anforderungen vor der Modellwahl:
+
+| Anforderung | Messung oder Prüfung |
+| --- | --- |
+| Nutzer: Supportmitarbeiter | Können sie die vorgeschlagene Route prüfen und korrigieren? |
+| Sprachen: Deutsch und Englisch | Ergebnisse getrennt nach Sprache berichten. |
+| Muss: richtige Route und gültiges JSON | Fachliche Richtigkeit und Format getrennt bewerten. |
+| Muss: geschützte Anfragen eskalieren | Kritische Fehler getrennt vom Durchschnitt zählen. |
+| Muss: lokale Verarbeitung | Rein entfernte Dienste vor der Qualitätsrangfolge ausschließen. |
+| Muss: bekannte Modell-/Datenherkunft | Version, Berechtigung und Lizenznachweis prüfen. |
+| Budget: Speicher und Antwortzeit | Gleiche Eingabelänge und Hardware messen; Messumfang nennen. |
+| Kann: ausformulierte Erklärung | Erst ergänzen, wenn das Pflichtverhalten funktioniert. |
+
+Die Übung unterstützt menschliche Entscheidungen. Sie ersetzt keine
+Zugriffskontrolle. Authentifizierung und Berechtigungen gehören in Anwendungscode.
+
+## 2. Ordne die Maßnahme der Lücke zu [#2-ordne-die-manahme-der-lucke-zu]
+
+| Beobachtete Lücke | Erste Maßnahme | Begründung |
+| --- | --- | --- |
+| Häufig wechselnde Fakten | Retrieval und Tools | Die erlaubte aktuelle Version bei jeder Anfrage abrufen. |
+| Fachsprache wird schlecht vorhergesagt | Continued Pretraining prüfen | Ihre Verteilung lernen und allgemeine Regression messen. |
+| Antwortformat oder Ablauf fehlt | SFT, gegebenenfalls mit LoRA | Richtige Antworten vorgeben und deren Tokens trainieren. |
+| Mehrere Antworten sind zulässig, eine bevorzugt | DPO | Relative Präferenzen aus Antwortpaaren lernen. |
+| Baseline erfüllt Anforderungen bereits | Kein Training | Das einfachere akzeptierte System behalten. |
+
+**SFT** beschreibt Lernziel und Daten. **LoRA** beschreibt, welche Parameter sich
+ändern; die Begriffe sind keine konkurrierenden Aufgaben. **QLoRA** ergänzt eine
+eingefrorene quantisierte Basis. Training von Grund auf braucht eine Begründung
+wie ein Architekturexperiment; vorhandene Firmendokumente reichen dafür nicht.
+
+Vergleiche für den Routingfall eine verständliche Regelbaseline und ein Modell
+mit derselben Evaluation. Erfüllen Regeln den engen Aufgabenbereich, bleiben sie
+eine ernsthafte Option. Ein offenes Modell muss seinen Wartungsaufwand durch
+benötigte Fähigkeiten jenseits dieser engen Regeln rechtfertigen.
+
+## 3. Harte Bedingungen vor der Rangfolge prüfen [#3-harte-bedingungen-vor-der-rangfolge-prufen]
+
+Ein Online-Modell erreicht beispielsweise 95 % Genauigkeit, ein lokales Modell
+80 %. Lokale Verarbeitung ist Pflicht. Ein Durchschnitt aus Datenschutz und
+Genauigkeit könnte fälschlich das Online-Modell empfehlen. Gehe deshalb so vor:
+
+1. Kandidaten ausschließen, die eine **Muss**-Bedingung verletzen.
+2. Verbleibende Kandidaten nach gemessener Qualität, Latenz und Speicher ordnen.
+3. Fehlerfälle und Unsicherheit zusammen mit der Rangfolge aufbewahren.
+
+`Requirements` und `score_candidates` bilden diese Schritte sichtbar in
+`src/llm_course/company_strategy.py` ab. Die voreingestellte Qualitätsgrenze 0,7
+ist eine Übungsvorgabe, kein Produktionsstandard. Ein Speicherwert muss sagen,
+ob er Parameterbytes, Tensorallokationen oder den Prozesshöchstwert beschreibt.
+
+```python
+from llm_course.company_strategy import Requirements, choose_strategy
+
+requirements = Requirements(need="domain_language")
+print(choose_strategy(requirements))  # Ohne Belege: erst Baseline messen.
+print(choose_strategy(requirements, domain_nll_gain=0.5,
+                      general_nll_regression=0.1))
+```
+
+Die zweite Entscheidung startet lediglich die Prüfung von Continued Pretraining.
+Sie belegt noch keine bessere Befolgung von Anweisungen oder Supportqualität.
+
+## 4. Den Aufwand rund um das Training zählen [#4-den-aufwand-rund-um-das-training-zahlen]
+
+**TCO**, Total Cost of Ownership, umfasst Vorbereitung und laufenden Aufwand.
+Übe mit erfundenen Geldeinheiten:
+
+- Einrichtung: 2 Stunden × 40 Einheiten/Stunde = 80.
+- Training: 1 Rechenstunde × 3 Einheiten/Stunde = 3.
+- Sechs Monate: monatlich 1 Wartungsstunde × 40 plus 2 Rechenstunden × 3 = 46.
+- Gesamt: `80 + 3 + 6*46 = 359` Einheiten.
+
+Das sind erfundene Sätze, keine Anbieterpreise. Ersetze sie durch freigegebene
+eigene Schätzungen, einschließlich Datenprüfung, Regressionstests, Bereitstellung
+und Rollbackpflege. Kürzeres Training kann trotzdem das teurere Gesamtsystem sein.
+
+## 5. Vorhersagen → verfolgen → bauen → beschädigen → messen → erklären [#5-vorhersagen-verfolgen-bauen-beschadigen-messen-erklaren]
+
+Sage voraus, welche Strategie die Anforderung auswählt. Verfolge eine Anforderung
+bis zu ihrer Messung und baue eine Scorecard für den gemeinsamen Firmenfall.
+Beschädige sie, indem der beste Qualitätskandidat einen unzulässigen
+Verarbeitungsort erhält. Messe die übrigen Kandidaten an denselben Fällen.
+Erkläre mindestens zwei verworfene Alternativen und welche neuen Belege deine
+Entscheidung ändern würden.
+
+Aufgabe: Eine Firma braucht aktuelle Exportgrenzen und striktes JSON. Entwirf ein
+System mit getrennten Zuständigkeiten. Welcher Teil braucht aktuelle Fakten?
+Welcher könnte von SFT profitieren? Speichere Zugriffsrechte nicht in Gewichten.
+
+<details>
+<summary>Hinweis</summary>
+
+Eine Antwort kann abgerufene Fakten, deterministische Schemaprüfung und einen
+trainierten Formatierer kombinieren. Wähle je beobachteter Lücke einen Mechanismus.
+
+</details>
+
+<details>
+<summary>Referenzantwort</summary>
+
+Aktuelle erlaubte Grenzen abrufen, Zugriff in der Anwendung prüfen und das
+Ausgabeformat validieren. Zuerst Prompting oder einen deterministischen
+Formatierer versuchen. SFT/LoRA nur nutzen, wenn dieselbe Evaluation weiterhin
+eine Formatlücke zeigt. Continued Pretraining liefert keine Aktualität; DPO
+ergänzt keine fehlenden Fakten.
+
+</details>
+
+**Checkpoint:** Eine andere lernende Person kann jede gewählte Komponente auf
+eine Anforderung, eine gemessene Baselinelücke und einen reproduzierbaren Test
+zurückführen. Weiter mit [Firmendaten](/llm-engineering-course-pages/de/company-data) und
+[geschützter Evaluation](/llm-engineering-course-pages/de/company-evaluation).
+
+</CourseContent>

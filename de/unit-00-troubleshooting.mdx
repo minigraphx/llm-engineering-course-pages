@@ -1,0 +1,58 @@
+---
+title: "Fehlerbehebung für Einheit 0"
+sidebar:
+  label: "Fehlerbehebung für Einheit 0"
+---
+
+<CourseContent>
+
+<span id="fehlerbehebung-fur-einheit-0" />
+
+
+[← Einheit 0](/llm-engineering-course-pages/de/unit-00) · [Einrichtung](/llm-engineering-course-pages/de/setup) · [Kursstart](/llm-engineering-course-pages/de/)
+
+Starte mit der Diagnose und behebe den ersten fehlschlagenden Check:
+
+```
+python examples/diagnose_unit0.py
+```
+
+| Symptom | Bedeutung | Lösung |
+| --- | --- | --- |
+| `python: command not found` | Python liegt nicht im Shell-Pfad | `python3` versuchen; andernfalls Python 3.11+ installieren |
+| `No module named llm_course` | Umgebung inaktiv oder Paket fehlt | `.venv` aktivieren, dann `pip install -e ".[dev,docs]"` |
+| Installation wirkt langsam | PyTorch ist eine große Abhängigkeit | Terminal offen lassen und auf die abschließende Erfolgs-/Fehlerzeile warten |
+| MPS/CUDA nicht verfügbar | Beschleuniger fehlt oder ist für PyTorch unsichtbar | mit `--device cpu` starten; dies ist der vollständige Pflichtpfad |
+| Berechtigungsfehler in `artifacts/` | aktuelles Verzeichnis nicht beschreibbar | `--artifact-dir` auf ein beschreibbares Projektverzeichnis setzen |
+| Checkpoint-Format/Vokabular falsch | Artefakte stammen aus anderer Kursversion | frisches Verzeichnis wie `--artifact-dir artifacts/unit0-clean` nutzen |
+| `text must not be empty` | das Modell benötigt mindestens ein Kontexttoken | nicht leeren `--prompt` angeben |
+| unerwartetes `?` im Prompt | unbekannte Zeichen werden zum Unknown-Token | Kleinbuchstaben und gelistete Satzzeichen nutzen |
+| Sampling-Läufe unterscheiden sich | Seed oder Befehl unterscheidet sich | Seed, Prompt, Boost, Temperatur und Commit angleichen |
+
+## Backend isolieren [#backend-isolieren]
+
+Prüfe den verbindlichen CPU-Pfad separat:
+
+```
+python examples/diagnose_unit0.py --device cpu
+python examples/run_unit0.py --device cpu
+```
+
+Wenn CPU besteht, aber MPS/CUDA scheitert, notiere Backend, PyTorch-Version,
+Befehl und vollständigen Fehler. Setze die Lektion auf CPU fort; Beschleunigung
+ist optional.
+
+## Nachweise für einen brauchbaren Fehlerbericht [#nachweise-fur-einen-brauchbaren-fehlerbericht]
+
+1. Betriebssystem und Python-Version;
+2. Ausgabe von `python examples/check_hardware.py --skip-benchmark`;
+3. Ausgabe von `python examples/diagnose_unit0.py`;
+4. exakter Befehl und erster vollständiger Traceback;
+5. ob `--device cpu` erfolgreich ist.
+
+Hänge niemals generierte Checkpoints, Firmendaten, Zugangsdaten oder persönliche
+Informationen an.
+
+[← Einheit 0](/llm-engineering-course-pages/de/unit-00) · [→ Diagnose](/llm-engineering-course-pages/de/diagnostic)
+
+</CourseContent>

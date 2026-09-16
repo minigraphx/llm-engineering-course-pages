@@ -1,0 +1,94 @@
+---
+title: "Hardware, time, and cloud safety"
+sidebar:
+  label: "Hardware & cloud safety"
+---
+
+<CourseContent>
+
+<span id="hardware-time-and-cloud-safety" />
+
+
+[Course home](/llm-engineering-course-pages/)
+
+## The promise [#the-promise]
+
+You can complete every required learning outcome on CPU. Apple MPS and NVIDIA
+CUDA shorten runs and enable larger comparisons. Cloud and multi-GPU work are
+optional and never required for a certificate.
+
+## Run the local preflight [#run-the-local-preflight]
+
+```
+python examples/check_hardware.py
+```
+
+The report contains the selected backend, a conservative reference profile,
+available memory when PyTorch exposes it, and a small measured operation. Keep
+the report with your experiment record. It contains no name or employer data.
+
+| Profile | Required workload |
+| --- | --- |
+| CPU-LITE | 0.1–5M parameter teaching models; context 64–128 |
+| CPU-ADAPT | up to about 150M parameters; short LoRA proof plus checkpoint |
+| MPS-32 | 10–50M from scratch; 0.5–1.5B LoRA where supported |
+| CUDA-12/16 | 10–50M from scratch; 0.5–3B LoRA/QLoRA where supported |
+| CLOUD-24 | optional 3–7B comparison only |
+
+These are starting configurations, not performance promises. Reduce microbatch
+first, then context, then model size.
+
+## Time boxes and fallback checkpoints [#time-boxes-and-fallback-checkpoints]
+
+| Work | CPU time box | Tier 1 time box | Fallback |
+| --- | --- | --- | --- |
+| concepts, tests, tiny forward passes | 10 min | 10 min | supplied outputs |
+| tiny training | 60 min | 30 min | CP1 base checkpoint |
+| continued pretraining | 90 min | 120 min | CP2 domain checkpoint |
+| SFT or LoRA | 90 min | 120 min | CP3 adapter |
+| DPO | 60 min | 150 min | CP4 preference adapter |
+| quantization/serving | 45 min | 60 min | CP5 quantized checkpoint |
+
+Before using a fallback, run the required small local proof: load one batch,
+complete the specified updates, save/resume, and record measured loss. The
+checkpoint replaces expensive repetition, not the learning evidence.
+
+## Optional cloud lab [#optional-cloud-lab]
+
+Copy the current all-in hourly price from the provider calculator and run:
+
+```
+python examples/plan_cloud_budget.py --hourly-rate RATE
+```
+
+The default gate limits the lab to USD 5, reserves USD 0.50 for other charges,
+uses an additional 20 percent safety margin, and caps runtime at 60 minutes. Do
+not start if the safe window is under 30 minutes.
+
+Immediately after the instance starts:
+
+1. schedule shutdown for the calculated runtime;
+2. keep a second terminal ready for the provider stop command;
+3. checkpoint every five minutes;
+4. stop after success or error and verify the stopped state;
+5. delete unneeded disks and snapshots.
+
+For the Google Cloud reference lab:
+
+```
+sudo shutdown -h +MAX_RUNTIME_MINUTES
+gcloud compute instances stop INSTANCE --zone=ZONE
+gcloud compute instances describe INSTANCE --zone=ZONE --format=get(status)
+```
+
+Pricing varies over time, region, resource, and discount. Never copy an old
+course price into the calculator.
+
+Official references:
+
+- [PyTorch MPS backend](https://docs.pytorch.org/docs/2.14/notes/mps.html)
+- [PyTorch CUDA API](https://docs.pytorch.org/docs/2.14/cuda.html)
+- [Google Compute Engine pricing](https://cloud.google.com/products/compute/pricing)
+- [Stopping Compute Engine instances](https://docs.cloud.google.com/compute/docs/instances/stop-start-instance)
+
+</CourseContent>

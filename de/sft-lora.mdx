@@ -1,15 +1,15 @@
 ---
 title: "SFT und LoRA: Antworten lernen, Basismodell erhalten"
+sidebar:
+  label: "M5 — SFT & LoRA"
 ---
-
-[Diese Lektion in MkDocs](/llm-engineering-course-pages/mkdocs/de/sft-lora/)
 
 <CourseContent>
 
 <span id="sft-und-lora-antworten-lernen-basismodell-erhalten" />
 
 
-Voraussetzungen: [Decoder](/llm-engineering-course-pages/mkdocs/de/mini-gpt/), [Training](/llm-engineering-course-pages/mkdocs/de/pretraining/) sowie die Daten-
+Voraussetzungen: [Decoder](/llm-engineering-course-pages/de/mini-gpt), [Training](/llm-engineering-course-pages/de/pretraining) sowie die Daten-
 und Evaluationsverträge der fiktiven Firma. Zuerst den expliziten CPU-Versuch
 verstehen, danach den optionalen Versuch mit einem vortrainierten Modell ausführen.
 Beide Wege benötigen weder private Daten noch eine kostenpflichtige Lehrer-API.
@@ -74,7 +74,7 @@ niemals Gold. Derselbe Evaluator bewertet generierte Antworten vor/nach Training
 Antwort-NLL und exakte/Format-/Sicherheitsmetriken messen Verschiedenes: Bessere NLL
 unter Teacher Forcing garantiert keine brauchbaren Antworten. Reload und Merge
 werden gegen den trainierten Adapter geprüft. Messwerte und Grenzen stehen im
-[Anpassungsvergleich](/llm-engineering-course-pages/mkdocs/de/adaptation-comparison/) und in `docs/baselines/sft-lora-v1.md`.
+[Anpassungsvergleich](/llm-engineering-course-pages/de/adaptation-comparison) und in `docs/baselines/sft-lora-v1.md`.
 
 ## Vorhersagen → Nachvollziehen → Bauen → Beschädigen → Messen → Erklären [#vorhersagen-nachvollziehen-bauen-beschadigen-messen-erklaren]
 

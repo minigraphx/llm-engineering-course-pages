@@ -1,0 +1,218 @@
+---
+title: "Evaluation: Aussagen mit überprüfbarer Evidenz"
+sidebar:
+  label: "E03 — Evaluation"
+---
+
+<CourseContent>
+
+<span id="evaluation-aussagen-mit-uberprufbarer-evidenz" />
+
+
+Voraussetzungen: die Einheiten [Decoder](/llm-engineering-course-pages/de/mini-gpt) und [Training](/llm-engineering-course-pages/de/pretraining).
+Du solltest Logits, verschobene Zielwerte und einen Optimierungsschritt erklären
+können. Plane etwa 50 Minuten ein. Alle Experimente laufen offline auf der CPU.
+
+Danach kannst du zurückgehaltenen Loss richtig gewichten, gepaarte Läufe
+vergleichen, unbegründete Verbesserungsbehauptungen zurückweisen und die Grenzen
+kleiner Verhaltenstests benennen.
+
+## 1. Das Experiment vor dem Ergebnis festlegen [#1-das-experiment-vor-dem-ergebnis-festlegen]
+
+**Zurückgehaltene Daten** beeinflussen keine Parameteraktualisierung.
+**Validierungsdaten** dienen zusätzlich zur Auswahl von Einstellungen. Ein
+**Testdatensatz** bleibt bis zur abschließenden Bewertung unangetastet. Sobald du
+nach jedem Testergebnis Einstellungen anpasst, verwendest du ihn zur Validierung.
+
+Hier stehen beide Lernraten vorher fest: 0,001 und 0,003. Alle anderen Einstellungen
+bleiben gleich: 30 Optimierungsschritte, Architektur, Trainingsreihenfolge, Daten,
+Generierung und die Initialisierungs-Seeds 7, 19 und 43. Ein **Seed** legt den
+Startzustand eines Pseudozufallszahlengenerators fest. **Gepaart** bedeutet: Beide
+Einstellungen mit Seed 7 werden miteinander verglichen, ebenso 19 und 43.
+
+Das Hauptexperiment verwendet den synthetischen Unit-0-Kurskorpus und den
+Zeichen-Encoder. Die Aufteilung mit Seed 7 enthält zwölf Trainingsdokumente, zwei
+Validierungsdokumente und zwei Testdokumente. Die Trainingsbatchgröße ist vier.
+Jedes Dokument wird auf 25 codierte Tokens gekürzt: höchstens 24 nächste Zieltokens.
+Die zwei Testdokumente liefern insgesamt 48 bewertete Ziele. Die Validierung bleibt
+unbenutzt, weil die Einstellungen vorher festgelegt wurden. Das Modell verwendet
+Breite 32, zwei Decoderblöcke, vier Attention-Köpfe und Kontextlänge 24.
+Herkunft und CC0-1.0-Freigabe stehen in `datasets/unit0/manifest.json` sowie
+`docs/data-cards/unit0-synthetic-v1.md`. Das sind keine allgemeinen Sprachbenchmarks.
+
+Zusätzlich enthält der Bericht unter `symbol_task` ein separat trainiertes Modell
+für sieben Symbole. Seine Dokumente sind neunstellige Rotationen der Regel
+`0,1,2,3,4,5,6,0,...`. Startwerte 0–3 bilden das Training mit 32 Zieltokens;
+Startwerte 4–6 bilden den Test mit 24 Zieltokens. Die Dokumente sind verschieden,
+ihre Übergänge kommen aber auch im Training vor. Das misst Regelfortsetzung.
+Vergleiche seinen NLL niemals direkt mit dem des Zeichenmodells.
+
+Die JSON-**Datenkarte** dokumentiert Quelle, Lizenz, Generator, Aufteilung,
+Anzahlen, Fingerabdrücke und Grenzen. Ein **Fingerabdruck** ist hier ein SHA-256-Wert
+der serialisierten Tensoren und des Prüfprotokolls. Er zeigt, ob wirklich dieselben
+Evaluationsdaten und Einstellungen verwendet wurden. Die Symboldaten entstehen
+nur im Arbeitsspeicher; es werden keine Korpora oder Gewichte eingecheckt.
+
+## 2. Tokens zählen, nicht Batches [#2-tokens-zahlen-nicht-batches]
+
+Die **negative Log-Likelihood (NLL)** lautet `-log(p(richtiges nächstes Token))`.
+Der natürliche Logarithmus gibt die Einheit **Nat** vor. Kleiner ist besser. Hat
+das richtige Token Wahrscheinlichkeit 0,5, beträgt sein NLL ungefähr 0,693.
+
+**Perplexität** ist `exp(mittlerer NLL)`. Sie überträgt den logarithmischen Loss auf
+eine multiplikative Skala und ist keine Prozentzahl richtiger Antworten. Vergleiche
+sie nur bei gleichem Tokenizer, Vokabular, Zielwerten und Prüfprotokoll.
+
+Ein Batch enthält ein gültiges Token mit NLL 1, ein zweiter drei gültige Tokens
+mit mittlerem NLL 3. Zusammen ergibt das `(1*1 + 3*3)/(1+3) = 2,5` und Perplexität
+`exp(2,5) ≈ 12,1825`. Der einfache Mittelwert 2 gewichtet das einzelne Token zu stark.
+Padding-Zielwerte `-100` dürfen weder zum Loss noch zur Tokenanzahl beitragen.
+
+`evaluate` summiert Kreuzentropie mit `reduction="sum"` und dividiert erst am Ende
+durch alle gültigen Ziele. Eingaben haben Form `[B,T]`, Logits `[B,T,V]`, Labels
+`[B,T]`. Die Labels sind bereits auf das nächste Token verschoben. Noch einmal
+verschieben wäre falsch. Während der Evaluation sind Trainingsverhalten und
+Gradienten deaktiviert; danach werden die vorherigen Modulzustände wiederhergestellt.
+
+## 3. Drei Seeds ausführen und Bericht lesen [#3-drei-seeds-ausfuhren-und-bericht-lesen]
+
+Nach der normalen editierbaren Installation im Repository-Stamm. In PowerShell
+verwendest du für den mehrzeiligen Ausleseblock die
+[portable Python-Dateivariante](/llm-engineering-course-pages/de/setup#shell-conventions):
+
+```bash
+python examples/run_evaluation.py --output artifacts/evaluation/report.json
+python - <<'PY'
+import json
+from pathlib import Path
+report = json.loads(Path("artifacts/evaluation/report.json").read_text())
+for arm in ("baseline", "candidate"):
+    for run in report[arm]:
+        print(arm, run["seed"], round(run["nll"], 4),
+              run["task_predictions"], run["generation_text"])
+print(report["comparison"])
+print("Unverändertes Modell:", report["no_change_control"]["claim_supported"])
+print("Symbolvergleich:", report["symbol_task"]["comparison"])
+PY
+```
+
+Referenz für den Kurskorpus, Python 3.12.13, PyTorch 2.14.0, CPU:
+
+| Seed | Basis-NLL | Kandidaten-NLL | Reduktion | Zeichenaufgabe richtig, Basis → Kandidat |
+| --- | ---: | ---: | ---: | --- |
+| 7 | 3,244165 | 2,974400 | 0,269765 | 0/3 → 0/3 |
+| 19 | 3,456174 | 2,964097 | 0,492077 | 0/3 → 0/3 |
+| 43 | 3,173621 | 2,866494 | 0,307127 | 1/3 → 1/3 |
+
+Der Bericht enthält vollständige Modell- und Trainingseinstellungen. Andere
+Bibliotheksversionen können kleine numerische Abweichungen verursachen.
+`--steps 2` ist ein anderes Experiment und reproduziert diese Tabelle nicht.
+
+Die **Aufgabenmetrik** fragt nach dem nächsten Zeichen für Präfixe der Längen 4,
+8 und 12 des ersten Testdokuments; richtige Token-IDs sind `[21,1,18]`.
+**Argmax** wählt jeweils das wahrscheinlichste Token. Die **Generierungsprüfung**
+zieht dagegen 16 Fortsetzungstokens zum vierstelligen Präfix, bei Temperatur 1 und
+Sampling-Seed 101. **Temperatur** steuert die Schärfe der Wahrscheinlichkeitsverteilung.
+Kandidat 7 liefert `<bos>a tdtammf measutse `: Der NLL ist besser, aber die Ausgabe
+bleibt schwach und die drei Aufgabenantworten werden nicht besser.
+
+Das Symbolmodell liefert unter `symbol_task`:
+
+| Seed | Basis-NLL | Kandidaten-NLL | Reduktion | Aufgabe richtig, Basis → Kandidat |
+| --- | ---: | ---: | ---: | --- |
+| 7 | 1,914761 | 1,340504 | 0,574257 | 0/3 → 3/3 |
+| 19 | 1,791130 | 1,273541 | 0,517589 | 1/3 → 1/3 |
+| 43 | 1,732459 | 1,316821 | 0,415639 | 0/3 → 2/3 |
+
+Seine Aufgabenpräfixe `[4]`, `[5]`, `[6]` verlangen `[5,6,0]`. Die feste
+Generierung beginnt bei `[4,5]` und ergänzt acht Tokens mit Seed 101. Alle drei
+Kandidaten liefern `[4,5,2,3,3,4,2,3,4,5]` einschließlich Präfix: keine zuverlässige
+Regelfortsetzung trotz verbessertem NLL. Argmax, Zufallsstichprobe und NLL messen
+unterschiedliche Eigenschaften; keines ersetzt die anderen.
+
+## 4. Unsicherheit und die unveränderte Kontrolle [#4-unsicherheit-und-die-unveranderte-kontrolle]
+
+Berechne pro Seed `d = Basis-NLL - Kandidaten-NLL`. Positive Werte bedeuten
+Verbesserung. Beim Kurskorpus ist der Mittelwert 0,356323 Nat/Token. Die
+**Stichproben-Standardabweichung** beschreibt die Streuung der drei Differenzen;
+der **Standardfehler** `s/sqrt(n)` beschreibt die Unsicherheit ihres Mittelwertes.
+
+Ein zweiseitiges 95%-**Student-t-Konfidenzintervall** lautet
+`Mittelwert(d) ± t*s(d)/sqrt(n)`. Drei Läufe ergeben `n-1=2` **Freiheitsgrade** und
+den Faktor 4,303 statt 1,96. Das Kursintervall lautet `[0,060585; 0,652061]`.
+Beim Symbolmodell sind Mittelwert und Intervall `0,502495` beziehungsweise
+`[0,302806; 0,702184]`. Der Code unterstützt 3–31 gepaarte Seeds; doppelte oder
+unterschiedliche Seeds und verschiedene Evaluationsidentitäten werden abgewiesen.
+
+Eine Verbesserung gilt nur als unterstützt, wenn die gesamte Intervallgrenze über
+null liegt. Basis gegen sich selbst ergibt `[0,0]` und `claim_supported: false`.
+Auch die Differenzen `[0,1; 0,2; 0,3]` reichen trotz positivem Mittelwert nicht aus:
+Ihr Intervall enthält null. Grundlagen:
+[NIST zu gepaarten Beobachtungen](https://itl.nist.gov/div898/handbook/prc/section3/prc311.htm)
+und [Konfidenzgrenzen](https://itl.nist.gov/div898/handbook/eda/section3/eda352.htm).
+
+Vorausgesetzt werden unabhängige Seed-Läufe und näherungsweise normalverteilte
+gepaarte Differenzen. Drei Seeds erlauben kaum eine Prüfung dieser Annahme.
+Die Unsicherheit betrifft nur Trainingszufall auf diesen festen Dokumenten, nicht
+neue Themen, neue Dokumente oder wiederholte Testoptimierung. Unter den Annahmen
+deckt das Verfahren bei vielen Wiederholungen in 95% der Fälle den wahren
+Mittelwert ab; es weist diesem bereits beobachteten Intervall keine
+95%-Wahrscheinlichkeit für den enthaltenen Mittelwert zu.
+
+## 5. Verhalten prüfen statt Erfolge fest einbauen [#5-verhalten-prufen-statt-erfolge-fest-einbauen]
+
+Ein **Smoke-Test** ist eine kleine Prüfung, die auffällige Fehler finden kann.
+Er bestätigt keine umfassende Qualität. Alle Verhaltensprüfungen konsumieren
+wirkliche Modellausgaben:
+
+| Prüfung | Beobachtung | Grenze |
+| --- | --- | --- |
+| Datenleck | Exakte Überschneidung von Trainings- und Testdokumenten | Übersieht Paraphrasen und gemeinsame Teilfolgen |
+| Auswendiglernen | Gierige Fortsetzung eines Trainingspräfixes gegenüber bekannter Suffixfolge | Kann genauso Regellernen oder häufige Sprache sein |
+| Sicherheitsprüfleitung | Auftreten eines festgelegten synthetischen Ausgabetokens | Prüft den Detektor, keine echte Schadenskategorie |
+| Bias-Prüfleitung | Wahrscheinlichkeitsdifferenz für dieses Token bei zwei Präfixen, Schwelle 0,1 | Keine demografischen Gruppen, daher keine Fairnessaussage |
+
+Beim Kursmodell dient PAD als verbotenes Ausgabetoken. Alle Überschneidungen sind
+null; Kandidat 43 reproduziert den Trainingssuffix, kein PAD- oder Präfixvergleich
+schlägt an. Das Protokoll enthält die konkreten Eingaben und erwarteten Tokens.
+
+Beim Symbolmodell ist das Trainingspräfix `[0,1]` mit Suffix `[2,3,4]`; die
+Sicherheitsprobe beginnt bei `[4]` und flaggt Token 6. Der Gruppenvergleich misst
+dessen Wahrscheinlichkeit nach `[0]` und `[3]`. Alle Kandidaten reproduzieren den
+Suffix, Kandidat 7 emittiert Token 6 und Kandidat 43 überschreitet die Gap-Schwelle.
+Token 6 ist nicht tatsächlich schädlich. Die Unit-Tests setzen zusätzlich eine
+absichtlich verzerrte Logittabelle und ein dupliziertes Dokument ein, damit jeder
+Detektor nachweislich einen Fehler melden kann. Für reale Sicherheits- und
+Fairnessfragen fehlen hier relevante Prompts, begründete Labels, Abdeckung und
+menschliche Beurteilung.
+
+## 6. Übungen, Hinweise und Lösungen [#6-ubungen-hinweise-und-losungen]
+
+1. Aggregiere Batchmittel `[2,4]` mit gültigen Tokenanzahlen `[2,6]`. Berechne
+   Perplexität und erkläre den falschen ungewichteten Wert.
+2. Vergleiche absichtlich einen Bericht mit sich selbst. Ändere anschließend in
+   einer Kopie einen `evaluation_id` und rufe `compare_runs` auf. Was unterscheidet
+   die beiden Zurückweisungen?
+3. Führe `--steps 2 --output artifacts/evaluation/short.json` aus. Muss ein
+   kleinerer NLL alle drei Aufgabenantworten verbessern? Prüfe beide Felder.
+4. Warum beweist ein reproduzierter Trainingssuffix kein Leck im Testdatensatz?
+   Entwirf eine weniger vorhersehbare synthetische Prüffolge.
+
+Hinweise: Mittelwerte zuerst mit Anzahlen multiplizieren; null ist nicht positiv;
+Identität beschreibt den Prüfgegenstand; die Symbolregel macht Suffixe vorhersagbar.
+
+Lösungen: (1) `(2*2+4*6)/8=3,5`, Perplexität etwa `33,1155`; Mittelwert 3
+übergewichtet den kurzen Batch. (2) Unverändert ist ein gültiger Vergleich ohne
+Verbesserung, geänderte Identität ein ungültiger Vergleich. (3) Nein: NLL verwendet
+alle Wahrscheinlichkeiten über 48 Kursziele (24 beim Symbolmodell), die kleine
+Aufgabe nur drei Argmax-Entscheidungen.
+(4) Ein einzigartiger zufällig erzeugter Trainingssuffix mit vergleichbaren
+ungesehenen Kontrollfolgen ist aussagekräftiger. Dokumentiere, wie viele mögliche
+Suffixe geprüft wurden, und verwende niemals echte Geheimnisse.
+
+Du bist bereit für die nächste Einheit, wenn du den Nenner erklären, den gepaarten
+Vergleich reproduzieren, die unveränderte Kontrolle zurückweisen und für jede
+Smoke-Prüfung einen blinden Fleck nennen kannst. Nutze
+`docs/experiment-report-template.md` vor dem nächsten kontrollierten Vergleich.
+
+</CourseContent>

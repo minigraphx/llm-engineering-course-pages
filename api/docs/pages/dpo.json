@@ -1,0 +1,11 @@
+{
+  "contentType": "doc",
+  "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/dpo.json",
+  "lastModified": null,
+  "locale": "en",
+  "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/dpo.md",
+  "route": "/dpo",
+  "title": "M5 — DPO and the small RLHF bridge",
+  "url": "https://minigraphx.github.io/llm-engineering-course-pages/dpo",
+  "markdown": "---\ntitle: \"M5 — DPO and the small RLHF bridge\"\nsidebar:\n  label: \"M5 — DPO\"\n---\n\n<span id=\"m5-dpo-and-the-small-rlhf-bridge\" />\n\n\nDirect Preference Optimization (DPO) learns from a chosen/rejected pair while a\nfrozen reference policy supplies a relative baseline. For one pair, the loss is\n`-log sigmoid(beta * ((log p(chosen)-log p(rejected)) - reference_margin))`.\n`response_log_probs` sums only unmasked response tokens; prompt and padding labels\nare `-100`.\n\nThe lesson's finite-action bridge makes the other pieces visible: a Bradley–Terry\nreward loss, categorical KL to the reference and PPO's clipped surrogate. The\nexample is a contextual bandit, not token-by-token production RLHF.\n\n```bash\n.venv/bin/python examples/run_alignment.py --dpo-steps 80 --ppo-steps 60\n.venv/bin/python examples/compare_dpo_reference.py\n```\n\nThe report compares DPO with a reference implementation from pinned TRL 0.26.1:\nloss and policy gradients match to zero at the recorded precision. The PPO\ndemonstration plants a shortcut in the reward model: naive PPO raises proxy reward\nbut lowers true quality and raises hack rate; KL-controlled PPO improves the true\nquality on this tiny action table. This is a teaching result, not a general safety\nclaim.\n\n### Exercise [#exercise]\n\nIf the chosen and rejected policy margins equal the reference margin, what is the\nDPO loss? Why must reference tensors be detached?\n\n<details>\n<summary>Reference answer</summary>\n\nThe loss is `log(2)`. Detaching keeps the reference policy fixed so gradients\nupdate only the policy being trained.\n\n\n</details>\n\nCheckpoint: compute one response log-probability sum, identify the clipped PPO\nratio and explain proxy reward versus task success.\n"
+}

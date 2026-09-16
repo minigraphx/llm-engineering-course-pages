@@ -1,0 +1,56 @@
+---
+title: "Datenrichtlinie des Kurses"
+sidebar:
+  label: "Datenrichtlinie"
+---
+
+<CourseContent>
+
+<span id="datenrichtlinie-des-kurses" />
+
+
+[Kursstart](/llm-engineering-course-pages/de/) · [Datenqualitätslab](/llm-engineering-course-pages/de/data-quality)
+
+Der vollständige Kurs muss ohne eigene Daten der Lernenden durchführbar sein.
+
+## Geplante Datenprofile [#geplante-datenprofile]
+
+| Profil | Ungefähre Größe | Zweck |
+| --- | --- | --- |
+| Starter | 5–20 MB | CPU-Übungen und Smoke-Tests |
+| Local | 100–500 MB | reguläres lokales Training |
+| Extended | 1–5 GB | optionale Skalierungsübungen |
+
+Diese Größen gehören zu M1A und sind noch nicht bereitgestellt. Aktuell gibt es
+den 596-Byte-Korpus von Einheit 0, den mehrsprachigen BPE-Generator und das
+synthetische Datenqualitätsinventar. M2/M3 nutzen diese kleinen Kursbeispiele;
+für ihren Trainingspfad braucht es keinen Download und keine eigenen Daten.
+Der optionale produktive BPE-Vergleich lädt beim ersten Aufruf seine öffentliche
+`tiktoken`-Tabelle herunter.
+
+## Erforderliche Metadaten [#erforderliche-metadaten]
+
+Jedes veröffentlichte Datenpaket braucht Data Card, Schema, Herkunft oder
+Generator, Lizenz- und Quellenmanifest, stabile Splits, Hashes, Version,
+Generator-Seed und Qualitätsberichte. Feste Generatoren benötigen keinen
+Zufallsseed; Shuffle- und Trainingsseeds werden separat festgehalten.
+
+## Gold-Evaluation getrennt halten [#gold-evaluation-getrennt-halten]
+
+Der unabhängige finale Goldtest darf weder ins Training noch in synthetische
+Generatorprompts, Few-shot-Beispiele oder die Hyperparameterauswahl eingehen.
+Die winzigen M2/M3-Tests ersetzen kein menschlich geprüftes Firmen-Goldset.
+
+## Grenze des Repositorys [#grenze-des-repositorys]
+
+Manifeste, Schemas, Generatoren und kleine handgepflegte Fixtures gehören ins
+Git. Heruntergeladene Daten, erzeugte Korpora, Gewichte und Trainingsartefakte
+bleiben außerhalb der Versionskontrolle. Einheit 0 erzeugt ihren CC0-Korpus und
+Checkpoint unter `artifacts/unit0/` und prüft SHA-256.
+
+Das [Datenqualitätslab](/llm-engineering-course-pages/de/data-quality) prüft Provenienz, Duplikate, erfundene
+sensible/problematische Marker und Split-Kontamination. Es misst eine durch
+Leakage irreführende Verbesserung. Manifeste stehen unter `datasets/`, die Data
+Cards unter `docs/data-cards/`. Tests erzeugen Inhalte neu und prüfen ihre Hashes.
+
+</CourseContent>

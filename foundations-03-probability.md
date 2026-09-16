@@ -1,0 +1,77 @@
+---
+title: "F03 — Probability, logits, and loss"
+sidebar:
+  label: "F03 — Probability & loss"
+---
+
+<span id="f03-probability-logits-and-loss" />
+
+
+[← F02](/llm-engineering-course-pages/foundations-02-shapes) · [Course home](/llm-engineering-course-pages/) · [→ F04](/llm-engineering-course-pages/foundations-04-neuron)
+
+## Learning outcome [#learning-outcome]
+
+You will convert logits to probabilities stably, calculate one cross-entropy
+by hand, and show how confidence changes the loss.
+
+## The numbers behind the notation [#the-numbers-behind-the-notation]
+
+A probability lies between 0 and 1; mutually exclusive next-token alternatives
+sum to 1. Logits are arbitrary real scores, not probabilities. `exp(x)` means
+`e` (approximately 2.71828) raised to `x`; it turns any finite score into a
+positive number. Dividing by the sum makes the resulting probabilities add to 1.
+`log` here means the natural logarithm, the inverse of `exp`.
+
+For a true token with probability 1, `-log(1)=0`. At probability 0.5 the penalty
+is about 0.693; at 0.25 it is 1.386. Halving that probability adds the same 0.693
+penalty. A batch loss averages these penalties over its valid targets. A
+**class index** is the integer identifying the correct alternative, starting at 0.
+
+## From scores to probabilities [#from-scores-to-probabilities]
+
+For logits `[2, 0]`, subtract the maximum before exponentiating:
+
+```text
+softmax([2, 0]) = [exp(0), exp(-2)] / (exp(0) + exp(-2))
+                 = [0.880797, 0.119203]
+```
+
+Subtracting 2 changes no probability but prevents overflow. Adding 10,000 to
+both original logits also changes no probability. Verify shape `[1,2]`, row sum
+1, and finite values with `llm_course.stable_softmax`.
+
+## Cross-entropy is a visible penalty [#cross-entropy-is-a-visible-penalty]
+
+For target class 0, the loss is
+`-log(0.880797) = 0.126928`. For target class 1 it is
+`-log(0.119203) = 2.126928`. The same scores therefore produce a small penalty
+when correct and a much larger penalty when confidently wrong.
+
+```
+from llm_course import cross_entropy_from_logits
+
+good = cross_entropy_from_logits([[2.0, 0.0]], [0])
+wrong = cross_entropy_from_logits([[2.0, 0.0]], [1])
+assert abs(good - 0.126928) < 1e-6
+assert wrong > good
+```
+
+## Build and break [#build-and-break]
+
+Implement stable softmax and batched cross-entropy in NumPy before reading the
+reference functions. Assert logits `[batch, classes]` and targets `[batch]`.
+Break stability by exponentiating `[1000, 1001]` directly; record the warning or
+non-finite value, then restore max subtraction.
+
+## Completion evidence [#completion-evidence]
+
+- hand calculation and code agree within `1e-6`;
+- each probability row sums to one;
+- adding a common constant leaves probabilities unchanged;
+- invalid class indices and mismatched shapes fail clearly.
+
+## What's next [#whats-next]
+
+Continue with [F04 — Neuron and gradient descent](/llm-engineering-course-pages/foundations-04-neuron).
+
+[← F02](/llm-engineering-course-pages/foundations-02-shapes) · [→ F04](/llm-engineering-course-pages/foundations-04-neuron)

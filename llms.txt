@@ -1,26 +1,96 @@
-# LLM Engineering · Pilot
+# LLM Engineering Course
 
-> Unit 0 · Attention · SFT / LoRA · Mini-GPT core gate
+> Understand, build, train, evaluate, align, and serve language models
 
 ## Docs
 
-- [Learn by tracing the numbers](https://minigraphx.github.io/llm-engineering-course-pages): Four complete lessons, setup, and two languages. One small model at a time.
-- [Unit 0 — First Tiny-LM Run](https://minigraphx.github.io/llm-engineering-course-pages/unit-00)
-- [T04 — Self-attention as a number experiment](https://minigraphx.github.io/llm-engineering-course-pages/attention)
-- [SFT and LoRA: teach a response, preserve a base](https://minigraphx.github.io/llm-engineering-course-pages/sft-lora)
-- [M2 core gate: code, diagnose, explain](https://minigraphx.github.io/llm-engineering-course-pages/mini-gpt-gate)
+- [LLM Engineering Course](https://minigraphx.github.io/llm-engineering-course-pages)
 - [Setup — from a fresh computer to the first run](https://minigraphx.github.io/llm-engineering-course-pages/setup)
+- [Your route through the course](https://minigraphx.github.io/llm-engineering-course-pages/learning-guide)
+
+## Course
+
+- [Unit 0 — First Tiny-LM Run](https://minigraphx.github.io/llm-engineering-course-pages/unit-00)
+- [Unit 0 troubleshooting](https://minigraphx.github.io/llm-engineering-course-pages/unit-00-troubleshooting)
+- [Diagnostic and learning path](https://minigraphx.github.io/llm-engineering-course-pages/diagnostic)
+- [F01 — Python and NumPy](https://minigraphx.github.io/llm-engineering-course-pages/foundations-01-python-numpy)
+- [F02 — Tensors and shapes](https://minigraphx.github.io/llm-engineering-course-pages/foundations-02-shapes)
+- [F03 — Probability, logits, and loss](https://minigraphx.github.io/llm-engineering-course-pages/foundations-03-probability)
+- [F04 — Neuron and gradient descent](https://minigraphx.github.io/llm-engineering-course-pages/foundations-04-neuron)
+- [F05 — MLP, backpropagation, and tiny autograd](https://minigraphx.github.io/llm-engineering-course-pages/foundations-05-mlp-autograd)
+- [F06 — PyTorch translation and foundations checkpoint](https://minigraphx.github.io/llm-engineering-course-pages/foundations-06-pytorch-checkpoint)
+- [B01 — Godot-RL neural-foundations bridge](https://minigraphx.github.io/llm-engineering-course-pages/foundations-godot-rl-bridge)
+- [T01 — Bigram language-model baseline](https://minigraphx.github.io/llm-engineering-course-pages/bigram-baseline)
+- [T02 — Byte-level BPE tokenizer from scratch](https://minigraphx.github.io/llm-engineering-course-pages/bpe-tokenizer)
+- [T03 — Data pipeline & embeddings](https://minigraphx.github.io/llm-engineering-course-pages/data-pipeline)
+- [T04 — Self-attention as a number experiment](https://minigraphx.github.io/llm-engineering-course-pages/attention)
+- [M2: assemble a tiny decoder](https://minigraphx.github.io/llm-engineering-course-pages/mini-gpt)
+- [M2 core gate: code, diagnose, explain](https://minigraphx.github.io/llm-engineering-course-pages/mini-gpt-gate)
+- [T05 — Reproducible pretraining](https://minigraphx.github.io/llm-engineering-course-pages/pretraining)
+- [E02 — Data quality and provenance](https://minigraphx.github.io/llm-engineering-course-pages/data-quality)
+- [Evaluation: make a claim the evidence can support](https://minigraphx.github.io/llm-engineering-course-pages/evaluation)
+- [Profiling: connect the model to a resource budget](https://minigraphx.github.io/llm-engineering-course-pages/profiling)
+- [C01 — Turn a company problem into a model decision](https://minigraphx.github.io/llm-engineering-course-pages/company-strategy)
+- [M4 — Auditable company data](https://minigraphx.github.io/llm-engineering-course-pages/company-data)
+- [M4 — Protected evaluation](https://minigraphx.github.io/llm-engineering-course-pages/company-evaluation)
+- [M4 — Continued pretraining without losing the baseline](https://minigraphx.github.io/llm-engineering-course-pages/continued-pretraining)
+- [SFT and LoRA: teach a response, preserve a base](https://minigraphx.github.io/llm-engineering-course-pages/sft-lora)
+- [Choose an adaptation with evidence](https://minigraphx.github.io/llm-engineering-course-pages/adaptation-comparison)
+- [M5 — DPO and the small RLHF bridge](https://minigraphx.github.io/llm-engineering-course-pages/dpo)
+- [M5 — RLHF bridge: inspect the failure mode](https://minigraphx.github.io/llm-engineering-course-pages/rlhf-bridge)
+- [Capstone — From requirement to a reversible company model](https://minigraphx.github.io/llm-engineering-course-pages/company-capstone)
+
+## Reference
+
+- [Glossary](https://minigraphx.github.io/llm-engineering-course-pages/glossary)
+- [Hardware, time, and cloud safety](https://minigraphx.github.io/llm-engineering-course-pages/hardware)
+- [Course data policy](https://minigraphx.github.io/llm-engineering-course-pages/data-policy)
 
 ## Deutsch
 
 ### Docs
 
-- [Lernen, indem du die Zahlen nachvollziehst](https://minigraphx.github.io/llm-engineering-course-pages/de): Vier vollständige Lektionen, Einrichtung und zwei Sprachen. Ein kleines Modell nach dem anderen.
-- [Einheit 0 — Erster Tiny-LM-Lauf](https://minigraphx.github.io/llm-engineering-course-pages/de/unit-00)
-- [T04 — Self-Attention als Zahlenexperiment](https://minigraphx.github.io/llm-engineering-course-pages/de/attention)
-- [SFT und LoRA: Antworten lernen, Basismodell erhalten](https://minigraphx.github.io/llm-engineering-course-pages/de/sft-lora)
-- [M2-Kernprüfung: programmieren, Fehler finden, erklären](https://minigraphx.github.io/llm-engineering-course-pages/de/mini-gpt-gate)
+- [LLM-Engineering-Kurs](https://minigraphx.github.io/llm-engineering-course-pages/de)
 - [Einrichtung — vom frischen Computer zum ersten Lauf](https://minigraphx.github.io/llm-engineering-course-pages/de/setup)
+- [Dein Weg durch den Kurs](https://minigraphx.github.io/llm-engineering-course-pages/de/learning-guide)
+
+### Kurs
+
+- [Einheit 0 — Erster Tiny-LM-Lauf](https://minigraphx.github.io/llm-engineering-course-pages/de/unit-00)
+- [Fehlerbehebung für Einheit 0](https://minigraphx.github.io/llm-engineering-course-pages/de/unit-00-troubleshooting)
+- [Diagnose und Lernpfad](https://minigraphx.github.io/llm-engineering-course-pages/de/diagnostic)
+- [F01 — Python und NumPy](https://minigraphx.github.io/llm-engineering-course-pages/de/foundations-01-python-numpy)
+- [F02 — Tensoren und Shapes](https://minigraphx.github.io/llm-engineering-course-pages/de/foundations-02-shapes)
+- [F03 — Wahrscheinlichkeit, Logits und Loss](https://minigraphx.github.io/llm-engineering-course-pages/de/foundations-03-probability)
+- [F04 — Neuron und Gradient Descent](https://minigraphx.github.io/llm-engineering-course-pages/de/foundations-04-neuron)
+- [F05 — MLP, Backpropagation und kleines Autograd](https://minigraphx.github.io/llm-engineering-course-pages/de/foundations-05-mlp-autograd)
+- [F06 — PyTorch-Übersetzung und Grundlagen-Checkpoint](https://minigraphx.github.io/llm-engineering-course-pages/de/foundations-06-pytorch-checkpoint)
+- [B01 — Godot-RL-Brücke für Neural Foundations](https://minigraphx.github.io/llm-engineering-course-pages/de/foundations-godot-rl-bridge)
+- [T01 — Bigramm-Sprachmodell als Baseline](https://minigraphx.github.io/llm-engineering-course-pages/de/bigram-baseline)
+- [T02 — Byte-Level-BPE-Tokenizer von Grund auf](https://minigraphx.github.io/llm-engineering-course-pages/de/bpe-tokenizer)
+- [T03 — Datenpipeline & Embeddings](https://minigraphx.github.io/llm-engineering-course-pages/de/data-pipeline)
+- [T04 — Self-Attention als Zahlenexperiment](https://minigraphx.github.io/llm-engineering-course-pages/de/attention)
+- [M2: einen kleinen Decoder zusammensetzen](https://minigraphx.github.io/llm-engineering-course-pages/de/mini-gpt)
+- [M2-Kernprüfung: programmieren, Fehler finden, erklären](https://minigraphx.github.io/llm-engineering-course-pages/de/mini-gpt-gate)
+- [T05 — Reproduzierbares Vortraining](https://minigraphx.github.io/llm-engineering-course-pages/de/pretraining)
+- [E02 — Datenqualität und Provenienz](https://minigraphx.github.io/llm-engineering-course-pages/de/data-quality)
+- [Evaluation: Aussagen mit überprüfbarer Evidenz](https://minigraphx.github.io/llm-engineering-course-pages/de/evaluation)
+- [Profiling: vom Modell zum Ressourcenbudget](https://minigraphx.github.io/llm-engineering-course-pages/de/profiling)
+- [C01 — Vom Firmenproblem zur Modellentscheidung](https://minigraphx.github.io/llm-engineering-course-pages/de/company-strategy)
+- [M4 — Prüffähige Firmendaten](https://minigraphx.github.io/llm-engineering-course-pages/de/company-data)
+- [M4 — Geschützte Evaluation](https://minigraphx.github.io/llm-engineering-course-pages/de/company-evaluation)
+- [M4 — Continued Pretraining ohne Verlust der Baseline](https://minigraphx.github.io/llm-engineering-course-pages/de/continued-pretraining)
+- [SFT und LoRA: Antworten lernen, Basismodell erhalten](https://minigraphx.github.io/llm-engineering-course-pages/de/sft-lora)
+- [Anpassung anhand von Evidenz wählen](https://minigraphx.github.io/llm-engineering-course-pages/de/adaptation-comparison)
+- [M5 — DPO und die kleine RLHF-Brücke](https://minigraphx.github.io/llm-engineering-course-pages/de/dpo)
+- [M5 — RLHF-Brücke: Fehler sichtbar machen](https://minigraphx.github.io/llm-engineering-course-pages/de/rlhf-bridge)
+- [Capstone — Von der Anforderung zum reversiblen Firmenmodell](https://minigraphx.github.io/llm-engineering-course-pages/de/company-capstone)
+
+### Referenz
+
+- [Glossar](https://minigraphx.github.io/llm-engineering-course-pages/de/glossary)
+- [Hardware, Zeit und Cloud-Sicherheit](https://minigraphx.github.io/llm-engineering-course-pages/de/hardware)
+- [Datenrichtlinie des Kurses](https://minigraphx.github.io/llm-engineering-course-pages/de/data-policy)
 
 ## Agent resources
 

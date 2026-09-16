@@ -1,0 +1,26 @@
+---
+title: "Capstone — Von der Anforderung zum reversiblen Firmenmodell"
+sidebar:
+  label: "Capstone — Firmenmodell"
+---
+
+<span id="capstone-von-der-anforderung-zum-reversiblen-firmenmodell" />
+
+
+Verwende nur versionierten Code, Manifeste und Baseline-Berichte. Keine echten
+Kundendaten verwenden und nicht auf den versiegelten Goldfällen tunen.
+
+1. Fünf Muss-/Kann-Anforderungen für Nordlicht Support formulieren.
+2. Snapshot, Hash und Kontaminationsbericht reproduzieren.
+3. Beide transparenten Baselines auf Entwicklungsfällen messen.
+4. Prompting/Retrieval, DAPT, Full SFT/LoRA und DPO anhand der Berichte vergleichen.
+5. Kandidaten erst nach Sicherheits-, Herkunfts- und Lokalitätsgates auswählen.
+6. Die versiegelte Prüfung mit einem Menschen durchführen und Korrekturen notieren.
+7. Monitoring, Rollback-Checkpoint und Verantwortliche für Alarme festlegen.
+
+Die Abgabe verknüpft jede Aussage mit Befehl, Hash, Bericht oder Prüfzeile und
+nennt zwei verworfene Alternativen. Das Modell schlägt nur eine Route vor;
+Zugriff, Secrets und Exporte erzwingt der Anwendungscode.
+
+Exit-Kriterium: Eine andere lernende Person kann die CPU-Rezepte aus einem frischen
+Checkout ausführen, jede Metrik erklären und den Rollback-Schritt benennen.

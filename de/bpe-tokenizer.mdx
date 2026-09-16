@@ -1,0 +1,195 @@
+---
+title: "T02 — Byte-Level-BPE-Tokenizer von Grund auf"
+sidebar:
+  label: "T02 — Byte-Level-BPE"
+---
+
+<CourseContent>
+
+<span id="t02-byte-level-bpe-tokenizer-von-grund-auf" />
+
+
+[← T01 Bigramm-Baseline](/llm-engineering-course-pages/de/bigram-baseline) · [Kursstart](/llm-engineering-course-pages/de/)
+
+## Lernziel [#lernziel]
+
+In 90–120 Minuten trainierst, encodierst und decodierst du mit deinem eigenen
+Byte-Level-Byte-Pair-Encoding-Tokenizer. Du erhältst beliebigen Unicode, machst
+Sondertokens explizit, visualisierst Merge-Entscheidungen und Tokenlängen und
+vergleichst das kleine Kursvokabular mit einem produktiven Tokenizer. Eigene
+Daten, Cloud oder Beschleuniger sind nicht nötig.
+
+## Vorhersagen · Zeichen sind keine Bytes [#vorhersagen-zeichen-sind-keine-bytes]
+
+Sage die Anzahl UTF-8-Bytes für `A`, `ü`, `你` und `👩🏽‍💻` voraus. Prüfe dann:
+
+```
+for text in ("A", "ü", "你", "👩🏽‍💻"):
+    print(text, list(text.encode("utf-8")))
+```
+
+Ein Python-String enthält Unicode-Text; Speicher und Modelle benötigen Zahlen.
+UTF-8 bildet jeden gültigen String auf Bytes `0..255` ab. BPE beginnt mit diesen
+256 Byte-IDs und lernt größere Stücke. Daher benötigt gewöhnlicher Text niemals
+ein Unknown-Token, auch wenn Sprache oder Emoji im Training nicht vorkamen.
+
+Starte die vollständige Referenz:
+
+```
+python examples/run_tokenizer_lab.py
+```
+
+Sie schreibt nur lokal ignorierte Nachweise nach `artifacts/tokenizer/`:
+
+- `report.json` — Korpus-Hash, Vokabular, Merge-Trace, Tokenstücke und Längen;
+- `merge-trace.svg` — die ersten geordneten Merge-Entscheidungen;
+- `token-lengths.svg` — UTF-8-Bytes gegen Kurs- und Produktionstokenanzahl.
+
+## Verfolgen · Ein Merge mit konkreten Zahlen [#verfolgen-ein-merge-mit-konkreten-zahlen]
+
+Für `abababab` beginnt UTF-8 mit acht IDs:
+
+```
+97 98 97 98 97 98 97 98
+```
+
+Das Paar `(97,98)` kommt viermal vor. Merge es zur neuen ID `256`:
+
+```
+256 256 256 256
+```
+
+Nun hat das benachbarte Paar `(256,256)` Häufigkeit drei; die nicht überlappende
+Ersetzung von links nach rechts erzeugt zwei ID-`257`-Tokens. Paarzählung und
+Ersetzung sind bewusst getrennte Operationen.
+
+Im echten Lauf wiederholt `train_byte_bpe`:
+
+1. jedes benachbarte Paar der aktuellen Trainingssequenz zählen;
+2. höchste Häufigkeit wählen, Gleichstände über das kleinere ID-Paar lösen;
+3. nächste ID vergeben und nicht überlappende Vorkommen ersetzen;
+4. beim Vokabularbudget oder der Mindesthäufigkeit stoppen.
+
+Deterministischer Tie-Break, fester Korpusgenerator und SHA-256-Hash machen die
+Merge-Reihenfolge reproduzierbar.
+
+## Bauen · Encodieren und decodieren [#bauen-encodieren-und-decodieren]
+
+Das Referenzvokabular besitzt 300 IDs:
+
+| Bereich | Zweck |
+| --- | --- |
+| `0..255` | vollständiger Byte-Fallback |
+| `256..295` | 40 gelernte Merge-Tokens |
+| `296..299` | &lt;&#124;pad&#124;&gt;, &lt;&#124;bos&#124;&gt;, &lt;&#124;eos&#124;&gt;, &lt;&#124;unk&#124;&gt; |
+
+Encoding wandelt gewöhnlichen Text zuerst in UTF-8-Bytes um. Danach wird jeweils
+der verfügbare Merge mit dem frühesten Trainingsrang angewendet. Decoding
+expandiert Merge-IDs zu Bytes und führt einmal striktes UTF-8-Decoding aus.
+Prüfe die Invariante:
+
+```
+text = "Grüezi 你好 👩🏽‍💻 cafe\u0301"
+ids = tokenizer.encode(text)
+assert tokenizer.decode(ids) == text
+```
+
+Das zusammengesetzte `é` und `e` plus kombinierender Akzent haben verschiedene
+Bytefolgen. Der Tokenizer normalisiert keines davon still; beide roundtrippen.
+
+## Bauen · Kontrolltokens bewusst behandeln [#bauen-kontrolltokens-bewusst-behandeln]
+
+Registrierte Sondertokens werden nur bei expliziter Freigabe atomar:
+
+```
+ids = tokenizer.encode(
+    "<|bos|>hello<|eos|>",
+    allowed_special={"<|bos|>", "<|eos|>"},
+)
+```
+
+Ohne `allowed_special` ist derselbe sichtbare Text gewöhnlicher UTF-8-Inhalt.
+Diese Trennung verhindert, dass ein nicht vertrauenswürdiges Dokument unbemerkt
+zur Modellsteuerung wird. `<|unk|>` bleibt für Interoperabilität reserviert;
+gewöhnlicher Unicode erzeugt es dank Byte-Fallback nie.
+
+## Brechen · Den Zielkonflikt finden [#brechen-den-zielkonflikt-finden]
+
+Behalte Korpus und Mindesthäufigkeit fest und starte:
+
+```
+python examples/run_tokenizer_lab.py --vocabulary-size 280
+python examples/run_tokenizer_lab.py --vocabulary-size 340
+```
+
+Sage zuerst die Richtung voraus. Ein größeres Vokabular verkürzt meist bekannte,
+trainingsähnliche Sequenzen, vergrößert aber Embedding- und Output-Matrix des
+Modells. Bei Hidden Size `C` verursachen 60 zusätzliche Tokens `60 × C`
+Embedding-Parameter und ohne Weight Tying weitere `60 × C` Output-Parameter.
+
+Encode danach eine Schrift, die im Training fehlt. Die Tokenzahl kann sich der
+UTF-8-Bytezahl nähern, trotzdem gelingt Decoding. Das trennt Effizienz von OOV:
+Unbekannter Text kann ineffizient sein, ohne undarstellbar zu sein.
+
+## Messen · Mit einem produktiven Tokenizer vergleichen [#messen-mit-einem-produktiven-tokenizer-vergleichen]
+
+Das Lab importiert `tiktoken` erst nach dem Training deiner Implementierung und
+nutzt `cl100k_base` als Produktionsreferenz. Die Bibliothek implementiert oder
+validiert den Kurs-BPE-Algorithmus nicht.
+
+Mit Vokabular 300 liefert der Referenzlauf:
+
+| Evaluationstext | UTF-8-Bytes | Kurs-BPE | `cl100k_base` |
+| --- | ---: | ---: | ---: |
+| englischer Satz | 37 | 19 | 8 |
+| Deutsch/lateinische Akzente | 29 | 25 | 11 |
+| CJK und Emoji | 29 | 25 | 14 |
+| zusammengesetzte/getrennte Akzente | 37 | 29 | 11 |
+| **Gesamt** | **132** | **98** | **44** |
+
+Der Produktionstokenizer gewinnt bei der Länge, weil sein Vokabular viel größer
+ist und auf erheblich vielfältigeren Daten trainiert wurde. Der kleine
+Kurstokenizer bleibt wertvoll: Jeder Merge ist prüfbar, das vollständige
+Training passt in ein Modul und alle Eingaben roundtrippen weiterhin.
+
+Die versionierte [BPE-Baseline](https://github.com/minigraphx/llm-engineering-course/blob/main/docs/baselines/bpe-v1.md)
+enthält den exakten Hash und Abnahmevertrag.
+
+## Erklären · Die Engineering-Entscheidung treffen [#erklaren-die-engineering-entscheidung-treffen]
+
+Beantworte in deinen Labornotizen:
+
+1. Warum entfernt Byte-Fallback OOV-Fehler für gewöhnlichen Text?
+2. Warum kann ein OOV-freier Tokenizer trotzdem lange Sequenzen erzeugen?
+3. Welche Parametermatrizen wachsen mit dem Vokabular?
+4. Warum gehören Merge-Rang und Tie-Break zum Modellvertrag?
+5. Warum müssen Kontrolltokens von identischem Dokumenttext getrennt werden?
+6. Welche Vokabulargröße wählst du hier, und welcher Nachweis trägt die Wahl?
+
+## Abschluss-Gate [#abschluss-gate]
+
+Du bestehst, wenn alle Roundtrip- und Edge-Case-Tests erfolgreich sind und du
+den dreiseitigen Zielkonflikt zwischen Vokabulargröße, Sequenzlänge und
+OOV-Verhalten diskutieren kannst. Reiche ein:
+
+- dein `report.json` mit erwartetem Trainings-Hash;
+- beide SVG-Visualisierungen;
+- je einen Unicode- und Sondertoken-Roundtrip;
+- einen kontrollierten Vergleich 280 gegen 300 oder 340;
+- eine kurze Entscheidung mit Sequenzkosten und Embedding-/Output-Größe.
+
+Prüfe den Vertrag:
+
+```
+pytest tests/test_tokenizer.py
+```
+
+## Wie geht es weiter? [#wie-geht-es-weiter]
+
+Als Nächstes gelangt der Tokenizer in eine Streaming-Datenpipeline mit
+Manifesten, Kontaminationsprüfungen, deterministischem Shuffling, Padding-Masken
+und Token-Batches für das Training.
+
+[← T01 Bigramm-Baseline](/llm-engineering-course-pages/de/bigram-baseline) · [Kursstart](/llm-engineering-course-pages/de/)
+
+</CourseContent>

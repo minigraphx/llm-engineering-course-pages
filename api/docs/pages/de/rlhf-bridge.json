@@ -1,0 +1,11 @@
+{
+  "contentType": "doc",
+  "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/de/rlhf-bridge.json",
+  "lastModified": null,
+  "locale": "de",
+  "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de/rlhf-bridge.md",
+  "route": "/de/rlhf-bridge",
+  "title": "M5 — RLHF-Brücke: Fehler sichtbar machen",
+  "url": "https://minigraphx.github.io/llm-engineering-course-pages/de/rlhf-bridge",
+  "markdown": "---\ntitle: \"M5 — RLHF-Brücke: Fehler sichtbar machen\"\nsidebar:\n  label: \"M5 — RLHF-Brücke\"\n---\n\n<span id=\"m5-rlhf-brucke-fehler-sichtbar-machen\" />\n\n\nDie optionale Brücke friert eine Referenzpolicy ein, lernt ein Reward-Modell aus\nPräferenzpaaren, bestraft Abweichung per KL und aktualisiert eine endliche Policy\nmit PPO. Eine eingebaute Konfidenz-Abkürzung macht Reward-Hacking messbar.\n\nPrüfe nach dem Lauf Proxy-Reward, echte Qualität und Hackrate. Höherer Reward\nbedeutet nicht automatisch mehr Sicherheit. Kritisches Routing bleibt eine\nAnwendungsprüfung.\n\nNutze das CPU-Rezept aus [DPO](/llm-engineering-course-pages/de/dpo) und behalte bei fehlendem Accelerator\nden CPU-Fallback.\n\nCheckpoint: Nenne ein Rollback-Signal, etwa einen kritischen Sicherheitsfehler\noder steigende Hackrate, und die unveränderliche Referenz für Reproduktion.\n"
+}

@@ -1,0 +1,171 @@
+---
+title: "T01 — Bigramm-Sprachmodell als Baseline"
+sidebar:
+  label: "T01 — Bigramm-Baseline"
+---
+
+<span id="t01-bigramm-sprachmodell-als-baseline" />
+
+
+[← F06-Checkpoint](/llm-engineering-course-pages/de/foundations-06-pytorch-checkpoint) · [Kursstart](/llm-engineering-course-pages/de/)
+
+## Lernziel [#lernziel]
+
+In 75–90 Minuten baust und vergleichst du ein zählendes und ein neuronales
+Zeichen-Bigramm-Modell. Du verfolgst den vollständigen Next-Token-Trainingsloop,
+misst Negative Log-Likelihood auf getrennten Daten, samplest reproduzierbar und
+entscheidest anhand fester Nachweise, ob das Training die Baseline verbessert.
+Der mitgelieferte CC0-Korpus entsteht lokal; eigene Daten sind nicht nötig.
+
+## Vorhersagen · Was kann ein Zeichen wissen? [#vorhersagen-was-kann-ein-zeichen-wissen]
+
+Ein Bigramm sieht für die Vorhersage nur das aktuelle Zeichen. Sage vor dem
+Lauf voraus:
+
+1. welche Tensor-Shapes aus einem Batch `[B,T]` entstehen;
+2. ob eine gelernte Tabelle die Gleichverteilung `1/33` schlagen kann;
+3. warum sie sich trotzdem nicht an das Wort vor dem aktuellen Zeichen erinnert.
+
+Starte dann die CPU-Referenz:
+
+```
+python examples/run_bigram_baseline.py --device cpu
+```
+
+Bewahre die JSON-Ausgabe auf. Sie enthält Konfiguration, Split-Hashes, Losses,
+feste Prompts, Wahrscheinlichkeiten und Seed-Samples für beide Modelle.
+
+## Verfolgen · Vor den Fenstern splitten [#verfolgen-vor-den-fenstern-splitten]
+
+`split_corpus` mischt 16 eindeutige Zeilen mit Seed 7 und erzeugt 12 Trainings-,
+2 Validierungs- und 2 Testzeilen. Erst danach erzeugt
+`CharacterWindowDataset` überlappende Next-Character-Beispiele. So gelangen
+nahezu identische Fenster derselben Zeile nicht in mehrere Partitionen.
+
+Bei `block_size=16` und `batch_size=8` gilt:
+
+| Wert | Shape | Bedeutung |
+| --- | --- | --- |
+| `inputs` | `[8,16]` | IDs der aktuellen Zeichen |
+| `targets` | `[8,16]` | dieselben Fenster, um eins verschoben |
+| `logits` | `[8,16,33]` | ein Score je möglichem Folgezeichen |
+
+Mit dem Validierungssplit wählst du Experimente. Der Testsplit wird nur für den
+Abschlussbericht gelesen; wiederholtes Tuning darauf würde ihn zu
+Trainingsinformation machen.
+
+## Bauen · Wahrscheinlichkeiten zählen [#bauen-wahrscheinlichkeiten-zahlen]
+
+Das Count-Modell zählt, wie oft Zielzeichen `y` auf Quellzeichen `x` folgt.
+Additive Glättung gibt jedem Übergang eine Wahrscheinlichkeit größer null:
+
+$$
+P(y\mid x)=\frac{N(x,y)+\alpha}{\sum_z N(x,z)+\alpha V}
+$$
+
+Hier sind `V=33` und `alpha=0.25`. Untersuche `fit_count_bigram`: Aus Counts
+werden Wahrscheinlichkeiten und daraus feste Log-Wahrscheinlichkeiten als
+Übergangslogits. Dieses Modell besitzt weder Optimizer noch Gradient Descent.
+
+Prüfe mit `bigram_probabilities(model, "the ")`, dass alle 33 Werte endlich,
+nicht negativ und zusammen eins sind.
+
+## Bauen · Dieselbe Tabelle mit Gradienten lernen [#bauen-dieselbe-tabelle-mit-gradienten-lernen]
+
+`TinyBigramLM` enthält eine trainierbare Übergangstabelle `[33,33]`. Eine
+Input-ID wählt eine Zeile. Cross-Entropy vergleicht sie mit der echten nächsten
+ID.
+
+Für Targets $y_1,\ldots,y_n$ ist die mittlere Negative Log-Likelihood
+
+$$
+\mathrm{NLL}=-\frac{1}{n}\sum_i \log P(y_i\mid x_i).
+$$
+
+Bei einem One-Hot-Target ist das genau Cross-Entropy. Verfolge in
+`train_neural_bigram` einen Durchlauf:
+
+1. Seed-Batch laden und auf das gewählte Device verschieben;
+2. alte Gradienten löschen;
+3. Logits und Cross-Entropy berechnen;
+4. Backward ausführen und nicht-endliche Gradienten abweisen;
+5. Parameter mit AdamW aktualisieren;
+6. Validierungs-Loss ohne Gradienten messen.
+
+Erkläre, was schiefgeht, wenn Schritt 2 nur einmal vor dem Loop läuft.
+
+## Brechen · Schwache Evidenz sichtbar machen [#brechen-schwache-evidenz-sichtbar-machen]
+
+Starte absichtlich mit zu wenig Training:
+
+```
+python examples/run_bigram_baseline.py --device cpu --steps 1
+```
+
+Ein einzelner Batch belegt keine Generalisierung. Auch ein fallender Batch-Loss
+allein genügt nicht. Lasse Split, Seed und Prompts unverändert und stelle 60
+Schritte wieder her:
+
+```
+python examples/run_bigram_baseline.py --device cpu --steps 60
+```
+
+Ändere jetzt nur die Lernrate auf `0.02`. Sage das Ergebnis voraus, führe es aus
+und notiere, ob der Validierungs-Loss — nicht nur der Trainings-Loss — besser
+wurde.
+
+## Messen · Vergleichbare Läufe vergleichen [#messen-vergleichbare-laufe-vergleichen]
+
+Die Referenz nutzt Seed 7, 60 Schritte, Lernrate 0.2, `block_size=16` und
+`batch_size=8`. In der Kursumgebung erreicht das Count-Modell ungefähr `1.861`
+Validierungs-Loss; das neuronale Modell verbessert sich von etwa `3.497` auf
+`1.547` und schlägt damit sowohl seinen Start als auch die Count-Baseline.
+Kleine Floating-Point-Abweichungen sind erlaubt, die Richtung und der
+Nachweisvertrag nicht.
+
+Die Prompts `"the "`, `"a "` und `"each "` bleiben fest. Jeder Bericht enthält
+die drei wahrscheinlichsten Folgezeichen und ein CPU-Sample mit Seed. Der Text
+wirkt lokal plausibel, bleibt aber zusammenhanglos, weil das Bigramm nur ein
+Zeichen Kontext besitzt. Das ist ein Ergebnis, kein Sampling-Fehler.
+
+Die versionierte [Referenz-Baseline](https://github.com/minigraphx/llm-engineering-course/blob/main/docs/baselines/bigram-v1.md)
+enthält Hashes, Grenzwerte und den Reproduktionsbefehl.
+
+## Erklären · Absatz für deine Model Card [#erklaren-absatz-fur-deine-model-card]
+
+Schreibe einen Absatz mit:
+
+- Shapes von Input, Target, Parametern und Logits;
+- wie Counts und Gradient Descent dieselbe bedingte Verteilung schätzen;
+- warum Cross-Entropy hier Negative Log-Likelihood ist;
+- welcher Split der Modellauswahl und welcher dem Abschlussbericht dient;
+- dem gemessenen Validierungsvergleich;
+- der Grenze durch nur ein Zeichen Kontext.
+
+## Abschluss-Gate [#abschluss-gate]
+
+Du bestehst, wenn du den vollständigen Loop Daten → Tokens → Batches → Logits →
+Wahrscheinlichkeiten → Loss → Gradienten → Update → Validierung → Sampling ohne
+Diagramm wiedergeben kannst und dein Bericht belegt, ob eine kontrollierte
+Änderung die feste Baseline verbessert hat. Erforderlich sind:
+
+- disjunkte Split-Anzahlen und SHA-256-Hashes;
+- geprüfte Shapes `[B,T]` und `[B,T,V]`;
+- endliche, normierte Wahrscheinlichkeiten;
+- anfängliche, finale, Validierungs- und Test-Losses;
+- alle drei festen Prompts mit demselben Seed;
+- ein Fazit anhand des Validierungs-Losses, einschließlich eines Versuchs ohne Nutzen.
+
+Prüfe den Vertrag automatisiert:
+
+```
+pytest tests/test_bigram.py
+```
+
+## Wie geht es weiter? [#wie-geht-es-weiter]
+
+Das Zeichen-Vokabular ist fest und kann keine nützlichen Subwörter darstellen.
+Weiter mit dem [Byte-Level-BPE-Tokenizer](/llm-engineering-course-pages/de/bpe-tokenizer): Dort misst du, wie
+Vokabular und Sequenzlänge dasselbe Modellierungsproblem verändern.
+
+[← F06-Checkpoint](/llm-engineering-course-pages/de/foundations-06-pytorch-checkpoint) · [→ BPE-Tokenizer](/llm-engineering-course-pages/de/bpe-tokenizer)

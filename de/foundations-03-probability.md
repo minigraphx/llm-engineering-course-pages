@@ -1,0 +1,78 @@
+---
+title: "F03 — Wahrscheinlichkeit, Logits und Loss"
+sidebar:
+  label: "F03 — Wahrscheinlichkeit & Loss"
+---
+
+<span id="f03-wahrscheinlichkeit-logits-und-loss" />
+
+
+[← F02](/llm-engineering-course-pages/de/foundations-02-shapes) · [Kursstart](/llm-engineering-course-pages/de/) · [→ F04](/llm-engineering-course-pages/de/foundations-04-neuron)
+
+## Lernziel [#lernziel]
+
+Du wandelst Logits numerisch stabil in Wahrscheinlichkeiten um, berechnest eine
+Cross-Entropy von Hand und zeigst die Wirkung von Zuversicht auf den Loss.
+
+## Die Zahlen hinter der Schreibweise [#die-zahlen-hinter-der-schreibweise]
+
+Eine Wahrscheinlichkeit liegt zwischen 0 und 1; einander ausschließende nächste
+Tokens haben zusammen Wahrscheinlichkeit 1. Logits sind beliebige reelle Scores,
+keine Wahrscheinlichkeiten. `exp(x)` bedeutet `e` (etwa 2.71828) hoch `x` und
+macht jeden endlichen Score positiv. Division durch die Summe normiert die
+Wahrscheinlichkeiten auf Summe 1. `log` bezeichnet hier den natürlichen
+Logarithmus, also die Umkehrung von `exp`.
+
+Hat das wahre Token Wahrscheinlichkeit 1, gilt `-log(1)=0`. Bei 0.5 beträgt die
+Strafe etwa 0.693, bei 0.25 etwa 1.386. Halbieren fügt also jeweils dieselbe
+Strafe 0.693 hinzu. Der Batch-Loss mittelt diese Strafen über gültige Ziele.
+Ein **Klassenindex** ist die Ganzzahl der richtigen Alternative, beginnend bei 0.
+
+## Von Scores zu Wahrscheinlichkeiten [#von-scores-zu-wahrscheinlichkeiten]
+
+Ziehe für Logits `[2,0]` vor dem Exponenzieren das Maximum ab:
+
+```text
+softmax([2, 0]) = [exp(0), exp(-2)] / (exp(0) + exp(-2))
+                 = [0.880797, 0.119203]
+```
+
+Das Subtrahieren von 2 ändert keine Wahrscheinlichkeit, verhindert aber
+Overflow. Auch +10.000 auf beiden ursprünglichen Logits ändert nichts. Prüfe
+Shape `[1,2]`, Zeilensumme 1 und endliche Werte mit
+`llm_course.stable_softmax`.
+
+## Cross-Entropy als sichtbare Strafe [#cross-entropy-als-sichtbare-strafe]
+
+Für Zielklasse 0 ist der Loss `-log(0.880797)=0.126928`; für Zielklasse 1
+`-log(0.119203)=2.126928`. Dieselben Scores bestrafen also eine richtige
+Vorhersage wenig und eine selbstsichere falsche stark.
+
+```
+from llm_course import cross_entropy_from_logits
+
+good = cross_entropy_from_logits([[2.0, 0.0]], [0])
+wrong = cross_entropy_from_logits([[2.0, 0.0]], [1])
+assert abs(good - 0.126928) < 1e-6
+assert wrong > good
+```
+
+## Bauen und brechen [#bauen-und-brechen]
+
+Implementiere stabile Softmax und gebatchte Cross-Entropy in NumPy, bevor du
+die Referenz liest. Prüfe Logits `[Batch,Klassen]` und Targets `[Batch]`.
+Exponentiere `[1000,1001]` einmal direkt, protokolliere Warning oder nicht
+endlichen Wert und stelle die Max-Subtraktion wieder her.
+
+## Abschlussnachweis [#abschlussnachweis]
+
+- Handrechnung und Code stimmen bis `1e-6` überein;
+- jede Wahrscheinlichkeitszeile summiert sich zu eins;
+- eine gemeinsame Konstante ändert Wahrscheinlichkeiten nicht;
+- ungültige Klassen und Shapes scheitern verständlich.
+
+## Wie geht es weiter? [#wie-geht-es-weiter]
+
+Weiter mit [F04 — Neuron und Gradient Descent](/llm-engineering-course-pages/de/foundations-04-neuron).
+
+[← F02](/llm-engineering-course-pages/de/foundations-02-shapes) · [→ F04](/llm-engineering-course-pages/de/foundations-04-neuron)

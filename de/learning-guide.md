@@ -1,0 +1,81 @@
+---
+title: "Dein Weg durch den Kurs"
+sidebar:
+  label: "Lernleitfaden"
+---
+
+<span id="dein-weg-durch-den-kurs" />
+
+
+[← Einrichtung](/llm-engineering-course-pages/de/setup) · [Kursstart](/llm-engineering-course-pages/de/) · [Glossar](/llm-engineering-course-pages/de/glossary)
+
+Du brauchst keine Vorkenntnisse in Machine Learning, Analysis oder PyTorch.
+Du brauchst einen Computer, auf dem du Python installieren kannst, und Zeit für
+kleine eigene Programme. Ist Programmieren neu, bearbeite den Python-Einstieg
+in [F01](/llm-engineering-course-pages/de/foundations-01-python-numpy) in deinem Tempo. Einheit 0 ist ein
+geführter erster Erfolg; das gesamte Trainingssystem musst du dort noch nicht
+verstehen.
+
+## Wähle deinen Einstieg [#wahle-deinen-einstieg]
+
+| Ausgangspunkt | Lernweg |
+| --- | --- |
+| Neu in Programmierung und ML | Einrichtung → Einheit 0 → Diagnose → F01–F06 → T01–T03 → T04 → M2 → M3 |
+| Python-Erfahrung, neu in ML | Derselbe Weg; belege F01-Fähigkeiten vor dem Überspringen in der Diagnose. |
+| Erfahrung aus dem Godot-RL-Kurs | Einheit 0 → Diagnose → [B01-Brücke](/llm-engineering-course-pages/de/foundations-godot-rl-bridge) → fehlende Grundlagen → gemeinsames F06-Gate → derselbe Kernkurs. |
+
+Die [Diagnose](/llm-engineering-course-pages/de/diagnostic) ist keine Hürde. Eine unbeantwortete Frage bedeutet
+„Das lernst du als Nächstes“. Du kannst jederzeit die ganze Lektion wählen.
+
+## Was jede Stufe ergänzt [#was-jede-stufe-erganzt]
+
+| Stufe | Frage, die du danach beantworten kannst | Prüfung vor dem Weitergehen |
+| --- | --- | --- |
+| [Einheit 0](/llm-engineering-course-pages/de/unit-00) | Was ändert sich, wenn ich einen Score für das nächste Zeichen erhöhe? | Eigene Änderung vorhersagen, ausführen und erklären. |
+| [F01–F06](/llm-engineering-course-pages/de/foundations-01-python-numpy) | Wie berechnet ein Programm Fehler und verbessert seine Zahlen? | Shapes, numerischer Gradientencheck und PyTorch-Update. |
+| [T01 Bigramm](/llm-engineering-course-pages/de/bigram-baseline) | Kann das letzte Token das nächste vorhersagen? | Train/Validation-Trennung und Baselinevergleich erklären. |
+| [T02 Tokenizer](/llm-engineering-course-pages/de/bpe-tokenizer) | Wie wird Text verlustfrei zu Ganzzahlen? | Unicode-Roundtrip und einen Merge von Hand zeigen. |
+| [T03 Pipeline](/llm-engineering-course-pages/de/data-pipeline) | Wie werden Dokumente zu Batches mit Ziel-Tokens? | Jeden Tensor, jede Grenze und Paddingmaske erklären. |
+| [T04 Attention](/llm-engineering-course-pages/de/attention) | Welche früheren Positionen tragen zur Vorhersage bei? | Handrechnung, Heatmap und Kausalitätstest. |
+| [M2 Mini-GPT](/llm-engineering-course-pages/de/mini-gpt) | Wie wird aus diesen Teilen ein trainierbarer Decoder? | Tiny-Batch überfitten, identisch laden und [Kerngate](/llm-engineering-course-pages/de/mini-gpt-gate) bestehen. |
+| [M3 Training](/llm-engineering-course-pages/de/pretraining) | Kann ich einen Lauf unterbrechen und dasselbe Experiment fortsetzen? | CPU-Parameter mit ununterbrochenem Lauf vergleichen und Accumulation erklären. |
+| [M3 Datenqualität](/llm-engineering-course-pages/de/data-quality) | Kommt die Verbesserung nur von kontaminierten Daten? | Absichtlich undichte Evaluation prüfen, reparieren und messen. |
+| [M3 Evaluation](/llm-engineering-course-pages/de/evaluation) | Verbessert eine Änderung unbekannte Vorhersagen über mehrere Seeds? | Gepaarter Vergleich mit Unsicherheit und Grenzen. |
+| [M3 Profiling](/llm-engineering-course-pages/de/profiling) | Was passt in mein Zeit- und Speicherbudget? | Schätzung mit gemessenem CPU-Lauf vergleichen. |
+
+M2/M3 bilden den implementierten Kernkurs. Firmenanpassung, Interpretierbarkeit,
+Inferenzsysteme und das volle Engineering-Zertifikat folgen später. Die Labs
+liefern Nachweise für die Kernrubrik, aber kein automatisch ausgestelltes
+Zertifikat und keine Freigabe des öffentlichen Kurses.
+
+## So bearbeitest du eine Lektion [#so-bearbeitest-du-eine-lektion]
+
+1. **Predict:** Notiere eine erwartete Zahl, Form oder Richtung vor der Ausführung.
+2. **Trace:** Verfolge ein Beispiel durch den Code. Benenne jede Achse.
+3. **Build:** Implementiere die kleine Aufgabe selbst in `artifacts/my-work/`.
+4. **Break:** Ändere die vorgeschlagene Annahme und bewahre den Fehler als Beleg auf.
+5. **Measure:** Vergleiche mit unveränderter Baseline auf denselben Daten und Seeds.
+6. **Explain:** Erkläre die Ursache; „Der Test besteht“ erklärt keinen Mechanismus.
+
+Beginne mit dem CPU-Befehl. Lies JSON-Berichte als Baum benannter Messungen:
+`validation.loss` meint das Feld `loss` innerhalb von `validation`. Laufzeiten
+können schwanken, auch wenn gelernte Parameter gleich sind. Notiere Befehle,
+Konfiguration, Versionen und Ergebnisse. Erzeugte Berichte und Gewichte bleiben
+in `artifacts/`.
+
+## Wenn du feststeckst [#wenn-du-feststeckst]
+
+| Schwierigkeit | Zurück zu |
+| --- | --- |
+| `def`, Klammern, Schleifen oder Exceptions sind unklar | [F01](/llm-engineering-course-pages/de/foundations-01-python-numpy) |
+| Du kannst `[B,T,D]` nicht erklären | [F02](/llm-engineering-course-pages/de/foundations-02-shapes) |
+| Scores, Wahrscheinlichkeiten und Loss wirken austauschbar | [F03](/llm-engineering-course-pages/de/foundations-03-probability) |
+| Die Richtung eines Updates ist unklar | [F04](/llm-engineering-course-pages/de/foundations-04-neuron) |
+| Rückwärtslauf oder Gradientencheck bleiben rätselhaft | [F05](/llm-engineering-course-pages/de/foundations-05-mlp-autograd) |
+| Optimizer oder Seeds wirken wie Magie | [F06](/llm-engineering-course-pages/de/foundations-06-pytorch-checkpoint) |
+| Ein neues Kürzel stört beim Lesen | [Glossar](/llm-engineering-course-pages/de/glossary) |
+
+Versuche die Aufgabe vor dem Öffnen von Hinweis oder Lösung. Bleibt die Lösung
+unklar, reduziere sie auf eine Zeile und eine Zahl. Wiederhole nur den fehlenden
+Checkpoint, nicht den ganzen Kurs. Der echte Anfängerpilot bleibt notwendig,
+um Tempo und Verständnis mit Lernenden zu überprüfen.

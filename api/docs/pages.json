@@ -1,5 +1,5 @@
 {
-  "count": 12,
+  "count": 70,
   "generator": "blume@1.6.4",
   "pages": [
     {
@@ -9,9 +9,18 @@
       "locale": "en",
       "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/index.md",
       "route": "/",
-      "title": "Learn by tracing the numbers",
-      "url": "https://minigraphx.github.io/llm-engineering-course-pages",
-      "description": "Four complete lessons, setup, and two languages. One small model at a time."
+      "title": "LLM Engineering Course",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/adaptation-comparison.json",
+      "lastModified": null,
+      "locale": "en",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/adaptation-comparison.md",
+      "route": "/adaptation-comparison",
+      "title": "Choose an adaptation with evidence",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/adaptation-comparison"
     },
     {
       "contentType": "doc",
@@ -25,14 +34,123 @@
     },
     {
       "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/bigram-baseline.json",
+      "lastModified": null,
+      "locale": "en",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/bigram-baseline.md",
+      "route": "/bigram-baseline",
+      "title": "T01 — Bigram language-model baseline",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/bigram-baseline"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/bpe-tokenizer.json",
+      "lastModified": null,
+      "locale": "en",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/bpe-tokenizer.md",
+      "route": "/bpe-tokenizer",
+      "title": "T02 — Byte-level BPE tokenizer from scratch",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/bpe-tokenizer"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/company-capstone.json",
+      "lastModified": null,
+      "locale": "en",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/company-capstone.md",
+      "route": "/company-capstone",
+      "title": "Capstone — From requirement to a reversible company model",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/company-capstone"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/company-data.json",
+      "lastModified": null,
+      "locale": "en",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/company-data.md",
+      "route": "/company-data",
+      "title": "M4 — Auditable company data",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/company-data"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/company-evaluation.json",
+      "lastModified": null,
+      "locale": "en",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/company-evaluation.md",
+      "route": "/company-evaluation",
+      "title": "M4 — Protected evaluation",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/company-evaluation"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/company-strategy.json",
+      "lastModified": null,
+      "locale": "en",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/company-strategy.md",
+      "route": "/company-strategy",
+      "title": "C01 — Turn a company problem into a model decision",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/company-strategy"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/continued-pretraining.json",
+      "lastModified": null,
+      "locale": "en",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/continued-pretraining.md",
+      "route": "/continued-pretraining",
+      "title": "M4 — Continued pretraining without losing the baseline",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/continued-pretraining"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/data-pipeline.json",
+      "lastModified": null,
+      "locale": "en",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/data-pipeline.md",
+      "route": "/data-pipeline",
+      "title": "T03 — Data pipeline & embeddings",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/data-pipeline"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/data-policy.json",
+      "lastModified": null,
+      "locale": "en",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/data-policy.md",
+      "route": "/data-policy",
+      "title": "Course data policy",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/data-policy"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/data-quality.json",
+      "lastModified": null,
+      "locale": "en",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/data-quality.md",
+      "route": "/data-quality",
+      "title": "E02 — Data quality and provenance",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/data-quality"
+    },
+    {
+      "contentType": "doc",
       "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/de.json",
       "lastModified": null,
       "locale": "de",
       "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de.md",
       "route": "/de",
-      "title": "Lernen, indem du die Zahlen nachvollziehst",
-      "url": "https://minigraphx.github.io/llm-engineering-course-pages/de",
-      "description": "Vier vollständige Lektionen, Einrichtung und zwei Sprachen. Ein kleines Modell nach dem anderen."
+      "title": "LLM-Engineering-Kurs",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/de"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/de/adaptation-comparison.json",
+      "lastModified": null,
+      "locale": "de",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de/adaptation-comparison.md",
+      "route": "/de/adaptation-comparison",
+      "title": "Anpassung anhand von Evidenz wählen",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/de/adaptation-comparison"
     },
     {
       "contentType": "doc",
@@ -46,6 +164,246 @@
     },
     {
       "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/de/bigram-baseline.json",
+      "lastModified": null,
+      "locale": "de",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de/bigram-baseline.md",
+      "route": "/de/bigram-baseline",
+      "title": "T01 — Bigramm-Sprachmodell als Baseline",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/de/bigram-baseline"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/de/bpe-tokenizer.json",
+      "lastModified": null,
+      "locale": "de",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de/bpe-tokenizer.md",
+      "route": "/de/bpe-tokenizer",
+      "title": "T02 — Byte-Level-BPE-Tokenizer von Grund auf",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/de/bpe-tokenizer"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/de/company-capstone.json",
+      "lastModified": null,
+      "locale": "de",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de/company-capstone.md",
+      "route": "/de/company-capstone",
+      "title": "Capstone — Von der Anforderung zum reversiblen Firmenmodell",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/de/company-capstone"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/de/company-data.json",
+      "lastModified": null,
+      "locale": "de",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de/company-data.md",
+      "route": "/de/company-data",
+      "title": "M4 — Prüffähige Firmendaten",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/de/company-data"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/de/company-evaluation.json",
+      "lastModified": null,
+      "locale": "de",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de/company-evaluation.md",
+      "route": "/de/company-evaluation",
+      "title": "M4 — Geschützte Evaluation",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/de/company-evaluation"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/de/company-strategy.json",
+      "lastModified": null,
+      "locale": "de",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de/company-strategy.md",
+      "route": "/de/company-strategy",
+      "title": "C01 — Vom Firmenproblem zur Modellentscheidung",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/de/company-strategy"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/de/continued-pretraining.json",
+      "lastModified": null,
+      "locale": "de",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de/continued-pretraining.md",
+      "route": "/de/continued-pretraining",
+      "title": "M4 — Continued Pretraining ohne Verlust der Baseline",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/de/continued-pretraining"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/de/data-pipeline.json",
+      "lastModified": null,
+      "locale": "de",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de/data-pipeline.md",
+      "route": "/de/data-pipeline",
+      "title": "T03 — Datenpipeline & Embeddings",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/de/data-pipeline"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/de/data-policy.json",
+      "lastModified": null,
+      "locale": "de",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de/data-policy.md",
+      "route": "/de/data-policy",
+      "title": "Datenrichtlinie des Kurses",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/de/data-policy"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/de/data-quality.json",
+      "lastModified": null,
+      "locale": "de",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de/data-quality.md",
+      "route": "/de/data-quality",
+      "title": "E02 — Datenqualität und Provenienz",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/de/data-quality"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/de/diagnostic.json",
+      "lastModified": null,
+      "locale": "de",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de/diagnostic.md",
+      "route": "/de/diagnostic",
+      "title": "Diagnose und Lernpfad",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/de/diagnostic"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/de/dpo.json",
+      "lastModified": null,
+      "locale": "de",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de/dpo.md",
+      "route": "/de/dpo",
+      "title": "M5 — DPO und die kleine RLHF-Brücke",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/de/dpo"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/de/evaluation.json",
+      "lastModified": null,
+      "locale": "de",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de/evaluation.md",
+      "route": "/de/evaluation",
+      "title": "Evaluation: Aussagen mit überprüfbarer Evidenz",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/de/evaluation"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/de/foundations-01-python-numpy.json",
+      "lastModified": null,
+      "locale": "de",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de/foundations-01-python-numpy.md",
+      "route": "/de/foundations-01-python-numpy",
+      "title": "F01 — Python und NumPy",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/de/foundations-01-python-numpy"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/de/foundations-02-shapes.json",
+      "lastModified": null,
+      "locale": "de",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de/foundations-02-shapes.md",
+      "route": "/de/foundations-02-shapes",
+      "title": "F02 — Tensoren und Shapes",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/de/foundations-02-shapes"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/de/foundations-03-probability.json",
+      "lastModified": null,
+      "locale": "de",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de/foundations-03-probability.md",
+      "route": "/de/foundations-03-probability",
+      "title": "F03 — Wahrscheinlichkeit, Logits und Loss",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/de/foundations-03-probability"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/de/foundations-04-neuron.json",
+      "lastModified": null,
+      "locale": "de",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de/foundations-04-neuron.md",
+      "route": "/de/foundations-04-neuron",
+      "title": "F04 — Neuron und Gradient Descent",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/de/foundations-04-neuron"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/de/foundations-05-mlp-autograd.json",
+      "lastModified": null,
+      "locale": "de",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de/foundations-05-mlp-autograd.md",
+      "route": "/de/foundations-05-mlp-autograd",
+      "title": "F05 — MLP, Backpropagation und kleines Autograd",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/de/foundations-05-mlp-autograd"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/de/foundations-06-pytorch-checkpoint.json",
+      "lastModified": null,
+      "locale": "de",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de/foundations-06-pytorch-checkpoint.md",
+      "route": "/de/foundations-06-pytorch-checkpoint",
+      "title": "F06 — PyTorch-Übersetzung und Grundlagen-Checkpoint",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/de/foundations-06-pytorch-checkpoint"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/de/foundations-godot-rl-bridge.json",
+      "lastModified": null,
+      "locale": "de",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de/foundations-godot-rl-bridge.md",
+      "route": "/de/foundations-godot-rl-bridge",
+      "title": "B01 — Godot-RL-Brücke für Neural Foundations",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/de/foundations-godot-rl-bridge"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/de/glossary.json",
+      "lastModified": null,
+      "locale": "de",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de/glossary.md",
+      "route": "/de/glossary",
+      "title": "Glossar",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/de/glossary"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/de/hardware.json",
+      "lastModified": null,
+      "locale": "de",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de/hardware.md",
+      "route": "/de/hardware",
+      "title": "Hardware, Zeit und Cloud-Sicherheit",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/de/hardware"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/de/learning-guide.json",
+      "lastModified": null,
+      "locale": "de",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de/learning-guide.md",
+      "route": "/de/learning-guide",
+      "title": "Dein Weg durch den Kurs",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/de/learning-guide"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/de/mini-gpt.json",
+      "lastModified": null,
+      "locale": "de",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de/mini-gpt.md",
+      "route": "/de/mini-gpt",
+      "title": "M2: einen kleinen Decoder zusammensetzen",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/de/mini-gpt"
+    },
+    {
+      "contentType": "doc",
       "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/de/mini-gpt-gate.json",
       "lastModified": null,
       "locale": "de",
@@ -53,6 +411,36 @@
       "route": "/de/mini-gpt-gate",
       "title": "M2-Kernprüfung: programmieren, Fehler finden, erklären",
       "url": "https://minigraphx.github.io/llm-engineering-course-pages/de/mini-gpt-gate"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/de/pretraining.json",
+      "lastModified": null,
+      "locale": "de",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de/pretraining.md",
+      "route": "/de/pretraining",
+      "title": "T05 — Reproduzierbares Vortraining",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/de/pretraining"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/de/profiling.json",
+      "lastModified": null,
+      "locale": "de",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de/profiling.md",
+      "route": "/de/profiling",
+      "title": "Profiling: vom Modell zum Ressourcenbudget",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/de/profiling"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/de/rlhf-bridge.json",
+      "lastModified": null,
+      "locale": "de",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de/rlhf-bridge.md",
+      "route": "/de/rlhf-bridge",
+      "title": "M5 — RLHF-Brücke: Fehler sichtbar machen",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/de/rlhf-bridge"
     },
     {
       "contentType": "doc",
@@ -86,6 +474,156 @@
     },
     {
       "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/de/unit-00-troubleshooting.json",
+      "lastModified": null,
+      "locale": "de",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de/unit-00-troubleshooting.md",
+      "route": "/de/unit-00-troubleshooting",
+      "title": "Fehlerbehebung für Einheit 0",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/de/unit-00-troubleshooting"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/diagnostic.json",
+      "lastModified": null,
+      "locale": "en",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/diagnostic.md",
+      "route": "/diagnostic",
+      "title": "Diagnostic and learning path",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/diagnostic"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/dpo.json",
+      "lastModified": null,
+      "locale": "en",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/dpo.md",
+      "route": "/dpo",
+      "title": "M5 — DPO and the small RLHF bridge",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/dpo"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/evaluation.json",
+      "lastModified": null,
+      "locale": "en",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/evaluation.md",
+      "route": "/evaluation",
+      "title": "Evaluation: make a claim the evidence can support",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/evaluation"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/foundations-01-python-numpy.json",
+      "lastModified": null,
+      "locale": "en",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/foundations-01-python-numpy.md",
+      "route": "/foundations-01-python-numpy",
+      "title": "F01 — Python and NumPy",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/foundations-01-python-numpy"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/foundations-02-shapes.json",
+      "lastModified": null,
+      "locale": "en",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/foundations-02-shapes.md",
+      "route": "/foundations-02-shapes",
+      "title": "F02 — Tensors and shapes",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/foundations-02-shapes"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/foundations-03-probability.json",
+      "lastModified": null,
+      "locale": "en",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/foundations-03-probability.md",
+      "route": "/foundations-03-probability",
+      "title": "F03 — Probability, logits, and loss",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/foundations-03-probability"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/foundations-04-neuron.json",
+      "lastModified": null,
+      "locale": "en",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/foundations-04-neuron.md",
+      "route": "/foundations-04-neuron",
+      "title": "F04 — Neuron and gradient descent",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/foundations-04-neuron"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/foundations-05-mlp-autograd.json",
+      "lastModified": null,
+      "locale": "en",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/foundations-05-mlp-autograd.md",
+      "route": "/foundations-05-mlp-autograd",
+      "title": "F05 — MLP, backpropagation, and tiny autograd",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/foundations-05-mlp-autograd"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/foundations-06-pytorch-checkpoint.json",
+      "lastModified": null,
+      "locale": "en",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/foundations-06-pytorch-checkpoint.md",
+      "route": "/foundations-06-pytorch-checkpoint",
+      "title": "F06 — PyTorch translation and foundations checkpoint",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/foundations-06-pytorch-checkpoint"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/foundations-godot-rl-bridge.json",
+      "lastModified": null,
+      "locale": "en",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/foundations-godot-rl-bridge.md",
+      "route": "/foundations-godot-rl-bridge",
+      "title": "B01 — Godot-RL neural-foundations bridge",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/foundations-godot-rl-bridge"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/glossary.json",
+      "lastModified": null,
+      "locale": "en",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/glossary.md",
+      "route": "/glossary",
+      "title": "Glossary",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/glossary"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/hardware.json",
+      "lastModified": null,
+      "locale": "en",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/hardware.md",
+      "route": "/hardware",
+      "title": "Hardware, time, and cloud safety",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/hardware"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/learning-guide.json",
+      "lastModified": null,
+      "locale": "en",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/learning-guide.md",
+      "route": "/learning-guide",
+      "title": "Your route through the course",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/learning-guide"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/mini-gpt.json",
+      "lastModified": null,
+      "locale": "en",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/mini-gpt.md",
+      "route": "/mini-gpt",
+      "title": "M2: assemble a tiny decoder",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/mini-gpt"
+    },
+    {
+      "contentType": "doc",
       "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/mini-gpt-gate.json",
       "lastModified": null,
       "locale": "en",
@@ -93,6 +631,36 @@
       "route": "/mini-gpt-gate",
       "title": "M2 core gate: code, diagnose, explain",
       "url": "https://minigraphx.github.io/llm-engineering-course-pages/mini-gpt-gate"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/pretraining.json",
+      "lastModified": null,
+      "locale": "en",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/pretraining.md",
+      "route": "/pretraining",
+      "title": "T05 — Reproducible pretraining",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/pretraining"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/profiling.json",
+      "lastModified": null,
+      "locale": "en",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/profiling.md",
+      "route": "/profiling",
+      "title": "Profiling: connect the model to a resource budget",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/profiling"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/rlhf-bridge.json",
+      "lastModified": null,
+      "locale": "en",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/rlhf-bridge.md",
+      "route": "/rlhf-bridge",
+      "title": "M5 — RLHF bridge: inspect the failure mode",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/rlhf-bridge"
     },
     {
       "contentType": "doc",
@@ -123,6 +691,16 @@
       "route": "/unit-00",
       "title": "Unit 0 — First Tiny-LM Run",
       "url": "https://minigraphx.github.io/llm-engineering-course-pages/unit-00"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/unit-00-troubleshooting.json",
+      "lastModified": null,
+      "locale": "en",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/unit-00-troubleshooting.md",
+      "route": "/unit-00-troubleshooting",
+      "title": "Unit 0 troubleshooting",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/unit-00-troubleshooting"
     }
   ],
   "site": "https://minigraphx.github.io"

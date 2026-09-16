@@ -1,0 +1,228 @@
+---
+title: "T03 — Datenpipeline & Embeddings"
+sidebar:
+  label: "T03 — Datenpipeline & Embeddings"
+---
+
+<CourseContent>
+
+<span id="t03-datenpipeline-embeddings" />
+
+
+[← T02 Byte-Level-BPE](/llm-engineering-course-pages/de/bpe-tokenizer) · [Kursstart](/llm-engineering-course-pages/de/)
+
+## Lernziel [#lernziel]
+
+In 75–90 Minuten baust du eine versionierte Mini-Datenpipeline, die Rohtext in
+eingebettete Batches verwandelt, und kannst Shape und Bedeutung jedes Tensors
+auf diesem Weg benennen. Du splittest Dokumente vor der Fenstererzeugung,
+packst einen Tokenstrom, paddst variabel lange Sequenzen, maskierst Padding aus
+dem Loss, seedest den DataLoader und misst Leakage, statt es zu vermuten.
+
+Die Pipeline läuft mit zwei Encodern: dem Zeichenvokabular aus Einheit 0 plus
+drei Sondertokens oder dem Byte-Level-BPE-Tokenizer aus T02. Nur das
+`DocumentEncoder`-Objekt wechselt; alle späteren Stufen laufen unverändert
+weiter — genau das macht die Grenze zwischen Tokenisierung und Pipeline
+sichtbar.
+
+## Vorhersagen · Woher kommt ein Batch? [#vorhersagen-woher-kommt-ein-batch]
+
+Sage vor dem ersten Lauf voraus:
+
+1. wie viele `[4,12]`-Batches aus 470 Trainingstokens entstehen;
+2. welche Positionen eines gepaddeten Batches den Loss nicht erreichen dürfen;
+3. ob das zufällige Splitten fester Fenster genauso sicher ist wie das
+   zufällige Splitten von Dokumenten.
+
+Starte dann die CPU-Referenz:
+
+```
+python examples/run_data_pipeline.py
+```
+
+Bewahre die JSON-Ausgabe auf. Sie enthält Version, Konfiguration, Split-Hashes,
+Fensteranzahl, Batch-Shapes, Füllraten, Batch-Hashes, Embedding-Trace und
+Leakage-Zahlen.
+
+## Verfolgen · Von Rohtext zu Token-IDs [#verfolgen-von-rohtext-zu-token-ids]
+
+`normalize_documents` entfernt Leerraum, verwirft leere Zeilen und behält von
+jedem exakten Duplikat die erste Kopie. Die Deduplizierung passiert **vor** dem
+Split: Ein doppelt vorhandenes Dokument landete sonst in zwei Partitionen und
+ließe Auswendiglernen wie Generalisierung aussehen.
+
+`encode_document` rahmt anschließend jedes Dokument mit den Grenztokens des
+Encoders:
+
+| Token | Zeichen-ID | BPE-ID | Bedeutung |
+| --- | ---: | ---: | --- |
+| Inhalt | 0–32 | 0–295 | Bytes, gemergte Stücke oder Zeichen |
+| pad | 33 | 296 | Füllung; trägt nie zum Loss bei |
+| bos | 34 | 297 | Dokumentanfang |
+| eos | 35 | 298 | Dokumentende |
+
+`decode_tokens` gibt Sondertokens mit Namen aus, sodass `<bos>a token<eos>`
+lesbarer Nachweis statt rätselhafter Ganzzahl ist.
+
+`build_encoder` trainiert BPE **nur auf den Trainingsdokumenten**. Ein auf dem
+gesamten Korpus trainierter Tokenizer trüge Validierungs- und Teststatistik in
+jede spätere Messung — ein Leck, das kein späterer Split repariert.
+
+## Bauen · Zwei Wege zu einer festen Shape [#bauen-zwei-wege-zu-einer-festen-shape]
+
+Ein Modell braucht rechteckige Batches, Dokumente haben aber verschiedene
+Längen. Die Pipeline implementiert beide Standardantworten und misst sie.
+
+**Packing.** `build_token_stream` verkettet die kodierten Trainingsdokumente zu
+einem Strom aus 470 Tokens. `SequenceWindowDataset` schneidet daraus Fenster aus
+`block_size + 1` Tokens und verschiebt sie um eins:
+
+| Wert | Shape | Bedeutung |
+| --- | --- | --- |
+| `input_ids` | `[4,12]` | IDs der aktuellen Tokens |
+| `labels` | `[4,12]` | dasselbe Fenster um eins verschoben |
+| `attention_mask` | `[4,12]` | nur Einsen; jede Position ist echt |
+
+Mit `stride=12` überlappen die Fenster nicht und 1 Resttoken entfällt. Mit
+`--stride 6` entstehen etwa doppelt so viele Fenster über denselben Tokens —
+zum Preis korrelierter Beispiele.
+
+**Padding.** `PaddedDocumentDataset` behält ein Dokument pro Sample, und
+`collate_batch` füllt einen Batch rechts bis zur längsten Sequenz auf:
+
+| Wert | Shape | Bedeutung |
+| --- | --- | --- |
+| `input_ids` | `[4,39]` | Tokens, danach `<pad>` |
+| `labels` | `[4,39]` | Ziele, danach `-100` |
+| `attention_mask` | `[4,39]` | 1 für echte Tokens, 0 für Padding |
+
+`-100` ist der Standard-`ignore_index` von PyTorch: Cross-Entropy überspringt
+diese Positionen vollständig. Padding, das den Loss erreicht, bringt dem Modell
+bei, `<pad>` vorherzusagen.
+
+`make_batch_loader` verpackt beide Datasets in einen Single-Worker-`DataLoader`
+mit explizit geseedetem `torch.Generator`; die Batchreihenfolge gehört damit zum
+Vertrag.
+
+## Bauen · Token- und Positions-Embeddings [#bauen-token-und-positions-embeddings]
+
+`TokenPositionEmbedding` hält zwei Tabellen:
+
+- `token_embedding`: `[36,16]` — ein Vektor je Tokenidentität;
+- `position_embedding`: `[64,16]` — ein Vektor je Positionsindex.
+
+Der Forward-Pass addiert sie und nullt gepaddete Positionen:
+
+$$
+h_{b,t} = E_{\text{token}}[x_{b,t}] + E_{\text{pos}}[t]
+$$
+
+Die Tokentabelle allein ist positionsblind: Dieselbe ID erhält an Position 0 und
+an Position 30 denselben Vektor. Erst die Summe erlaubt einer späteren
+Attention-Schicht, `the model` von `model the` zu unterscheiden. Referenzgrößen:
+Aus `[4,39]` IDs werden `[4,39,16]` Embeddings aus 1600 Parametern, und
+`embedding.trace(batch)` gibt die vollständige Kette mit Bedeutungen aus.
+
+## Brechen · Erst Fenster, dann Split [#brechen-erst-fenster-dann-split]
+
+Starte die absichtlich falsche Reihenfolge, die derselbe Report unter
+`leakage.window_split_demo` festhält: zuerst alle 601 Schiebefenster bilden,
+dann zufällig splitten. Ergebnis: 63 von 151 Holdout-Fenstern stehen wörtlich im
+Training, und 149 von 151 überlappen Trainingstext um ein bis zwei Positionen.
+
+Eine Evaluation auf diesem Split misst Kopieren, nicht Lernen. Vergleiche sie
+mit dem Dokumentsplit unter `leakage.document_split`: 0 geteilte Dokumente und
+eine gemessene Fensterüberlappung von 0,300 (Validierung) und 0,216 (Test) —
+innerhalb des Budgets von 0,5.
+
+Erzwinge danach einen Fehlschlag, um das Gate zu sehen:
+
+```
+python examples/run_data_pipeline.py --max-window-overlap 0.0
+```
+
+`assert_no_leakage` löst `LeakageError` aus. Überlappung auf schablonenhaft
+erzeugtem Text ist erwartbar und wird berichtet; unbegrenzte Überlappung nicht.
+
+## Messen · Welche Shape gewinnt [#messen-welche-shape-gewinnt]
+
+| Loader | Batch-Shape | Echte Positionen | Füllrate |
+| --- | --- | ---: | ---: |
+| gepackt | `[4,12]` | 468 / 468 | 1,000 |
+| gepaddet | `[4,39]` | 458 / 480 | 0,954 |
+
+Packing verschwendet nichts, überschreitet aber Dokumentgrenzen: Ein Fenster
+kann den Anfang eines Dokuments aus dem Ende eines anderen vorhersagen; `<eos>`
+ist das Signal, das dies lernbar macht. Padding respektiert Grenzen, zahlt aber
+in jedem Batch für die längste Sequenz — die Kosten wachsen mit der
+Längenvarianz, nicht mit der Dokumentzahl.
+
+Wechsle nun ausschließlich den Encoder:
+
+```
+python examples/run_data_pipeline.py --encoder bpe
+```
+
+| Messwert | Zeichen | Byte-Level-BPE |
+| --- | ---: | ---: |
+| Trainingstokens | 470 | 223 |
+| gepackte Fenster | 39 | 18 |
+| gepaddete Batch-Shape | `[4,39]` | `[4,19]` |
+| Padding-Füllrate | 0,954 | 0,894 |
+| Embedding-Parameter | 1600 | 5824 |
+| Fensterüberlappung (Validierung) | 0,300 | 0,000 |
+
+Subwörter halbieren die Sequenzlänge für denselben Text; eine feste
+`block_size` deckt also rund doppelt so viel Inhalt ab — deshalb wird
+Kontextlänge in Tokens angegeben, nicht in Zeichen. Das Vokabular wächst von 36
+auf 300, und die Tokentabelle wächst mit. Die Split-Hashes bleiben identisch,
+weil der Split auf Text erfolgt und nicht vom Encoder abhängt.
+
+Auch Determinismus ist messbar: `batch_stream_fingerprint` hasht jeden Batch
+eines vollen Durchlaufs. Zwei Läufe mit gleicher Version, Konfiguration und
+gleichem Seed müssen dieselben Hashes liefern. Referenzwerte und
+Änderungsprotokoll stehen in der versionierten
+[Datenpipeline-Referenz](https://github.com/minigraphx/llm-engineering-course/blob/main/docs/baselines/data-pipeline-v1.md).
+
+## Erklären · Dein Pipeline-Absatz [#erklaren-dein-pipeline-absatz]
+
+Schreibe einen Absatz, der benennt:
+
+- jede Stufe von Rohtext bis Embedding mit Tensor-Shapes;
+- warum Deduplizierung und Split vor der Fenstererzeugung stattfinden;
+- was `attention_mask` und `-100` jeweils schützen;
+- den Kompromiss zwischen Packing und Padding, ausgedrückt in Füllrate;
+- was sich beim Encoder-Wechsel ändert und was identisch bleibt;
+- welche Zahlen belegen, dass deine Batches deterministisch sind;
+- wie hoch dein Leakage-Budget ist und warum es hier nicht null beträgt.
+
+## Abschluss-Gate [#abschluss-gate]
+
+Du bestehst, wenn du die Kette
+Text → Dokumente → Split → Tokens → Fenster/Padding → Batch → Embeddings
+ohne Vorlage aufzeichnen kannst und dein gespeicherter Report sie belegt.
+Erforderliche Nachweise:
+
+- Dokumentanzahlen und SHA-256-Hashes der Splits;
+- `[B,T]` für Inputs, Labels und Maske sowie `[B,T,D]` für Embeddings;
+- gepaddete Positionen mit `<pad>` in den Inputs und `-100` in den Labels;
+- identische Batch-Hashes über zwei Läufe mit gleichem Seed;
+- Füllrate 1,0 beim Packing gegenüber der gemessenen Padding-Füllrate;
+- je einen Lauf mit Zeichen- und mit BPE-Encoder auf demselben Korpus;
+- 0 geteilte Dokumente und eine berichtete Fensterüberlappung im Budget.
+
+Führe die automatischen Vertragstests aus:
+
+```
+pytest tests/test_data_pipeline.py
+```
+
+## Wie es weitergeht [#wie-es-weitergeht]
+
+Die Batches tragen jetzt Bedeutung pro Position, aber noch keine Möglichkeit,
+Positionen miteinander zu vergleichen. Als Nächstes baust du Self-Attention als
+sichtbares Zahlenexperiment und gibst diesen Embeddings Kontext.
+
+[← T02 Byte-Level-BPE](/llm-engineering-course-pages/de/bpe-tokenizer) · [Kursstart](/llm-engineering-course-pages/de/)
+
+</CourseContent>

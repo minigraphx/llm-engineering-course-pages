@@ -1,0 +1,11 @@
+{
+  "contentType": "doc",
+  "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/company-capstone.json",
+  "lastModified": null,
+  "locale": "en",
+  "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/company-capstone.md",
+  "route": "/company-capstone",
+  "title": "Capstone — From requirement to a reversible company model",
+  "url": "https://minigraphx.github.io/llm-engineering-course-pages/company-capstone",
+  "markdown": "---\ntitle: \"Capstone — From requirement to a reversible company model\"\nsidebar:\n  label: \"Capstone — Company model\"\n---\n\n<span id=\"capstone-from-requirement-to-a-reversible-company-model\" />\n\n\nUse only the committed code, manifests and baseline reports. Do not add real\ncustomer data or tune on the sealed gold cases.\n\n1. Write five must/can requirements for Nordlicht support.\n2. Rebuild the approved snapshot and prove its hash and contamination report.\n3. Score both transparent baselines on development cases.\n4. Compare prompting/retrieval, DAPT, full SFT/LoRA and DPO using the measured\n   reports; record trainable parameters, latency/memory scope and failure cases.\n5. Select a candidate only after hard safety, provenance and local-processing\n   gates pass.\n6. Run the sealed review with a human, then record the decision and corrections.\n7. Specify monitoring, a rollback checkpoint and an owner for each alert.\n\nYour submission is a short decision record linking every claim to a command,\nhash, report or review row. Include two rejected alternatives and the evidence\nthat would change the decision. The model may suggest a route; application code\nenforces authorization, secrets handling and export permissions.\n\nExit criteria: another learner can run the CPU recipes from a clean checkout,\nexplain every metric, reproduce the baseline hashes and identify the exact step\nthat rolls back a rejected adapter.\n"
+}

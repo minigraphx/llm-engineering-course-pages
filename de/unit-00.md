@@ -1,13 +1,13 @@
 ---
 title: "Einheit 0 — Erster Tiny-LM-Lauf"
+sidebar:
+  label: "Einheit 0 — Erster Tiny-LM-Lauf"
 ---
-
-[Diese Lektion in MkDocs](/llm-engineering-course-pages/mkdocs/de/unit-00/)
 
 <span id="einheit-0-erster-tiny-lm-lauf" />
 
 
-[← Einrichtung](/llm-engineering-course-pages/de/setup) · [Kursstart](/llm-engineering-course-pages/mkdocs/de/) · [Fehlerbehebung](/llm-engineering-course-pages/mkdocs/de/unit-00-troubleshooting/)
+[← Einrichtung](/llm-engineering-course-pages/de/setup) · [Kursstart](/llm-engineering-course-pages/de/) · [Fehlerbehebung](/llm-engineering-course-pages/de/unit-00-troubleshooting)
 
 ## Lernziel [#lernziel]
 
@@ -29,7 +29,7 @@ python examples/diagnose_unit0.py
 Jede Prüfung soll `pass` melden. Der Befehl prüft Python, CPU/MPS/CUDA,
 beschreibbaren Artefaktspeicher, das Laden des Checkpoints und eine
 Testgenerierung. Bei einem Fehler hilft die
-[Fehlerbehebung](/llm-engineering-course-pages/mkdocs/de/unit-00-troubleshooting/).
+[Fehlerbehebung](/llm-engineering-course-pages/de/unit-00-troubleshooting).
 
 ## 10–20 Min. · Erste Generierung [#1020-min-erste-generierung]
 
@@ -135,7 +135,7 @@ Lernenden.
 
 ## Wie geht es weiter? [#wie-geht-es-weiter]
 
-Weiter mit [Diagnose und Lernpfad](/llm-engineering-course-pages/mkdocs/de/diagnostic/). Dort bestimmst du sicher
+Weiter mit [Diagnose und Lernpfad](/llm-engineering-course-pages/de/diagnostic). Dort bestimmst du sicher
 überspringbare Grundlagen und behältst für jede Abkürzung einen Re-Entry-Link.
 
-[← Einrichtung](/llm-engineering-course-pages/de/setup) · [Fehlerbehebung](/llm-engineering-course-pages/mkdocs/de/unit-00-troubleshooting/) · [→ Diagnose](/llm-engineering-course-pages/mkdocs/de/diagnostic/)
+[← Einrichtung](/llm-engineering-course-pages/de/setup) · [Fehlerbehebung](/llm-engineering-course-pages/de/unit-00-troubleshooting) · [→ Diagnose](/llm-engineering-course-pages/de/diagnostic)

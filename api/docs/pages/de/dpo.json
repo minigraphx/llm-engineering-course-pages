@@ -1,0 +1,11 @@
+{
+  "contentType": "doc",
+  "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/de/dpo.json",
+  "lastModified": null,
+  "locale": "de",
+  "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de/dpo.md",
+  "route": "/de/dpo",
+  "title": "M5 — DPO und die kleine RLHF-Brücke",
+  "url": "https://minigraphx.github.io/llm-engineering-course-pages/de/dpo",
+  "markdown": "---\ntitle: \"M5 — DPO und die kleine RLHF-Brücke\"\nsidebar:\n  label: \"M5 — DPO\"\n---\n\n<span id=\"m5-dpo-und-die-kleine-rlhf-brucke\" />\n\n\nDirect Preference Optimization (DPO) lernt aus einem bevorzugten und einem\nabgelehnten Paar. Eine eingefrorene Referenz liefert die relative Baseline. Die\nLoss ist `-log sigmoid(beta * (Policy-Marge − Referenz-Marge))`.\n`response_log_probs` summiert nur Antworttokens; Prompt und Padding tragen Label\n`-100`.\n\nDie endliche Aktionsbrücke macht Bradley–Terry-Reward, kategorische KL und den\ngeclippten PPO-Surrogat sichtbar. Sie ist ein Contextual-Bandit-Lehrbeispiel,\nkein Token-RLHF für Produktion.\n\n```bash\n.venv/bin/python examples/run_alignment.py --dpo-steps 80 --ppo-steps 60\n.venv/bin/python examples/compare_dpo_reference.py\n```\n\nDer DPO-Lauf stimmt mit TRL 0.26.1 bei Loss und Policy-Gradienten überein. Die\nPPO-Variante zeigt Reward-Hacking: naive PPO erhöht Proxy-Reward, senkt aber\nQualität und erhöht die Hackrate; KL-Kontrolle verbessert sie auf der kleinen\nTabelle. Das ist kein allgemeiner Sicherheitsbeweis.\n\n### Aufgabe [#aufgabe]\n\nWie groß ist die DPO-Loss, wenn Policy- und Referenzmarge gleich sind? Warum muss\ndie Referenz abgetrennt werden?\n\n<details>\n<summary>Referenzantwort</summary>\n\nDie Loss ist `log(2)`. Durch `detach` erhält nur die zu trainierende Policy\nGradienten.\n\n\n</details>\n\nCheckpoint: Summiere eine Antwort-Logwahrscheinlichkeit, finde das PPO-Clipping\nund erkläre Proxy-Reward gegenüber Aufgabenqualität.\n"
+}

@@ -1,0 +1,104 @@
+---
+title: "F05 — MLP, backpropagation, and tiny autograd"
+sidebar:
+  label: "F05 — MLP, backprop & autograd"
+---
+
+<span id="f05-mlp-backpropagation-and-tiny-autograd" />
+
+
+[← F04](/llm-engineering-course-pages/foundations-04-neuron) · [Course home](/llm-engineering-course-pages/) · [→ F06](/llm-engineering-course-pages/foundations-06-pytorch-checkpoint)
+
+## Learning outcome [#learning-outcome]
+
+You will implement a one-hidden-layer MLP, trace reverse-mode
+backpropagation, and verify an analytic gradient numerically.
+
+## From one neuron to a hidden layer [#from-one-neuron-to-a-hidden-layer]
+
+An MLP (multilayer perceptron) combines several neurons. A hidden layer is an
+intermediate vector rather than the final answer. `tanh` bends each value into
+(-1,1): `tanh(0)=0`, `tanh(1)≈0.762`. Without a nonlinear operation, two linear
+layers would collapse to one matrix multiplication. An activation is a value
+computed for the current input; a parameter is a stored weight used across inputs.
+
+For the equations below, let `P=softmax(Z)` and `Y` contain one 1 in the correct
+class column of each row (a **one-hot** target). Mean cross-entropy over B rows
+starts the backward pass with `dZ=(P-Y)/B`. The rest follows local derivatives:
+
+```text
+dW2 = H.T @ dZ                db2 = sum(dZ, over rows)
+dH  = dZ @ W2.T
+dA  = dH * (1 - H*H)         # derivative of tanh at A is 1-tanh(A)^2
+dW1 = X.T @ dA               db1 = sum(dA, over rows)
+```
+
+`.T` transposes a 2D matrix; `*` here is elementwise. Bias is reused for every
+row, so its gradient adds all row contributions. For one row with probabilities
+`[0.8,0.2]` and target class 1, `dZ=[0.8,-0.8]`: the update tends to reduce the
+wrong score and increase the correct one. Write each gradient shape next to its
+parameter before implementing. The numerical check below verifies a derivative
+without trusting this derivation.
+
+## MLP shapes before values [#mlp-shapes-before-values]
+
+For `X:[2,2]`, `W1:[2,3]`, `b1:[3]`, `W2:[3,2]`, and `b2:[2]`:
+
+```text
+H = tanh(X @ W1 + b1)    shape [2, 3]
+Z = H @ W2 + b2          shape [2, 2]
+```
+
+The two rows are examples and the final two columns are class logits. Use
+`mlp_loss_and_gradients` to inspect hidden activations, logits, probabilities,
+loss, and gradients, but implement the equations yourself before comparing.
+Every gradient must have the same shape as its parameter.
+
+## Backpropagation is repeated local multiplication [#backpropagation-is-repeated-local-multiplication]
+
+For `q=(2x+1)²` at `x=3`, the forward values are `2x+1=7` and `q=49`.
+The backward path multiplies local derivatives:
+
+```text
+dq/dx = 2(2x + 1) × 2 = 2 × 7 × 2 = 28
+```
+
+```
+from llm_course import Value
+
+x = Value(3.0)
+q = (2.0 * x + 1.0) ** 2
+q.backward()
+assert q.data == 49.0
+assert x.grad == 28.0
+```
+
+The tiny `Value` engine stores graph edges during the forward pass, sorts them
+so outputs are visited before inputs, and accumulates every path's local
+contribution.
+
+## Gradient check [#gradient-check]
+
+Central difference estimates the same derivative without backpropagation:
+
+```text
+f'(x) ≈ (f(x + 0.000001) - f(x - 0.000001)) / 0.000002
+```
+
+At `x=3` it returns approximately `28`. Apply this check to one element of
+`W1`. Require absolute error below `1e-6`, then deliberately remove the tanh
+derivative and watch the check fail.
+
+## Completion evidence [#completion-evidence]
+
+- forward and gradient shapes are asserted;
+- the scalar autograd engine supports shared graph paths;
+- analytic and numerical gradients agree;
+- a broken local derivative is detected before training.
+
+## What's next [#whats-next]
+
+Translate the mechanisms into framework code in
+[F06 — PyTorch and checkpoint](/llm-engineering-course-pages/foundations-06-pytorch-checkpoint).
+
+[← F04](/llm-engineering-course-pages/foundations-04-neuron) · [→ F06](/llm-engineering-course-pages/foundations-06-pytorch-checkpoint)

@@ -1,0 +1,90 @@
+---
+title: "Hardware, Zeit und Cloud-Sicherheit"
+sidebar:
+  label: "Hardware & Cloud-Sicherheit"
+---
+
+<span id="hardware-zeit-und-cloud-sicherheit" />
+
+
+[Kursstart](/llm-engineering-course-pages/de/)
+
+## Das Versprechen [#das-versprechen]
+
+Alle Pflichtlernziele sind auf CPU erreichbar. Apple MPS und NVIDIA CUDA
+verkürzen Läufe und ermöglichen größere Vergleiche. Cloud und Multi-GPU sind
+optional und niemals Voraussetzung für ein Zertifikat.
+
+## Lokalen Preflight ausführen [#lokalen-preflight-ausfuhren]
+
+```
+python examples/check_hardware.py
+```
+
+Der Bericht enthält Backend, konservatives Referenzprofil, verfügbaren Speicher,
+soweit PyTorch ihn bereitstellt, und eine kleine Messung. Bewahre ihn beim
+Experimentbericht auf. Namen oder Firmendaten werden nicht erfasst.
+
+| Profil | Pflicht-Workload |
+| --- | --- |
+| CPU-LITE | Lehrmodelle mit 0,1–5 Mio. Parametern; Kontext 64–128 |
+| CPU-ADAPT | bis etwa 150 Mio. Parameter; kurzer LoRA-Nachweis plus Checkpoint |
+| MPS-32 | 10–50 Mio. from scratch; 0,5–1,5 Mrd. LoRA, sofern unterstützt |
+| CUDA-12/16 | 10–50 Mio. from scratch; 0,5–3 Mrd. LoRA/QLoRA, sofern unterstützt |
+| CLOUD-24 | nur optionaler Vergleich mit 3–7 Mrd. Parametern |
+
+Dies sind Startkonfigurationen, keine Leistungsversprechen. Reduziere zuerst den
+Microbatch, danach Kontext und schließlich Modellgröße.
+
+## Zeitboxen und Fallback-Checkpoints [#zeitboxen-und-fallback-checkpoints]
+
+| Arbeit | CPU-Zeitbox | Tier-1-Zeitbox | Fallback |
+| --- | --- | --- | --- |
+| Konzepte, Tests, kleine Forward Passes | 10 min | 10 min | bereitgestellte Ausgaben |
+| Tiny-Training | 60 min | 30 min | CP1 Basis-Checkpoint |
+| Continued Pretraining | 90 min | 120 min | CP2 Domain-Checkpoint |
+| SFT oder LoRA | 90 min | 120 min | CP3 Adapter |
+| DPO | 60 min | 150 min | CP4 Präferenz-Adapter |
+| Quantisierung/Serving | 45 min | 60 min | CP5 quantisierter Checkpoint |
+
+Führe vor einem Fallback den kleinen lokalen Pflichtnachweis aus: einen Batch
+laden, die geforderten Updates abschließen, speichern/fortsetzen und den
+gemessenen Loss dokumentieren. Der Checkpoint ersetzt Rechenzeit, nicht Nachweis.
+
+## Optionales Cloud-Lab [#optionales-cloud-lab]
+
+Übernimm den aktuellen Gesamtstundenpreis aus dem Provider-Rechner:
+
+```
+python examples/plan_cloud_budget.py --hourly-rate RATE
+```
+
+Das Standard-Gate begrenzt das Lab auf 5 USD, reserviert 0,50 USD für weitere
+Kosten, nutzt 20 Prozent Sicherheitsmarge und maximal 60 Minuten. Starte nicht,
+wenn das sichere Fenster kürzer als 30 Minuten ist.
+
+Unmittelbar nach dem Start:
+
+1. Shutdown für die berechnete Laufzeit planen;
+2. zweites Terminal für den Provider-Stop-Befehl bereithalten;
+3. alle fünf Minuten Checkpoint schreiben;
+4. nach Erfolg oder Fehler stoppen und Zustand prüfen;
+5. unnötige Disks und Snapshots löschen.
+
+Für das Google-Cloud-Referenzlab:
+
+```
+sudo shutdown -h +MAX_RUNTIME_MINUTES
+gcloud compute instances stop INSTANCE --zone=ZONE
+gcloud compute instances describe INSTANCE --zone=ZONE --format=get(status)
+```
+
+Preise ändern sich nach Zeit, Region, Ressource und Rabatt. Verwende niemals
+einen alten Kurswert als aktuellen Stundenpreis.
+
+Offizielle Referenzen:
+
+- [PyTorch-MPS-Backend](https://docs.pytorch.org/docs/2.14/notes/mps.html)
+- [PyTorch-CUDA-API](https://docs.pytorch.org/docs/2.14/cuda.html)
+- [Google-Compute-Engine-Preise](https://cloud.google.com/products/compute/pricing)
+- [Compute-Engine-Instanzen stoppen](https://docs.cloud.google.com/compute/docs/instances/stop-start-instance)

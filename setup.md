@@ -1,13 +1,13 @@
 ---
 title: "Setup — from a fresh computer to the first run"
+sidebar:
+  label: "Setup"
 ---
-
-[This lesson in MkDocs](/llm-engineering-course-pages/mkdocs/setup/)
 
 <span id="setup-from-a-fresh-computer-to-the-first-run" />
 
 
-[Course home](/llm-engineering-course-pages/mkdocs/) · [Learning guide](/llm-engineering-course-pages/mkdocs/learning-guide/) · [→ Unit 0](/llm-engineering-course-pages/unit-00)
+[Course home](/llm-engineering-course-pages/) · [Learning guide](/llm-engineering-course-pages/learning-guide) · [→ Unit 0](/llm-engineering-course-pages/unit-00)
 
 Allow 20–40 minutes for the first installation. A **terminal** is a window where
 commands run; a **repository** is the course folder plus its change history.
@@ -127,7 +127,7 @@ python -m mkdocs serve
 Tests end with a count of passed tests. The docs build must finish without an
 error. The server prints a local address, usually `http://127.0.0.1:8000`; open
 it in your browser. Press Ctrl+C in the terminal to stop it. EN/DE switches the
-lesson language. Start the [learning guide](/llm-engineering-course-pages/mkdocs/learning-guide/), then Unit 0.
+lesson language. Start the [learning guide](/llm-engineering-course-pages/learning-guide), then Unit 0.
 
 ## If something fails [#if-something-fails]
 
@@ -141,5 +141,5 @@ lesson language. Start the [learning guide](/llm-engineering-course-pages/mkdocs
 | Can't type commands after `mkdocs serve` | It is running; open a second terminal or stop with Ctrl+C. |
 
 Record the command and the last error lines when diagnosing a problem. Never
-paste credentials into a report. More: [Unit 0 troubleshooting](/llm-engineering-course-pages/mkdocs/unit-00-troubleshooting/)
-and [hardware profiles](/llm-engineering-course-pages/mkdocs/hardware/).
+paste credentials into a report. More: [Unit 0 troubleshooting](/llm-engineering-course-pages/unit-00-troubleshooting)
+and [hardware profiles](/llm-engineering-course-pages/hardware).

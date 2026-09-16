@@ -1,0 +1,68 @@
+---
+title: "M4 — Auditable company data"
+sidebar:
+  label: "M4 — Company data"
+---
+
+<span id="m4-auditable-company-data" />
+
+
+Prerequisites: [C01 strategy](/llm-engineering-course-pages/company-strategy) and [data quality](/llm-engineering-course-pages/data-quality).
+Nordlicht Workspace is fictional, so every learner can inspect the complete source
+inventory without handling customer data.
+
+## Build a snapshot before generating examples [#build-a-snapshot-before-generating-examples]
+
+`source_inventory()` contains current handbook facts plus deliberately planted
+fixtures: one deleted price, one restricted secret marker and one PII marker.
+`build_snapshot()` excludes those rows, records the reason, redacts email-like
+text and returns a stable SHA-256 hash. The hash identifies the exact approved
+snapshot used by later runs.
+
+```python
+from llm_course.company_data import build_snapshot
+
+snapshot = build_snapshot()
+print(len(snapshot["documents"]), snapshot["sha256"])
+print([row for row in snapshot["audit"] if row["decision"] != "include"])
+```
+
+The generator is deterministic and provenance-aware. Every instruction has a
+task (`billing`, `access`, `export` or `escalate`), a split, and source IDs. The
+filter rejects unknown actions, duplicate prompts, protected prompts, secrets,
+PII and unknown source IDs. `instruction_records("train")` returns 16 rows;
+`instruction_records("development")` returns 8. Neither imports protected gold.
+
+Preference records reuse training prompts and pair an approved answer with a
+clearly unsafe alternative. The rejected answer is a teaching signal, never a
+production answer. Keep raw/generated data in ignored `artifacts/`; commit only
+the manifest and the reproducible code.
+
+## Trace one record [#trace-one-record]
+
+1. Read the source ID and its license/access decision.
+2. Check that the response action matches the task and has exactly two string
+   fields.
+3. Run contamination checks before training.
+4. Hash the final records and record the code/model revision.
+
+### Exercise [#exercise]
+
+Pass a candidate containing `[SECRET_001]`, then a duplicate prompt, to
+`filter_instruction_candidates`. Predict both audit decisions before printing
+the result. Why must a deleted source be excluded even when its wording looks
+useful?
+
+<details>
+<summary>Reference answer</summary>
+
+The secret row is excluded by the secret-marker filter and the repeated prompt
+is excluded by the duplicate filter. Deleted material is no longer an approved
+source, so retaining it would break provenance and policy review.
+
+
+</details>
+
+Checkpoint: explain the difference between a source snapshot, a training record,
+a development case and a protected gold case. Continue with
+[company evaluation](/llm-engineering-course-pages/company-evaluation).

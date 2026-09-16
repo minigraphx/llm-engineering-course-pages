@@ -1,0 +1,44 @@
+---
+title: "Glossary"
+sidebar:
+  label: "Glossary"
+---
+
+<span id="glossary" />
+
+
+[Course home](/llm-engineering-course-pages/) · [Learning guide](/llm-engineering-course-pages/learning-guide)
+
+Examples and derivations live in the linked lessons. Use this page when a term blocks reading.
+
+| Term | Meaning |
+| --- | --- |
+| Token / Token | One discrete text unit: a character, byte or learned piece; an ID is its integer label. |
+| Vocabulary / Vokabular | All token IDs the model can predict; V is their count. |
+| Scalar, vector, matrix, tensor / Skalar, Vektor, Matrix, Tensor | One number; a list of numbers; a table; a number array with any number of axes. |
+| Shape, B/T/D/H/V / Shape, B/T/D/H/V | Axis lengths: batch examples, token positions, hidden width, attention heads and vocabulary. |
+| Parameter / Parameter | A stored trainable number, such as a weight. Training changes it. |
+| Activation / Aktivierung | An intermediate value calculated for a particular input; different from a stored weight. |
+| Embedding / Embedding | A lookup table turning a token or position ID into a learned vector. |
+| Logit, softmax / Logit, Softmax | An unrestricted score; the operation turning a row of scores into positive probabilities summing to one. |
+| Loss, NLL, cross-entropy / Loss, NLL, Kreuzentropie | Prediction penalty. For one true next token, negative log likelihood is -ln(probability assigned to it). |
+| Perplexity / Perplexität | exp(mean NLL). A uniform choice among four tokens has NLL ln(4) and perplexity 4; compare only with the same tokenizer/data. |
+| Gradient, backpropagation / Gradient, Backpropagation | Sensitivities of loss to parameters; the chain-rule algorithm computing them backwards through the graph. |
+| Optimizer, learning rate / Optimizer, Lernrate | The rule for updating parameters using gradients; the step-size control in that rule. |
+| Batch, microbatch, accumulation / Batch, Microbatch, Accumulation | Examples processed together; a smaller chunk; collecting several chunks’ gradients before one update. |
+| Epoch, step / Epoche, Schritt | One pass through a dataset; one optimizer update. Several microbatches may form one step. |
+| Causal mask / Kausale Maske | An allowed-position map preventing a prediction from using future input tokens. |
+| Padding, loss mask / Padding, Lossmaske | Filler tokens making sequences equally long; a selection of which targets count toward the loss. |
+| Residual, normalization, FFN / Residual, Normalisierung, FFN | Add a block’s input back to its output; rescale feature values; a feed-forward network applied separately at each position. |
+| Pretraining / Pretraining | Learning next-token prediction from text. It does not itself teach reliable instruction following. |
+| Train / validation / test | Data used for updates / choosing configurations / final evaluation after choices are frozen. |
+| Overfitting / Überanpassung | Training gets better while unseen-data quality stagnates or worsens; tiny-batch overfit is intentionally used as a mechanics check. |
+| Baseline, ablation / Baseline, Ablation | The unchanged reference experiment; a controlled comparison changing one component. |
+| Seed, checkpoint, resume / Seed, Checkpoint, Resume | A random-generator starting point; saved experiment state; continuation using that state. |
+| Leakage, memorization / Leakage, Memorierung | Held-out information enters training/selection; reproducing seen content instead of generalizing. |
+| Paired seeds, uncertainty / Gepaarte Seeds, Unsicherheit | Run baseline and change with matching seeds; variation showing how fragile the observed difference may be. |
+| FLOP, throughput, memory / FLOP, Durchsatz, Speicher | One floating-point operation; tokens processed per second; bytes needed for parameters, gradients, optimizer and activations. |
+| Mixed precision / Gemischte Präzision | Some operations use smaller numeric formats to reduce cost, with a float32 fallback in this course. |
+| RAG, SFT, LoRA / RAG, SFT, LoRA | Later units: retrieval of external text; supervised instruction fine-tuning; adaptation using small trainable low-rank matrices. |
+
+[F01](/llm-engineering-course-pages/foundations-01-python-numpy) · [F02](/llm-engineering-course-pages/foundations-02-shapes) · [F03](/llm-engineering-course-pages/foundations-03-probability) · [F04](/llm-engineering-course-pages/foundations-04-neuron) · [F05](/llm-engineering-course-pages/foundations-05-mlp-autograd) · [F06](/llm-engineering-course-pages/foundations-06-pytorch-checkpoint)

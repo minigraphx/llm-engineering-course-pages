@@ -1,29 +1,60 @@
 ---
-title: Lernen, indem du die Zahlen nachvollziehst
-description: Vier vollständige Lektionen, Einrichtung und zwei Sprachen. Ein kleines Modell nach dem anderen.
+title: "LLM-Engineering-Kurs"
+sidebar:
+  label: "Start"
 ---
 
-Starte mit einem winzigen Sprachmodell, rechne Attention von Hand und bringe einem
-Modell mit SFT und LoRA eine Antwort bei. Alle Pflichtversuche laufen auf der CPU.
+<span id="llm-engineering-kurs" />
 
-## Wähle deine Lektion
 
-- [Einheit 0 · Dein erster Tiny-LM-Lauf](/llm-engineering-course-pages/de/unit-00) — 45–60 Minuten, keine ML-Vorkenntnisse nötig.
-- [Attention · Von Scores zu gewichteten Values](/llm-engineering-course-pages/de/attention) — 90–110 Minuten, mit interaktiver Handrechnung.
-- [SFT / LoRA · Eine Antwort lernen, die Basis bewahren](/llm-engineering-course-pages/de/sft-lora) — Response-Maske nachvollziehen und ein Low-Rank-Update bauen.
+Verstehe Sprachmodelle, indem du ihre wichtigen Bestandteile selbst baust.
+Später verwendest du sie für einen realistischen Firmenfall.
 
-- [Mini-GPT-Kerngate · Implementieren, diagnostizieren, erklären](/llm-engineering-course-pages/de/mini-gpt-gate) — 60–90 Minuten, mit gestuften Hinweisen und vollständigem Referenzcode.
+Beginne mit der [Einrichtung](/llm-engineering-course-pages/de/setup) und dem [Lernleitfaden](/llm-engineering-course-pages/de/learning-guide).
+Er nennt Voraussetzungen und Checkpoints. Das [Glossar](/llm-engineering-course-pages/de/glossary) erklärt
+unbekannte Begriffe. Vorkenntnisse in Machine Learning sind nicht erforderlich.
 
-## Dein Einstieg
+## Zwei Einstiegspfade [#zwei-einstiegspfade]
 
-[Beginne mit der Einrichtung](/llm-engineering-course-pages/de/setup) oder nutze die
-[Godot-RL-Brücke](/llm-engineering-course-pages/mkdocs/de/foundations-godot-rl-bridge/).
-Der [Lernleitfaden](/llm-engineering-course-pages/mkdocs/de/learning-guide/) hilft dir bei den Voraussetzungen.
+- **Standalone:** Python, Mathematik, neuronale Netze und PyTorch sind enthalten.
+- **Godot-RL-Brücke:** Eine Diagnose erkennt bereits belegte Fähigkeiten aus dem
+  Godot-RL-Kurs an und vermeidet unnötige Wiederholung.
 
-## Vergleiche das Leseerlebnis
+Beide Wege beginnen mit [Einheit 0](/llm-engineering-course-pages/de/unit-00) und der
+[Diagnose](/llm-engineering-course-pages/de/diagnostic). Neueinsteiger bearbeiten [F01–F06](/llm-engineering-course-pages/de/foundations-01-python-numpy);
+Godot-RL-Absolventen nutzen die [kompakte Brücke](/llm-engineering-course-pages/de/foundations-godot-rl-bridge).
+Jede übersprungene Grundlage behält einen Rücksprunglink. Alle Wege führen über
+das gemeinsame F06-Gate zum selben Kernkurs.
 
-Dies ist der Blume-Pilot. Der [vollständige MkDocs-Kurs](/llm-engineering-course-pages/mkdocs/de/) bleibt verfügbar.
-Jede Lektion verlinkt ihre MkDocs-Fassung. Das Sprachmenü wechselt auf derselben
-Lektion zwischen Deutsch und Englisch; die Suche umfasst die Pilotseiten.
+Danach folgen [Bigramm-Baseline](/llm-engineering-course-pages/de/bigram-baseline), [Byte-Level-BPE](/llm-engineering-course-pages/de/bpe-tokenizer),
+[Datenpipeline und Embeddings](/llm-engineering-course-pages/de/data-pipeline), [Self-Attention](/llm-engineering-course-pages/de/attention),
+[Mini-GPT](/llm-engineering-course-pages/de/mini-gpt) und [Kerngate](/llm-engineering-course-pages/de/mini-gpt-gate). M3 ergänzt
+[reproduzierbares Training](/llm-engineering-course-pages/de/pretraining), [Datenqualität](/llm-engineering-course-pages/de/data-quality),
+[Evaluation](/llm-engineering-course-pages/de/evaluation) und [Profiling](/llm-engineering-course-pages/de/profiling).
 
-[Portable Shell-Konventionen](/llm-engineering-course-pages/de/setup#shell-conventions).
+Alle Pflichtziele haben einen CPU-Pfad. Prüfe vor größeren Experimenten die
+[Hardware- und Kostenleitplanken](/llm-engineering-course-pages/de/hardware).
+
+## Was du im gesamten Kurs bauen wirst [#was-du-im-gesamten-kurs-bauen-wirst]
+
+- eine Bigramm-Sprachmodellbaseline;
+- einen BPE-Tokenizer;
+- Self-Attention und einen Decoder-Transformer;
+- ein kleines GPT-Modell mit Training und Evaluation;
+- Instruktions- und Präferenz-Finetuning;
+- eine synthetische Datenpipeline mit Qualitätsprüfungen;
+- einen optimierten lokalen Inferenzdienst;
+- einen reproduzierbaren Firmenmodell-Capstone.
+
+<aside className="course-note" aria-label="Entwicklungsstand">
+<strong>Entwicklungsstand</strong>
+
+Einheit 0, Diagnose, Grundlagen, Bigramm, BPE, Datenpipeline und Attention
+sind verfügbar. M2 ergänzt Decoder, Kerngate und Model Card; M3 ergänzt
+fortsetzbares CPU-Training, Provenienzprüfungen, gepaarte Evaluation und
+gemessenes Profiling. Firmenmodell-Einheiten und größere bereitgestellte
+Datenpakete sind weiter geplant. Der echte Pilot mit fünf Lernenden steht
+noch aus. Automatische Prüfungen belegen weder das Verständnis aller
+Lernenden noch die Ausstellung eines Zertifikats.
+
+</aside>

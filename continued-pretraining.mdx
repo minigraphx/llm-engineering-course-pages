@@ -1,0 +1,48 @@
+---
+title: "M4 — Continued pretraining without losing the baseline"
+sidebar:
+  label: "M4 — Continued pretraining"
+---
+
+<CourseContent>
+
+<span id="m4-continued-pretraining-without-losing-the-baseline" />
+
+
+Continued pretraining (also called domain-adaptive pretraining, DAPT) continues
+the language-model objective on approved domain text. It teaches vocabulary and
+style distributions; it does not directly teach a JSON response contract.
+
+`run_continued_pretraining.py` uses the approved company snapshot, byte-level
+fallback tokenization, disjoint domain held-outs and two general controls. It
+trains a tiny CPU model, saves an immutable base, resumes from an interrupted
+checkpoint, and can roll back by reloading the base.
+
+```bash
+.venv/bin/python examples/run_continued_pretraining.py --seeds 7 19 43
+```
+
+The measured seeds improved domain NLL by 0.359–0.411 nats while general-control
+NLL regressed by 0.032–0.109 nats. The report therefore keeps the candidate for
+further review rather than promoting it. Exact resume and rollback identity are
+strong engineering checks; they are not a quality claim.
+
+### Exercise [#exercise]
+
+Why are a domain gain and a general regression reported separately? Which change
+would make this experiment invalid: adding a general held-out sentence to the
+training text, or changing only the learning-rate seed?
+
+<details>
+<summary>Reference answer</summary>
+
+Separate scores expose forgetting. Adding held-out text contaminates the test;
+a preregistered seed change is a new run that must be recorded, not hidden.
+
+
+</details>
+
+Checkpoint: state a promotion threshold, name the rollback artifact and explain
+why DAPT must be followed by instruction evaluation.
+
+</CourseContent>

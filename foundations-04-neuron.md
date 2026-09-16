@@ -1,0 +1,79 @@
+---
+title: "F04 — Neuron and gradient descent"
+sidebar:
+  label: "F04 — Neuron & gradient descent"
+---
+
+<span id="f04-neuron-and-gradient-descent" />
+
+
+[← F03](/llm-engineering-course-pages/foundations-03-probability) · [Course home](/llm-engineering-course-pages/) · [→ F05](/llm-engineering-course-pages/foundations-05-mlp-autograd)
+
+## Learning outcome [#learning-outcome]
+
+You will calculate a neuron's forward pass and gradients, then prove that the
+chosen update lowers its loss.
+
+## What a neuron and a derivative mean here [#what-a-neuron-and-a-derivative-mean-here]
+
+Our neuron is a small function with adjustable numbers `w` (weight) and `b`
+(bias). A forward pass computes a prediction from input `x`. The target `y`
+is the desired answer. Squaring the difference gives a nonnegative error.
+
+A derivative measures local sensitivity: if increasing `w` by a tiny amount
+raises the loss, `dL/dw` is positive. To lower the loss, move in the opposite
+direction. The **learning rate** controls the step size. A gradient collects
+one derivative for each adjustable parameter. For the square `u²`, the local
+derivative is `2u`; for `wx+b`, changing `w` changes the result at rate `x`.
+Multiply these two local rates to obtain `dL/dw = 2(ŷ-y)x` (the chain rule).
+The exact zero in this particular example is a convenient numerical choice;
+a general dataset will need many updates and need not reach zero.
+
+## One complete update with numbers [#one-complete-update-with-numbers]
+
+A scalar neuron predicts `ŷ = wx + b`. Use `x=2`, `w=0.5`, `b=0.1`, target
+`y=3`, and squared loss `L=(ŷ-y)²`:
+
+1. `ŷ = 0.5 × 2 + 0.1 = 1.1`.
+2. Error is `1.1 - 3 = -1.9`; loss is `(-1.9)² = 3.61`.
+3. `dL/dw = 2(ŷ-y)x = 2 × -1.9 × 2 = -7.6`.
+4. `dL/db = 2(ŷ-y) = -3.8`.
+5. With learning rate `0.1`, subtract the gradients: `w=1.26`, `b=0.48`.
+6. The new prediction is `1.26 × 2 + 0.48 = 3.0`; loss is `0`.
+
+The sign has visible meaning: subtracting a negative gradient increases the
+parameters. Adding the gradient moves in the opposite direction.
+
+## Train and inspect [#train-and-inspect]
+
+```
+import numpy as np
+from llm_course import train_scalar_neuron
+
+x = np.array([-1.0, 0.0, 1.0, 2.0])
+y = 2.0 * x + 1.0
+trace = train_scalar_neuron(x, y)
+assert trace.losses[-1] < trace.losses[0]
+```
+
+Write the gradient calculation yourself first. Track weight, bias, and loss on
+every step; a final number alone cannot explain a failure.
+
+## Break and diagnose [#break-and-diagnose]
+
+Run the same data with `fault="wrong_gradient_sign"`. Do not inspect the
+reference implementation yet. Use only the loss curve and parameter movement
+to form a hypothesis, identify the faulty equation, and predict the repair.
+
+## Completion evidence [#completion-evidence]
+
+- the hand-worked update and code agree;
+- input, target, and prediction shapes match;
+- healthy loss decreases and the broken loss increases;
+- your diagnosis names mechanism, evidence, and repair.
+
+## What's next [#whats-next]
+
+Continue with [F05 — MLP, backpropagation, and autograd](/llm-engineering-course-pages/foundations-05-mlp-autograd).
+
+[← F03](/llm-engineering-course-pages/foundations-03-probability) · [→ F05](/llm-engineering-course-pages/foundations-05-mlp-autograd)

@@ -12,9 +12,9 @@
     "apiCatalog": "https://minigraphx.github.io/llm-engineering-course-pages/.well-known/api-catalog",
     "sitemap": "https://minigraphx.github.io/llm-engineering-course-pages/sitemap.xml"
   },
-  "description": "Unit 0 · Attention · SFT / LoRA · Mini-GPT core gate",
+  "description": "Understand, build, train, evaluate, align, and serve language models",
   "generator": "blume@1.6.4",
-  "name": "LLM Engineering · Pilot",
+  "name": "LLM Engineering Course",
   "site": "https://minigraphx.github.io",
   "contentUsage": {
     "search": true,

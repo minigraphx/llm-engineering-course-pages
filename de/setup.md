@@ -1,13 +1,13 @@
 ---
 title: "Einrichtung — vom frischen Computer zum ersten Lauf"
+sidebar:
+  label: "Einrichtung"
 ---
-
-[Diese Lektion in MkDocs](/llm-engineering-course-pages/mkdocs/de/setup/)
 
 <span id="einrichtung-vom-frischen-computer-zum-ersten-lauf" />
 
 
-[Kursstart](/llm-engineering-course-pages/mkdocs/de/) · [Lernleitfaden](/llm-engineering-course-pages/mkdocs/de/learning-guide/) · [→ Einheit 0](/llm-engineering-course-pages/de/unit-00)
+[Kursstart](/llm-engineering-course-pages/de/) · [Lernleitfaden](/llm-engineering-course-pages/de/learning-guide) · [→ Einheit 0](/llm-engineering-course-pages/de/unit-00)
 
 Plane für die erste Installation 20–40 Minuten ein. Ein **Terminal** ist ein
 Fenster zum Ausführen von Befehlen. Ein **Repository** ist der Kursordner samt
@@ -134,7 +134,7 @@ Die Tests enden mit der Zahl bestandener Tests. Der Dokumentationsbau muss ohne
 Fehler enden. Der Server nennt eine lokale Adresse, meist
 `http://127.0.0.1:8000`; öffne sie im Browser. Ctrl+C im Terminal beendet den
 Server. EN/DE wechselt die Sprache. Beginne mit dem
-[Lernleitfaden](/llm-engineering-course-pages/mkdocs/de/learning-guide/), dann mit Einheit 0.
+[Lernleitfaden](/llm-engineering-course-pages/de/learning-guide), dann mit Einheit 0.
 
 ## Wenn etwas fehlschlägt [#wenn-etwas-fehlschlagt]
 
@@ -149,5 +149,5 @@ Server. EN/DE wechselt die Sprache. Beginne mit dem
 
 Notiere bei Fehlern den Befehl und die letzten Fehlerzeilen. Zugangsdaten gehören
 nicht in Berichte. Weitere Hilfe:
-[Fehlerbehebung für Einheit 0](/llm-engineering-course-pages/mkdocs/de/unit-00-troubleshooting/) und
-[Hardwareprofile](/llm-engineering-course-pages/mkdocs/de/hardware/).
+[Fehlerbehebung für Einheit 0](/llm-engineering-course-pages/de/unit-00-troubleshooting) und
+[Hardwareprofile](/llm-engineering-course-pages/de/hardware).

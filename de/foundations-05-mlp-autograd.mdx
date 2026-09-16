@@ -1,0 +1,107 @@
+---
+title: "F05 — MLP, Backpropagation und kleines Autograd"
+sidebar:
+  label: "F05 — MLP, Backprop & Autograd"
+---
+
+<CourseContent>
+
+<span id="f05-mlp-backpropagation-und-kleines-autograd" />
+
+
+[← F04](/llm-engineering-course-pages/de/foundations-04-neuron) · [Kursstart](/llm-engineering-course-pages/de/) · [→ F06](/llm-engineering-course-pages/de/foundations-06-pytorch-checkpoint)
+
+## Lernziel [#lernziel]
+
+Du implementierst ein MLP mit einer Hidden-Schicht, verfolgst Reverse-Mode-
+Backpropagation und prüfst einen analytischen Gradienten numerisch.
+
+## Vom einzelnen Neuron zur versteckten Schicht [#vom-einzelnen-neuron-zur-versteckten-schicht]
+
+Ein MLP (Multilayer Perceptron) verbindet mehrere Neuronen. Eine versteckte
+Schicht liefert einen Zwischenvektor statt der endgültigen Antwort. `tanh`
+begrenzt Werte nichtlinear auf (-1,1): `tanh(0)=0`, `tanh(1)≈0.762`. Ohne
+Nichtlinearität ließen sich zwei lineare Schichten zu einer Matrixmultiplikation
+zusammenfassen. Eine Aktivierung wird für die aktuelle Eingabe berechnet; ein
+Parameter ist ein gespeichertes Gewicht für viele Eingaben.
+
+Für die Gleichungen unten sei `P=softmax(Z)` und `Y` pro Zeile eine 1 in der
+richtigen Klassenspalte (**One-hot**-Ziel). Mittlere Kreuzentropie über B Zeilen
+beginnt rückwärts mit `dZ=(P-Y)/B`. Danach folgen lokale Ableitungen:
+
+```text
+dW2 = H.T @ dZ                db2 = sum(dZ, over rows)
+dH  = dZ @ W2.T
+dA  = dH * (1 - H*H)         # tanh-Ableitung bei A: 1-tanh(A)^2
+dW1 = X.T @ dA               db1 = sum(dA, over rows)
+```
+
+`.T` transponiert eine 2D-Matrix; `*` wirkt hier elementweise. Der Bias wird für
+jede Zeile genutzt, deshalb summiert sein Gradient alle Zeilenbeiträge. Für eine
+Zeile mit Wahrscheinlichkeiten `[0.8,0.2]` und Zielklasse 1 gilt
+`dZ=[0.8,-0.8]`: Das Update senkt tendenziell den falschen Score und erhöht den
+richtigen. Schreibe jede Gradientenform neben ihren Parameter. Der numerische
+Check unten prüft eine Ableitung unabhängig von dieser Herleitung.
+
+## MLP-Shapes vor Werten [#mlp-shapes-vor-werten]
+
+Für `X:[2,2]`, `W1:[2,3]`, `b1:[3]`, `W2:[3,2]` und `b2:[2]` gilt:
+
+```text
+H = tanh(X @ W1 + b1)    shape [2, 3]
+Z = H @ W2 + b2          shape [2, 2]
+```
+
+Die zwei Zeilen sind Beispiele, die letzten zwei Spalten Klassenlogits. Nutze
+`mlp_loss_and_gradients`, um Hidden-Aktivierungen, Logits, Wahrscheinlichkeiten,
+Loss und Gradienten zu untersuchen, aber implementiere die Gleichungen zuerst
+selbst. Jeder Gradient hat denselben Shape wie sein Parameter.
+
+## Backpropagation multipliziert lokale Ableitungen [#backpropagation-multipliziert-lokale-ableitungen]
+
+Für `q=(2x+1)²` bei `x=3` sind die Forward-Werte 7 und 49. Rückwärts:
+
+```text
+dq/dx = 2(2x + 1) × 2 = 2 × 7 × 2 = 28
+```
+
+```
+from llm_course import Value
+
+x = Value(3.0)
+q = (2.0 * x + 1.0) ** 2
+q.backward()
+assert q.data == 49.0
+assert x.grad == 28.0
+```
+
+Die kleine `Value`-Engine speichert Kanten im Forward Pass, besucht Ausgaben
+vor Eingaben und summiert den lokalen Beitrag jedes Pfades.
+
+## Gradient Check [#gradient-check]
+
+Central Difference schätzt unabhängig:
+
+```text
+f'(x) ≈ (f(x + 0.000001) - f(x - 0.000001)) / 0.000002
+```
+
+Bei `x=3` entsteht ungefähr 28. Prüfe damit ein Element von `W1` und verlange
+Absolutfehler unter `1e-6`. Entferne danach absichtlich die tanh-Ableitung und
+beobachte den Fehlschlag.
+
+## Abschlussnachweis [#abschlussnachweis]
+
+- Forward- und Gradienten-Shapes sind geprüft;
+- die Autograd-Engine verarbeitet gemeinsam genutzte Graphpfade;
+- analytischer und numerischer Gradient stimmen überein;
+- eine defekte lokale Ableitung wird vor dem Training gefunden.
+
+## Wie geht es weiter? [#wie-geht-es-weiter]
+
+Übersetze die Mechanismen in Framework-Code in
+[F06 — PyTorch und Checkpoint](/llm-engineering-course-pages/de/foundations-06-pytorch-checkpoint).
+
+[← F04](/llm-engineering-course-pages/de/foundations-04-neuron) · [→ F06](/llm-engineering-course-pages/de/foundations-06-pytorch-checkpoint)
+
+</CourseContent>

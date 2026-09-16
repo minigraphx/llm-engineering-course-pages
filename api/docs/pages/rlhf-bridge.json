@@ -1,0 +1,11 @@
+{
+  "contentType": "doc",
+  "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/rlhf-bridge.json",
+  "lastModified": null,
+  "locale": "en",
+  "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/rlhf-bridge.md",
+  "route": "/rlhf-bridge",
+  "title": "M5 — RLHF bridge: inspect the failure mode",
+  "url": "https://minigraphx.github.io/llm-engineering-course-pages/rlhf-bridge",
+  "markdown": "---\ntitle: \"M5 — RLHF bridge: inspect the failure mode\"\nsidebar:\n  label: \"M5 — RLHF bridge\"\n---\n\n<span id=\"m5-rlhf-bridge-inspect-the-failure-mode\" />\n\n\nThe optional bridge fixes a reference policy, fits a reward model from preference\npairs, adds a KL penalty and updates a finite-action policy with PPO. The action\ntable includes billing, access, export and secret-request routes. A planted\nconfidence shortcut makes reward hacking observable.\n\nRead `alignment.py` line by line before using a library trainer. Check three\nquantities after the run: proxy reward, true quality and hack rate. A policy is\nnot safer merely because its learned reward increased. Critical routing remains\nan application gate and must be evaluated separately.\n\nRun the CPU recipe from [DPO](/llm-engineering-course-pages/dpo). For an accelerator, keep the same seed,\ndata and evaluator; retain the CPU fallback when the accelerator is unavailable.\n\nCheckpoint: describe one monitor that would trigger rollback (for example, a\ncritical safety failure or a rising hack rate) and name the immutable reference\nneeded to reproduce it.\n"
+}

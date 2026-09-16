@@ -1,0 +1,253 @@
+---
+title: "Profiling: vom Modell zum Ressourcenbudget"
+sidebar:
+  label: "E04 — Profiling & Budgets"
+---
+
+<CourseContent>
+
+<span id="profiling-vom-modell-zum-ressourcenbudget" />
+
+
+Voraussetzungen: [Decoder](/llm-engineering-course-pages/de/mini-gpt), [Training](/llm-engineering-course-pages/de/pretraining) und
+[Evaluation](/llm-engineering-course-pages/de/evaluation). Plane etwa 45 Minuten ein. Eine CPU genügt.
+Das Ziel ist eine begründete Ressourcenentscheidung mit sichtbaren Annahmen.
+
+## 1. Erst die Größen erklären [#1-erst-die-groen-erklaren]
+
+Ein **Parameter** ist ein trainierbarer Skalar. Ein **FLOP** ist eine
+Gleitkommaoperation; Multiplikation plus Addition zählen hier als zwei.
+**FLOPs** geben Arbeit an, **FLOP/s** eine Rate. **Durchsatz** bezeichnet hier
+verarbeitete Trainingstokens pro Sekunde. Ein **Profiler** zeichnet Operationen
+und ihre Kosten während der Ausführung auf. **Latenz** ist die verstrichene Zeit
+für einen Schritt. Keine dieser Größen misst allein die Modellqualität.
+
+`B` bezeichnet Batchgröße, `T` Sequenzlänge, `d` Einbettungsbreite, `L` Decoderblöcke,
+`H` Attention-Köpfe, `V` Vokabulargröße und `C` konfigurierte Kontextkapazität.
+Standard ist `B=2,T=C=8,d=16,L=1,H=2,V=7`: 16 Tokens pro Trainingsschritt und
+Ausgabelogits der Form `[2,8,7]`.
+
+## 2. Die tatsächliche Architektur zählen [#2-die-tatsachliche-architektur-zahlen]
+
+Tokeneinbettung und separate Ausgabematrix tragen zusammen `2*V*d` Parameter bei,
+Positionseinbettungen `C*d`. Pro Block sind es `4*d*d` Attention-Gewichte,
+`8*d*d` Feed-forward-Gewichte und `5*d` Feed-forward-Biaswerte. Zwei Normalisierungen
+fügen `4*d` Skalare hinzu; die abschließende Normalisierung weitere `2*d`.
+
+Mit aktivierter Normalisierung:
+
+```text
+P = 2*V*d + C*d + L*(12*d*d + 9*d) + 2*d
+  = 224 + 128 + 3216 + 32
+  = 3600 Parameter
+```
+
+Diese Anzahl ist für MiniGPT exakt: Einbettung und Ausgabematrix teilen keine
+Gewichte, die Attention-Projektionen haben keinen Bias. Der Test vergleicht die
+Formel mit `sum(p.numel() ...)`, auch ohne Normalisierung. Andere Architekturen
+benötigen eine angepasste Zählung.
+
+**FP32** benötigt vier Bytes pro Skalar. **AdamW** speichert zwei gleitende
+Statistiken pro Parameter. Zusammen mit Parametern und Gradienten sind das ungefähr
+`4*4*P=16P=57.600` Bytes. Python, Laufzeitbibliotheken, Speicherverwaltung und
+Zwischentensoren sind darin nicht enthalten. Eine **gespeicherte Aktivierung** ist
+ein Zwischenwert für den Rückwärtslauf. Unsere bewusst grobe Schätzung lautet
+`4*B*(L*(12*T*d+H*T*T)+T*V)` und ergibt 13.760 Bytes. Zusammen sind es 71.360 Bytes;
+das ist nicht der Speicherbedarf eines gestarteten Python-Prozesses.
+
+Für dichte Matrixmultiplikationen schätzen wir:
+
+```text
+Vorwärts: 2*B*L*(12*T*d*d + 2*T*T*d) + 2*B*T*d*V = 110080 FLOPs
+Training: ungefähr 3 * Vorwärts = 330240 FLOPs pro Optimierungsschritt
+```
+
+Der erste Term enthält Projektionen und Feed-forward-Matrizen. `T*T` entsteht aus
+Attention-Scores und gewichteten Werten. Der letzte Term ist die Vokabularausgabe.
+Nichtlinearitäten, Normalisierung, Nachschlagen und Optimierer-Arithmetik fehlen.
+Bei dichten Produkten kostet der Rückwärtslauf oft ungefähr zwei Vorwärtsläufe;
+`3x` ist eine Planungsnäherung, keine gemessene Gleichheit. Die Kausalmaske entfernt
+in dieser Lehrimplementierung keine dichten Matrixmultiplikationen.
+
+## 3. Erst vorhersagen, dann dieselbe Arbeit messen [#3-erst-vorhersagen-dann-dieselbe-arbeit-messen]
+
+Lege vor der Messung zehn Schritte und angenommene 10.000 Tokens/s fest. Dieser
+Durchsatz ist ausdrücklich hypothetisch und stammt nicht aus dem bevorstehenden
+Lauf. Bei Batch2/Kontext8 ergibt das `10*2*8=160` gemessene Tokens und eine
+Zeitvorhersage von `160/10000=0,016` Sekunden. Für Modellzustände plus Aktivierungen
+stehen vorab 71.360 Bytes in der Schätzung. Plane zusätzliche Reserve ein, zum
+Beispiel die doppelte Schrittzeit (0,032 Sekunden) für Schwankungen sowie ein
+getrenntes Budget für Start, Evaluation und Checkpoints. Reserve auf geschätzte
+Tensorbytes ersetzt keine Messung des tatsächlichen Prozess-Spitzenspeichers.
+
+```bash
+python examples/profile_training.py --assumed-tokens-per-second 10000 --output artifacts/profiling/review.json
+```
+
+Die CLI schreibt `artifacts/profiling/review.plan.json`, **bevor** sie den Profiler
+aufruft. Die Datei enthält Schritte, Tokens, angenommenen Durchsatz, vorhergesagte
+Sekunden, Tensorbytes, Architektur und Messumfang. Mit
+`--assumed-tokens-per-second` kannst du einen separat kalibrierten Durchsatz
+vorgeben; null, negative und nicht endliche Werte werden abgewiesen. Verwende für
+jeden Versuch einen eigenen Ausgabenamen, um seine ursprüngliche Annahme zu behalten.
+
+`review.json` enthält anschließend denselben unveränderten Plan.
+`timed_step_total_seconds` summiert die zehn tatsächlich gemessenen Dauern, statt
+`10*Median` zu verwenden. Vorhersage und Messung schließen Aufwärmen, Modellaufbau,
+Profiling, Datenladen, Evaluation und Checkpoints aus. Ihr Umfang stimmt überein.
+Ein dokumentierter Wiederholungslauf auf der Referenz-CPU brauchte
+**0,007748458 Sekunden** statt vorhergesagter **0,016 Sekunden**. Die vorzeichenbehaftete
+Abweichung ist `Ist-Soll=-0,008251542` Sekunden; relativ ergibt das
+`-0,008251542/0,016=-0,515721`, also etwa **51,57% weniger Zeit** als angenommen.
+Der hypothetische Durchsatz war für diesen Rechner konservativ. Das widerlegt
+keine FLOP-Formel; andere Rechner können abweichen. Kalibriere mit einem getrennten
+Pilotlauf, statt die gespeicherte Vorhersage nach Kenntnis des Ergebnisses zu ändern.
+
+Beim Speicher stehen 71.360 geschätzte Tensorbytes den 115.904 Bytes positiver
+Operatorallokationen gegenüber. Da die Umfänge verschieden sind, berechnet der
+Bericht daraus ausdrücklich keinen prozentualen Peak-Speicherfehler. Dafür wäre
+eine zusätzliche passende Prozess-/Gerätespeichermessung nötig.
+
+Die folgenden Konfigurationsvergleiche verwenden dieselbe Standardannahme und
+schreiben jeweils ebenfalls eine eigene `.plan.json`:
+
+```bash
+python examples/profile_training.py --output artifacts/profiling/report.json
+python examples/profile_training.py --context 16 --output artifacts/profiling/context16.json
+python examples/profile_training.py --context 16 --width 32 --output artifacts/profiling/width32.json
+```
+
+Der Runner kopiert das Modell auf die CPU und erzeugt mit einem Aufwärmschritt die
+AdamW-Zustände. **Aufwärmen** lässt erstmalige Initialisierung und verzögerte
+Allokationen vor der eigentlichen Messung stattfinden. Danach werden zehn volle
+Trainingsschritte gemessen. Der **Median**, die mittlere sortierte Dauer, reagiert
+weniger auf eine einzelne Unterbrechung als der Mittelwert. Die Zeitmessung erfolgt
+ohne Profiler, damit dessen Zusatzaufwand nicht im Durchsatz steckt. Separate
+instrumentierte Durchläufe erfassen Trainingsoperationen und Vorwärts-FLOPs.
+
+Referenz: macOS arm64, Python 3.12.13, PyTorch 2.14.0, ein CPU-Thread:
+
+| Kontext / Breite | Parameter | Vorwärts geschätzt / aufgezeichnet | Geschätzter Speicher | Median pro Schritt | Tokens/s |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 8 / 16 | 3.600 | 110.080 / 111.728 FLOPs | 71.360 B | 0,753 ms | 21.261 |
+| 16 / 16 | 3.728 | 236.544 / 239.840 FLOPs | 89.216 B | 0,799 ms | 40.055 |
+| 16 / 32 | 13.600 | 866.304 / 872.672 FLOPs | 271.744 B | 0,958 ms | 33.392 |
+
+Das sind Beobachtungen, keine Bestehensgrenzen. Rechner, konkurrierende Prozesse
+und Bibliotheksversionen verändern die Zeiten. Längerer Kontext verdoppelt hier
+die Tokens, aber nicht die Laufzeit: Viele winzige Operationen haben festen
+Verwaltungsaufwand. Übertrage dieses günstige Verhältnis nicht auf lange Kontexte.
+
+`with_flops=True` liefert Schätzungen für unterstützte Operationen, keine gezählten
+Hardwareinstruktionen. Im Standardfall ist die Abweichung
+`(111728-110080)/110080 ≈ 1,50%`. Zusätzlich erfasste Arithmetik und unterschiedliche
+Zählumfänge erklären, warum analytischer Wert und Profilerwert nicht exakt gleich
+sein müssen. Siehe die
+[PyTorch-Profiler-API](https://docs.pytorch.org/docs/stable/profiler.html) und das
+[offizielle Profiling-Rezept](https://docs.pytorch.org/tutorials/recipes/recipes/profiler_recipe.html).
+
+`positive_operator_allocation_bytes` beträgt in der Referenz 115.904 Bytes. Es ist
+die Summe positiver Nettoallokationen pro Operator während eines Schritts.
+Das ist **nicht gleichzeitig belegter Spitzenspeicher**, **RSS** (physisch belegter
+Prozessspeicher) oder GPU-Speicher. Wiederverwendete Zwischentensoren und dauerhafte
+Zustände unterscheiden diese Größen. PyTorch kann melden, dass ein vor Profilbeginn
+angelegter Block keinem aufgezeichneten Freigabeereignis zugeordnet werden kann.
+Auch deshalb darf diese Summe nicht als Peak-Speicher bezeichnet werden.
+
+## 4. Engpass erkennen und Budgetentscheidung treffen [#4-engpass-erkennen-und-budgetentscheidung-treffen]
+
+Ein **Engpass** ist der Teil, der bei dieser Konfiguration den Fortschritt
+begrenzt. `operators` sortiert nach eigener CPU-Zeit, ohne aufgezeichnete
+Kindoperationen. `course_forward` und `course_backward` sind markierte Bereiche,
+keine einzelnen Tensor-Kernel. Ihre eigenen Zeiten betragen in der Referenz etwa
+527 und 240 Mikrosekunden, der AdamW-Schritt etwa 226 Mikrosekunden. Bei diesem
+winzigen Modell ist Verwaltungs-/Python-/Optimiereraufwand damit sichtbar.
+Das beweist keinen Python-Engpass bei großen Transformern.
+
+Das Standardbudget beträgt 60 Sekunden und 64 MiB, also `64*1024*1024` Bytes.
+Die Speicherschätzung passt; aus dem Median folgt
+`floor(60/0,00075256)=79.727` Schritte. Im JSON steht `decision: "run"`.
+Das plant wiederholte synthetische Schritte. Datenladen, Evaluation, Checkpoints,
+Start und Profiling selbst brauchen zusätzliche Zeit. Es ist keine Zusage für
+79.727 vollständige End-to-End-Trainingsschritte in einer Minute.
+
+Bei einem hypothetischen Budget von 100.000 Bytes *für geschätzte Modelltensoren*
+passt Kontext 16 / Breite 16 mit 89.216 Bytes. Breite 32 passt mit 271.744 Bytes
+nicht. Wähle dafür die kleinere Breite. Für ein echtes Prozessbudget musst du
+Spitzenspeicher messen und Reserve einplanen: 100.000 Bytes reichen nicht einmal
+für die Python-Laufzeit. Mit `--memory-mib 0.001` scheitert bereits die
+Standardschätzung und liefert null mögliche Schritte. Null, negative und nicht
+endliche Budgets werden als ungültig zurückgewiesen.
+
+## 5. Skalierung und optionale Parallelisierung [#5-skalierung-und-optionale-parallelisierung]
+
+Mehr Batchgröße erhöht die geschätzte Arbeit linear. Doppelte Breite vervierfacht
+ungefähr die Matrixgewichte und Projektionsarbeit. Doppelter Kontext vervierfacht
+die `T*T`-Attention-Komponente, während viele andere Komponenten nur doppelt so
+groß werden. Mehr Blöcke skalieren die wiederholte Blockarbeit fast linear.
+Gelernte Positionseinbettungen wachsen mit der konfigurierten Kontextkapazität,
+auch bei kürzeren Batches. Miss erneut: Auslastung und Speicherverkehr ändern die
+Verhältnisse zwischen Rechenarbeit und Zeit.
+
+Ein **Skalierungsgesetz** beschreibt einen empirisch beobachteten Zusammenhang
+zwischen Modell-Loss und Größen wie Parameterzahl, Datenmenge und Rechenbudget.
+Es ist etwas anderes als die Formeln für Rechenoperationen: Diese zählen Arbeit,
+nicht ihren Nutzen für die Qualität. Ein größeres Modell braucht geeignete Daten
+und ausreichend Training. Mehr Durchläufe desselben winzigen Korpus können zu
+Überanpassung statt besserem Test-Loss führen. Bei abnehmendem Zusatznutzen wird
+die nächste Recheneinheit weniger wertvoll. Vergleiche deshalb gemessenen Loss
+unter kontrollierten Modell-/Daten-/Schrittbudgets. Die drei winzigen Konfigurationen
+hier reichen nicht aus, ein Sprachmodell-Skalierungsgesetz zu bestimmen oder zu
+bestätigen. Die empirische Grundlage beschreibt
+[Kaplan et al., Scaling Laws for Neural Language Models](https://arxiv.org/abs/2001.08361).
+
+**Datenparallelität** hält auf jedem Gerät eine vollständige Modellkopie und
+verteilt Beispiele. Vor jeder Aktualisierung werden Gradienten ausgetauscht.
+Das erhöht potenziell den Gesamtdurchsatz, verkleinert aber nicht die Parameter
+einer Kopie. Bei unterschiedlich vielen gültigen Tokens pro Gerät muss die globale
+Tokengewichtung korrekt bleiben.
+
+**Tensorparallelität** zerlegt die Matrizen einer Operation auf Geräte. Das kann
+den lokalen Speicherbedarf senken, erfordert aber Kommunikation innerhalb der
+Schichten. **Pipelineparallelität** verteilt aufeinanderfolgende Schichten auf
+Geräte und schickt Mikrobatches hindurch. Beim Füllen oder Warten entstehen
+**Bubbles**, also Leerlaufzeiten. Mehr Mikrobatches können diesen Anteil reduzieren.
+Beide Verfahren benötigen passende Kommunikations- und Ablaufplanung. Hier werden
+sie erklärt; die Einheit implementiert keine verteilte Trainingslaufzeit.
+
+Optionale GPUs können das Trainingslabor mit dessen CPU-Rückfall ausführen.
+Dieser Profiler misst ausdrücklich immer CPU. Für einen getrennten CUDA-Versuch
+müssen CUDA-Aktivitäten aufgezeichnet und asynchrone Operationen um die Zeitmessung
+synchronisiert werden. CUDA-Allokationen und Peak-Werte separat berichten.
+Unsynchronisierte Startzeit darf nicht mit dem CPU-Median verglichen werden.
+Bei 3.600 Parametern können Gerätestart und Kommunikation mehr kosten als die
+beschleunigte Arithmetik.
+
+## 6. Übungen und Referenzantworten [#6-ubungen-und-referenzantworten]
+
+1. Berechne die vier FP32-Parameterzustände. Warum genügt ein Prozessbudget von
+   57.600 Bytes trotzdem nicht?
+2. Bezeichne absichtlich `positive_operator_allocation_bytes` als maximalen RAM
+   in einer Experimentkarte. Benenne und korrigiere den falschen Schluss.
+3. Sage voraus, wie doppelter Kontext Attention-Score-Speicher und Projektionen
+   verändert. Führe den Kontextvergleich aus und erkläre seine Laufzeit.
+4. Wähle eine gemessene Konfiguration für 100.000 Bytes geschätzte Modelltensoren.
+   Welche fehlende Messung brauchst du vor einem echten Einsatz?
+
+Hinweise: Vier Zustände mal vier Bytes; Allokationen während einer Zeitspanne sind
+nicht gleichzeitig belegter Speicher; unterscheide `T` und `T*T`.
+
+Antworten: (1) `3600*16=57600` Bytes ohne Aktivierungen, temporäre Tensoren,
+Speicherverwaltung, Python und Bibliotheken. (2) Schreibe „115.904 Bytes positive
+Nettoallokationen pro Operator im profilierten Schritt; gleichzeitig belegter
+Spitzenspeicher wurde nicht gemessen.“ (3) Score-Speicher wächst vierfach,
+Projektionen ungefähr zweifach; feste Verwaltungskosten können bei winzigen
+CPU-Operationen besser ausgelastet werden. (4) Beide Breite-16-Konfigurationen
+passen in diese Schätzung; Kontext 16 zeigt hier höheren Tokendurchsatz. Miss
+den tatsächlichen Prozess-Spitzenspeicher und prüfe Qualität bei gewähltem Kontext.
+
+Die Einheit ist abgeschlossen, wenn du 3.600 Parameter herleiten, die FLOP-Abweichung
+erklären, Allokationsereignisse von Spitzenspeicher unterscheiden und eine
+Budgetentscheidung mit ihren Grenzen formulieren kannst.
+
+</CourseContent>

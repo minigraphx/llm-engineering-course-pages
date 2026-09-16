@@ -1,0 +1,235 @@
+---
+title: "Diagnose und Lernpfad"
+sidebar:
+  label: "Diagnose & Lernpfad"
+---
+
+<span id="diagnose-und-lernpfad" />
+
+
+[← Einheit 0](/llm-engineering-course-pages/de/unit-00) · [Kursstart](/llm-engineering-course-pages/de/)
+
+## Lernziel [#lernziel]
+
+In 45–60 Minuten sammelst du Nachweise über bereits beherrschte Grundlagen und
+erhältst einen vorsichtigen Lernpfad. Dies ist eine Wegempfehlung, keine Prüfung:
+Du darfst immer mehr Grundlagen bearbeiten, und jede Abkürzung ist umkehrbar.
+
+Schließe zuerst [Einheit 0](/llm-engineering-course-pages/de/unit-00) ab. Alle Pfade treffen sich vor Text und
+Tokenisierung wieder.
+
+## Zwei Einstiegspfade [#zwei-einstiegspfade]
+
+| Pfad | Geeignet, wenn | Wirkung der Diagnose |
+| --- | --- | --- |
+| Standalone | Wenig oder keine Erfahrung mit Python, Mathematik, ML oder PyTorch | Markiert notwendige Grundlagen als Pflicht und erkennt einzelne Stärken |
+| Godot-RL-Brücke | Du hast den [Godot-RL-Kurs](https://github.com/minigraphx/godot-rl-course) ganz oder teilweise abgeschlossen | Prüft übertragbare Fähigkeiten und entfernt nur belegte Wiederholungen |
+
+Kursabschluss und Selbsteinschätzung erlauben allein kein Überspringen.
+
+## 1 · Erfahrungsinventar [#1-erfahrungsinventar]
+
+Markiere jeden Punkt als **neu**, **geübt** oder **kann ich erklären und
+implementieren**:
+
+- Python-Funktionen und Tests;
+- Tensor-Shapes;
+- Logits, Softmax, Logarithmen und Cross-Entropy;
+- Ableitungen und Kettenregel;
+- Parameter, Aktivierungen, Loss und Backpropagation;
+- PyTorch-Forward-/Backward-/Update-Zyklus;
+- Seeds, Splits und Baselines;
+- Observation, Action, Policy, Reward und Trajectory.
+
+Dieses Inventar wird nicht bewertet. Es trennt Umgebungsprobleme von fehlendem
+Konzeptwissen.
+
+## 2 · Kurzer Theoriecheck [#2-kurzer-theoriecheck]
+
+Antworte zuerst ohne Suche und prüfe danach deine Begründung.
+
+1. Was erzeugt eine List Comprehension, und wann ist ein Generator sicherer?
+2. Warum sollte ein Test Verhalten statt privater Implementierungsdetails prüfen?
+3. X hat Shape [4, 8, 32], W hat Shape [32, 64]. Welchen Shape hat XW?
+4. Welche Achse bezeichnet in [B, T, C] normalerweise die Tokenposition?
+5. Welche Wahrscheinlichkeiten erzeugt Softmax für [0, 0], und was geschieht
+   beim Addieren derselben Konstante?
+6. Warum erzeugt eine selbstsichere falsche Vorhersage großen Cross-Entropy-Loss?
+7. Wie lautet für L = (wx - y)² die Ableitung nach w?
+8. Warum hängt der Gradient einer frühen Schicht von späteren Operationen ab?
+9. Was unterscheidet einen Parameter von einer Aktivierung?
+10. Welche Informationen aus dem Forward Pass braucht Backpropagation?
+11. Warum werden Gradienten vor dem nächsten Optimizer-Schritt gelöscht?
+12. Nenne eine Operation, die sich in Training und Evaluation unterscheiden kann.
+
+Optionale Brückenfrage: Ordne Observation, Action, Policy, Trajectory und Reward
+LLM-Konzepten zu und nenne eine Stelle, an der die Analogie endet.
+
+## 3 · Coding-Check [#3-coding-check]
+
+Dokumentation ist für ein Wiederholungsergebnis erlaubt; notiere ihre Nutzung.
+
+### Aufgabe A — Python-Sequenzen [#aufgabe-a-python-sequenzen]
+
+Schreibe eine Funktion, die diese Sequenz in benachbarte Eingabe-/Zielpaare
+umwandelt:
+
+```
+["a", "b", "c", "d"]
+[("a", "b"), ("b", "c"), ("c", "d")]
+```
+
+Ergänze Tests für eine leere Sequenz, ein Element und den Normalfall. Erkläre
+die Zeitkomplexität.
+
+### Aufgabe B — stabile Wahrscheinlichkeiten und Shapes [#aufgabe-b-stabile-wahrscheinlichkeiten-und-shapes]
+
+Mit NumPy oder PyTorch:
+
+- demonstriere eine numerisch stabile Softmax-Funktion;
+- zeige, dass dieselbe additive Konstante für alle Logits nichts verändert;
+- berechne Cross-Entropy für ein korrektes Ziel;
+- ergänze Shape- und Finite-Value-Assertions.
+
+### Aufgabe C — ein PyTorch-Update [#aufgabe-c-ein-pytorch-update]
+
+Erstelle einen kleinen Linear(3, 2)-Klassifikator und einen Batch mit Shape
+[4, 3]. Führe Forward Pass, Cross-Entropy gegen vier Klassenindizes,
+Gradientenlöschen, Backward Pass, Finite-Gradient-Check und Optimizer-Schritt
+aus. Nenne den Logit-Shape und erkläre Folgen nie gelöschter Gradienten.
+
+## 4 · Nachweise bewerten [#4-nachweise-bewerten]
+
+| Wert | Bedeutung |
+| --- | --- |
+| 0 · Noch nicht | Kein korrektes lauffähiges Ergebnis oder ungelöster Shape-/Loss-/Gradientenfehler |
+| 1 · Mit Hilfe | Korrekt nach Dokumentation, Hinweis oder wesentlicher Korrektur |
+| 2 · Selbstständig | Ohne Hilfe korrekt, mit Assertions und klarer Erklärung |
+
+Verwende pro Kompetenz den niedrigeren Wert aus Theorie und Code.
+
+## 5 · Lernpfad bilden [#5-lernpfad-bilden]
+
+| Ergebnis | Regel | Aktion |
+| --- | --- | --- |
+| Pflicht | Eine steuernde Fähigkeit ist 0, ein Nachweis fehlt oder ein kritischer Fehler trat auf | Vollständigen Block und Checkpoint bearbeiten |
+| Wiederholung | Keine Fähigkeit ist 0, mindestens eine ist aber 1 | Kompakte Wiederholung und Checkpoint bearbeiten |
+| Überspringen + Checkpoint | Alle steuernden Fähigkeiten sind 2 | Lektionen überspringen, Re-Entry-Link behalten, Gate absolvieren |
+| Vertiefung | Nur nach Überspringen angeboten | Herleitung, Gradient Check oder Vergleich bearbeiten |
+
+Bei Unsicherheit gilt Wiederholung.
+
+| Block | Nachweis | Re-Entry-Link |
+| --- | --- | --- |
+| F01 Python und Entwicklung | Python-Theorie + Aufgabe A | [F01 wieder aufnehmen](/llm-engineering-course-pages/de/foundations-01-python-numpy) |
+| F02 Tensoren und Shapes | Shape-Fragen + Assertions aus Aufgabe B | [F02 wieder aufnehmen](/llm-engineering-course-pages/de/foundations-02-shapes) |
+| F03 Wahrscheinlichkeit und Loss | Wahrscheinlichkeits-/Loss-Fragen + Aufgabe B | [F03 wieder aufnehmen](/llm-engineering-course-pages/de/foundations-03-probability) |
+| F04 Neuron und Gradient Descent | Ableitungen + nachvollzogenes Update | [F04 wieder aufnehmen](/llm-engineering-course-pages/de/foundations-04-neuron) |
+| F05 MLP und Autograd | Backprop-Fragen + Gradient Check | [F05 wieder aufnehmen](/llm-engineering-course-pages/de/foundations-05-mlp-autograd) |
+| F06 PyTorch und Reproduzierbarkeit | Aufgabe C + reproduzierbarer Checkpoint | [F06 wieder aufnehmen](/llm-engineering-course-pages/de/foundations-06-pytorch-checkpoint) |
+| B01 Godot-RL-Brücke | Brückenfrage + bestätigte Erfahrung | [B01 wieder aufnehmen](/llm-engineering-course-pages/de/foundations-godot-rl-bridge) |
+
+Alle Pfade bearbeiten Tokenisierung, kausale Modellierung, Attention und Evaluation.
+
+## 6 · Beispielpfade [#6-beispielpfade]
+
+| Lernprofil | Empfohlener Pfad |
+| --- | --- |
+| Kompletter Anfänger | Einheit 0 → F01–F06 Pflicht → gemeinsames Gate → LLM-Kern |
+| Godot-RL-Absolvent mit unsicherem PyTorch | Einheit 0 → F02–F05 Wiederholung → kurze B01-Brücke → Gate |
+| Python-Entwickler ohne ML | Einheit 0 → F02 Wiederholung → F03–F05 Pflicht → F06-Checkpoint → Gate |
+| ML-Engineer ohne LLM-Erfahrung | Einheit 0 → Grundlagen-Checkpoints → optionale Vertiefung → Gate |
+
+## 7 · Gemeinsames Gate [#7-gemeinsames-gate]
+
+Vor Text und Tokenisierung müssen alle Lernenden einen gebatchten Shape
+bestimmen, einen stabilen Cross-Entropy-Wert prüfen, einen Backward-/Update-
+Zyklus ausführen, das Gradientenlöschen erklären und das Ergebnis mit
+vorgegebenem Seed reproduzieren.
+
+Scheitert ein Punkt, folge seinem Re-Entry-Link, bearbeite nur diesen Block und
+wiederhole den Punkt. Ein kompletter Neustart ist nie erforderlich.
+
+## Re-Entry-Katalog [#re-entry-katalog]
+
+### Python und Entwicklung [#python-und-entwicklung]
+
+Kehre hierher zurück, wenn Funktionen, Iteration, Tests, Exceptions oder
+Umgebungsbefehle blockieren. Bearbeite [F01](/llm-engineering-course-pages/de/foundations-01-python-numpy) und wiederhole Aufgabe A.
+
+### Tensoren und Shapes [#tensoren-und-shapes]
+
+Kehre bei unklaren Batch-/Zeit-/Kanalachsen, Broadcasting, Matrixmultiplikation
+oder Shape-Assertions zurück. Bearbeite [F02](/llm-engineering-course-pages/de/foundations-02-shapes) und wiederhole den Shape-Punkt.
+
+### Wahrscheinlichkeit und Loss [#wahrscheinlichkeit-und-loss]
+
+Kehre bei unklaren oder nicht endlichen Logits, Softmax-, Log-Probability- oder
+Cross-Entropy-Werten zurück. Bearbeite [F03](/llm-engineering-course-pages/de/foundations-03-probability) und wiederhole Aufgabe B.
+
+### Gradienten und neuronale Netze [#gradienten-und-neuronale-netze]
+
+Kehre bei unklarer Kettenregel, Parameterupdates oder Lossbewegung zurück.
+Bearbeite [F04](/llm-engineering-course-pages/de/foundations-04-neuron) und verfolge ein Update von Hand und im Code.
+
+### PyTorch-Training [#pytorch-training]
+
+Kehre bei unklaren MLP-Shapes, Graphpfaden, lokalen Ableitungen oder Gradient
+Checks zurück. Bearbeite [F05](/llm-engineering-course-pages/de/foundations-05-mlp-autograd) und prüfe einen Parameter.
+
+### Reproduzierbare Experimente [#reproduzierbare-experimente]
+
+Kehre bei Problemen mit PyTorch-Update-Reihenfolge, Seeds, Baselines oder
+Vergleichen zurück. Bearbeite [F06](/llm-engineering-course-pages/de/foundations-06-pytorch-checkpoint) und reproduziere den Checkpoint zweimal.
+
+### Godot-RL-Brücke [#godot-rl-brucke]
+
+| Godot RL | LLM | Nicht gleichsetzen |
+| --- | --- | --- |
+| Observation | Tokenkontext | Kontext ist ein sequenzielles Tokenfenster |
+| Action | nächstes Token | die Action wird Teil des zukünftigen Kontexts |
+| Policy | Vokabularverteilung | Pretraining lernt primär Likelihood |
+| Trajectory | generierte Sequenz | Grenzen unterscheiden sich vom Episodenende |
+| Reward | Präferenz-/Verifier-Signal | nicht jede LM-Phase verwendet Reward |
+| Behaviour Cloning | Supervised Fine-Tuning | Maskierung und Chatformat sind wichtig |
+| PPO | RLHF-Update | Referenz-Policy und KL-Kontrolle kommen hinzu |
+| ONNX-Inferenz | optimierte Inferenz | Decoding profitiert vom KV-Cache |
+
+## Wie geht es weiter? [#wie-geht-es-weiter]
+
+Halte Pflicht-, Wiederholungs-, Überspringen- und Vertiefungsblöcke fest,
+behalte jeden Re-Entry-Link und starte [F01](/llm-engineering-course-pages/de/foundations-01-python-numpy) oder
+die kompakte [Godot-RL-Brücke](/llm-engineering-course-pages/de/foundations-godot-rl-bridge). Alle Pfade treffen sich in F06.
+
+[← Einheit 0](/llm-engineering-course-pages/de/unit-00) · [→ F01](/llm-engineering-course-pages/de/foundations-01-python-numpy) · [Godot-RL-Brücke](/llm-engineering-course-pages/de/foundations-godot-rl-bridge)
+
+## Referenzantworten nach deinem ersten Versuch [#referenzantworten-nach-deinem-ersten-versuch]
+
+<details>
+<summary>Theorielösungen und passende Übungen</summary>
+
+1. Eine List-Comprehension erstellt eine Liste; ein Generator liefert Elemente
+   bei Bedarf und kann das Speichern aller Elemente vermeiden. Siehe F01.
+2. Ein Verhaltenstest prüft ein zugesagtes Ergebnis; interne Namen können
+   sich ohne Ergebnisänderung ändern. Siehe F01.
+3. `[4,8,64]`: Über die gemeinsame Achse 32 wird summiert. Siehe F02.
+4. `T`, die mittlere Achse, bezeichnet Tokenpositionen. Siehe F02.
+5. `[0.5,0.5]`; dieselbe Verschiebung kürzt sich beim Normieren heraus. F03.
+6. Die wahre Klasse hat kleine Wahrscheinlichkeit, ihr negativer Logarithmus
+   ist deshalb groß.
+7. `2(wx-y)x` mit Quadrat-Ableitung und Kettenregel. Siehe F04.
+8. Ein früher Wert verändert spätere Berechnungen; lokale Ableitungen werden
+   multipliziert, Beiträge von Verzweigungen addiert. Siehe F05.
+9. Ein Parameter wird gelernt und gespeichert; eine Aktivierung hängt von
+   dieser Eingabe ab.
+10. Graphverbindungen und die Werte für die jeweilige lokale Ableitung.
+11. Backward addiert zu gespeicherten Gradienten. Ohne Zurücksetzen beeinflussen
+    vorherige Batches das Update, außer Accumulation war beabsichtigt. F06.
+12. Dropout lässt nur im Training Werte weg; Evaluation schaltet es ab.
+
+Coding-Referenzen: F01 zeigt Nachbarpaare mit Tests; F03 und
+`src/llm_course/foundations.py` zeigen stabile Wahrscheinlichkeiten und
+Kreuzentropie; F06 enthält ein vollständiges PyTorch-Update. Vergleiche erst
+nach deinem Versuch und markiere genutzte Hilfe ehrlich in der Diagnose.
+
+</details>

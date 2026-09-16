@@ -1,0 +1,11 @@
+{
+  "contentType": "doc",
+  "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/de/continued-pretraining.json",
+  "lastModified": null,
+  "locale": "de",
+  "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de/continued-pretraining.md",
+  "route": "/de/continued-pretraining",
+  "title": "M4 — Continued Pretraining ohne Verlust der Baseline",
+  "url": "https://minigraphx.github.io/llm-engineering-course-pages/de/continued-pretraining",
+  "markdown": "---\ntitle: \"M4 — Continued Pretraining ohne Verlust der Baseline\"\nsidebar:\n  label: \"M4 — Continued Pretraining\"\n---\n\n<span id=\"m4-continued-pretraining-ohne-verlust-der-baseline\" />\n\n\nContinued Pretraining (DAPT) setzt das Sprachmodellziel auf freigegebenem\nFachtext fort. Es lernt Wortschatz und Stil, aber keinen JSON-Antwortvertrag.\n\nDer Lauf nutzt den Firmensnapshot, Byte-Fallback-Tokenisierung, getrennte\nFach-Holdouts und zwei allgemeine Kontrollen. Ein unveränderliches Basismodell,\nunterbrochene Fortsetzung und Rollback werden geprüft.\n\n```bash\n.venv/bin/python examples/run_continued_pretraining.py --seeds 7 19 43\n```\n\nDie Messungen verbessern Domain-NLL um 0,359–0,411 Nats, verschlechtern die\nallgemeine Kontroll-NLL aber um 0,032–0,109 Nats. Deshalb bleibt der Kandidat in\nPrüfung. Exakte Fortsetzung und Rollback sind Engineering-Nachweise, kein\nQualitätsbeweis.\n\n### Aufgabe [#aufgabe]\n\nWarum werden Domaingewinn und allgemeine Regression getrennt berichtet? Was macht\nden Versuch ungültig: einen allgemeinen Testsatz in den Trainingstext aufnehmen\noder nur den Lernraten-Seed ändern?\n\n<details>\n<summary>Referenzantwort</summary>\n\nGetrennte Werte zeigen Vergessen. Testsatztext im Training ist Kontamination;\nein geänderter Seed ist ein neuer, zu dokumentierender Lauf.\n\n\n</details>\n\nCheckpoint: Lege eine Freigabeschwelle fest, benenne das Rollback-Artefakt und\nbegründe die anschließende Instruktions-Evaluation.\n"
+}

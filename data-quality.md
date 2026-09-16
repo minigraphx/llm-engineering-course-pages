@@ -1,0 +1,153 @@
+---
+title: "E02 — Data quality and provenance"
+sidebar:
+  label: "E02 — Data quality"
+---
+
+<span id="e02-data-quality-and-provenance" />
+
+
+[Course home](/llm-engineering-course-pages/) · [← Training](/llm-engineering-course-pages/pretraining) · [→ Evaluation](/llm-engineering-course-pages/evaluation)
+
+## Before you start [#before-you-start]
+
+Complete [T03](/llm-engineering-course-pages/data-pipeline): distinguish a document, a token window and a
+split. Review [loss](/llm-engineering-course-pages/foundations-03-probability) if an apparently lower score
+still feels automatically better. Allow 60–90 minutes; this lab needs only CPU
+and generates fictional examples in memory.
+
+You will explain where a training example came from, find contamination, repair
+training data without modifying the benchmark, and measure a false improvement.
+**Provenance** is the record of origin and processing. **Governance** means who
+may use a source, for what purpose, and under which retention/access rules.
+
+## Predict: can perfect accuracy be meaningless? [#predict-can-perfect-accuracy-be-meaningless]
+
+Suppose training contains eight pairs of arbitrary card IDs and labels. Evaluation
+contains four different IDs. A program that only memorizes training answers gets
+0/4 right. Copy the four evaluation pairs into training: it now gets 4/4 right.
+The algorithm did not improve; its input included the answers. This is **leakage**.
+
+```bash
+python examples/run_data_quality.py
+```
+
+The report is also saved to `artifacts/data-quality/report.json`. Expect:
+
+| Field | Before | After repair |
+| --- | --- | --- |
+| document count | 9 | 4 |
+| exact duplicate pairs | 2 | 0 |
+| near duplicate pairs | 2 | 0 |
+| cross-split exact duplicate pairs | 1 | 0 |
+| sensitive marker records | 1 | 0 |
+| missing provenance records | 1 | 0 |
+
+In `leakage_experiment`, clean accuracy is 0, contaminated accuracy 1, and repaired
+accuracy 0. These are fractions, so 1 means 100%. The runner evaluates a literal
+lookup memorizer on arbitrary labels; it is a deliberately simple counterexample,
+not a language-model benchmark. Lower held-out LM loss needs the same protection.
+
+## Trace: origin → audit → decision → version [#trace-origin-audit-decision-version]
+
+Each `QualityDocument` holds `id`, `text`, `split`, `source` and `license`.
+The first two duplicated records have different IDs but identical text: checking
+IDs alone cannot find them. Normalizing case/whitespace helps detect superficial
+changes. Near matching compares sets of five-character pieces (**shingles**):
+if two sets share 8 pieces and their union contains 10, Jaccard similarity is
+`8/10 = 0.8`. Our teaching threshold is 0.8. Similarity can also flag legitimate
+repeated wording, so inspect the evidence before applying this policy to real data.
+
+```python
+from llm_course.data_quality import (
+    generate_quality_documents, audit_documents, repair_documents,
+)
+
+raw = generate_quality_documents()
+before = audit_documents(raw)
+clean, decisions = repair_documents(raw)
+assert before["cross_split_duplicates"] == [["leaked", "test"]]
+assert audit_documents(clean)["ready"]
+for decision in decisions:
+    print(decision["id"], decision["action"], decision["reason"])
+```
+
+Repair retains the held-out copy and removes its training duplicate. It never
+silently edits validation/test. A defect inside held-out data raises an error:
+an independent review and a new benchmark version are needed. Sensitive markers
+such as `[EMAIL_001]` and `[SECRET_001]` become `[REDACTED]`; a `[TOXIC]` record is
+quarantined. These rules illustrate mechanisms. They do not detect all personal
+information, secret formats, toxicity or permission violations.
+
+## Build: choose and explain a sampling mixture [#build-choose-and-explain-a-sampling-mixture]
+
+A **sampling weight** controls how often a source is drawn. For 20 examples at
+75% original / 25% synthetic, draw 15 and 5. Sampling with replacement can repeat
+rows; repeated draws are not additional unique knowledge.
+
+```python
+from llm_course.data_quality import QualityDocument, deterministic_mixture
+
+original = [doc for doc in clean if doc.split == "train"]
+synthetic = [QualityDocument("new", "new authored teaching example", "train")]
+mix = deterministic_mixture(
+    {"original": original, "synthetic": synthetic},
+    {"original": 0.75, "synthetic": 0.25}, size=20, seed=7,
+)
+assert sum(doc.id == "new" for doc in mix) == 5
+```
+
+Try 50/50 with the same size and seed. Before running, predict the new count.
+Report unique document count separately from sampled example count. Select
+weights on validation evidence, not on the protected final test.
+
+## Break, measure and repair yourself [#break-measure-and-repair-yourself]
+
+Create a copy of a validation row with a new ID and `split="train"`. Predict why
+that is still leakage. Run the audit, remove the training copy, and show that
+held-out text and membership did not change. Then change the last character:
+can the near-duplicate rule still catch it? Record the score and any false positives.
+
+<details>
+<summary>Hint</summary>
+
+Use `dataclasses.replace(doc, id="copied", split="train")`. The split must
+happen before making windows. Compare content, not only IDs.
+
+
+</details>
+
+<details>
+<summary>Reference reasoning</summary>
+
+A new ID does not make the text new. Exact matching detects the copied row;
+shingles can detect a small edit. Remove the train copy and preserve the
+original benchmark. The demonstration returns from 100% to 0% accuracy,
+honestly exposing the memorizer's lack of generalization.
+
+
+</details>
+
+## Source and license inventory [#source-and-license-inventory]
+
+Before a real acquisition, record owner, source URL/version, license/permission,
+intended purpose, language, access group, personal-data categories, retention and
+delete/rebuild procedure. Public visibility is not permission to train. Unknown
+rights stay out of the training snapshot until reviewed. Automated redaction
+helps minimize exposure; it does not grant authorization or prove anonymization.
+
+The course ships generators and manifests for Unit 0, BPE and this lab. All three
+have data cards under `docs/data-cards/`; each manifest records generator, license,
+UTF-8 byte count, SHA-256 and split policy. A **hash** identifies exact bytes: one
+changed space changes the identity. Never update a hash to make an unexplained
+mismatch disappear. A new version needs a new baseline and documented migration.
+The [data policy](/llm-engineering-course-pages/data-policy) distinguishes current tiny fixtures from planned
+larger supplied data packs. Do not commit generated corpora, real personal data
+or weights.
+
+## Completion gate [#completion-gate]
+
+Run `pytest tests/test_data_quality.py`. Submit the before/after report, one
+repaired contamination defect, an explained mixture and a data card for an invented
+source. Explain why `ready=true` means only that these teaching checks passed,
+and why preserving test integrity can make a reported score worse.

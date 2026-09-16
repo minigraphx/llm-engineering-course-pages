@@ -1,0 +1,156 @@
+---
+title: "F06 — PyTorch-Übersetzung und Grundlagen-Checkpoint"
+sidebar:
+  label: "F06 — PyTorch & Checkpoint"
+---
+
+<span id="f06-pytorch-ubersetzung-und-grundlagen-checkpoint" />
+
+
+[← F05](/llm-engineering-course-pages/de/foundations-05-mlp-autograd) · [Kursstart](/llm-engineering-course-pages/de/) · [Godot-RL-Brücke](/llm-engineering-course-pages/de/foundations-godot-rl-bridge)
+
+## Lernziel [#lernziel]
+
+Du übersetzt die NumPy-Pipeline nach PyTorch und bestehst das gemeinsame Gate,
+indem du sie selbstständig implementierst, prüfst, brichst und erklärst.
+
+## Ein vollständiges Framework-Update [#ein-vollstandiges-framework-update]
+
+PyTorch speichert Tensoren und merkt sich die Operationen für den Rückwärtslauf.
+`nn.Linear(3,2)` enthält eine Gewichtsmatrix und einen Bias: drei Eingabewerte
+werden zu zwei Scores. `model.parameters()` liefert die veränderbaren Tensoren.
+SGD (Stochastic Gradient Descent) führt das bekannte Subtrahieren von Lernrate
+mal Gradient aus. Die Bibliothek übernimmt Buchhaltung; die Mathematik bleibt.
+Speichere dieses Beispiel in `artifacts/my-work/one_update.py` und führe es mit
+`python artifacts/my-work/one_update.py` aus:
+
+```python
+import torch
+from torch import nn
+
+torch.manual_seed(7)
+x = torch.tensor([[1., 0., 0.], [0., 1., 0.], [0., 0., 1.], [1., 1., 0.]])
+y = torch.tensor([0, 1, 1, 0])
+model = nn.Linear(3, 2)
+optimizer = torch.optim.SGD(model.parameters(), lr=0.1)
+logits = model(x)
+assert logits.shape == (4, 2)
+loss = nn.functional.cross_entropy(logits, y)
+optimizer.zero_grad()
+loss.backward()
+assert all(torch.isfinite(p.grad).all() for p in model.parameters())
+optimizer.step()
+after = nn.functional.cross_entropy(model(x), y)
+print(round(loss.item(), 6), round(after.item(), 6))
+assert after.item() < loss.item()
+```
+
+Die Ausgabe zeigt Loss vor und nach dem Update; die zweite Zahl ist kleiner.
+`.item()` liest einen einzelnen Tensorwert als Python-Zahl. Gib **Logits** an
+`cross_entropy`, keine vorher mit Softmax berechneten Wahrscheinlichkeiten:
+Die Funktion enthält bereits die stabile Log-Softmax-Berechnung. Ganzzahlziele
+wählen die richtige Spalte. `backward()` berechnet Gradienten; erst `step()`
+verändert die Parameter. `zero_grad()` verhindert ungewolltes Aufsummieren vom
+vorherigen Schritt. Nach diesem Beispiel folgt die unabhängige Prüfung.
+
+## Warum eigene Modelle eine Klasse haben [#warum-eigene-modelle-eine-klasse-haben]
+
+Eine **Klasse** bündelt gespeicherte Daten und zugehörige Funktionen (**Methoden**).
+`class SmallMLP(nn.Module)` erweitert PyTorchs Modulklasse. `__init__` richtet die
+Schichten einmal ein, `self` meint dieses Modellobjekt, und `super().__init__()`
+initialisiert PyTorchs Parameterverwaltung. Schichten als `self.hidden` zu speichern
+registriert ihre Parameter für den Optimizer. `forward` beschreibt die Berechnung;
+`mlp(x)` ruft sie mit PyTorchs Buchhaltung auf. Ergänze unter dem Beispiel oben:
+
+```python
+class SmallMLP(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.hidden = nn.Linear(3, 4)
+        self.output = nn.Linear(4, 2)
+
+    def forward(self, inputs):
+        hidden = torch.tanh(self.hidden(inputs))
+        return self.output(hidden)
+
+mlp = SmallMLP()
+assert mlp(x).shape == (4, 2)
+```
+
+Dies ist das bekannte MLP: 3 → 4 → 2 mit `tanh` dazwischen. Im Transformer
+bleibt dieselbe Klassenstruktur bestehen; nur die Berechnung in `forward` wird
+umfangreicher. `nn.Sequential` verkettet Schichten; `nn.ModuleList` registriert
+eine Liste von Blöcken, die du in einer Schleife aufrufst. Eine `dataclass` wie die
+spätere `GPTConfig` bündelt benannte Einstellungen; sie ist kein Lernalgorithmus.
+
+## Konzepte statt nur Syntax übersetzen [#konzepte-statt-nur-syntax-ubersetzen]
+
+| From scratch | PyTorch |
+| --- | --- |
+| Parameter-Arrays | `torch.nn.Parameter` in einem Modul |
+| manuelle Forward-Gleichungen | `module(batch)` |
+| manueller Reverse Pass | `loss.backward()` |
+| Lernrate mal Gradient subtrahieren | `optimizer.step()` |
+| gespeicherte Gradienten zurücksetzen | `optimizer.zero_grad()` |
+
+Bei Batch `[4,3]` und `Linear(3,2)` müssen Logits `[4,2]`, vier ganzzahlige
+Targets `[4]` sein. Sage diese Shapes vor dem Lauf voraus.
+
+## Selbstständiger Checkpoint [#selbststandiger-checkpoint]
+
+Erstelle ein eigenes `checkpoint.py`, ohne `llm_course`-Implementierungen zu
+importieren. Es muss:
+
+1. stabile gebatchte Softmax und Cross-Entropy implementieren;
+2. ein NumPy-MLP mit einer Hidden-Schicht und manueller Backpropagation bauen;
+3. einen analytischen Parametergradienten per Central Difference prüfen und
+   Absolutfehler unter `1e-6` fordern;
+4. das skalare Neuron auf den vier gelieferten Punkten trainieren, eine Kopie
+   mit umgekehrtem Update-Vorzeichen diagnostizieren und reparieren;
+5. einen MLP-Schritt mit Seed 7, Shape-Assertions, Gradientenlöschen,
+   Finite-Checks, Backward und Update nach PyTorch übertragen;
+6. Anfangs-/End-Loss, Gradient-Check-Fehler, Shapes, Fehlernachweis und eine
+   Diagnose in zwei Sätzen ausgeben.
+
+Die Punkte entstehen im Code; eigene Daten sind nicht nötig:
+
+```
+x = np.array([-1.0, 0.0, 1.0, 2.0])
+y = 2.0 * x + 1.0
+```
+
+Starte zweimal in einem sauberen Prozess. CPU-Werte stimmen bis `1e-7` überein.
+
+## Referenz-Orakel [#referenz-orakel]
+
+Erst nach Bestehen deiner Version:
+
+```
+python examples/foundations_checkpoint.py
+pytest tests/test_foundations.py tests/test_autograd.py
+```
+
+Vergleiche Verträge und Nachweise, nicht Variablennamen. Die Referenz zeigt
+gesunde und falsche Vorzeichen-Traces, ersetzt aber nicht deine Diagnose.
+
+## Bewertungsraster [#bewertungsraster]
+
+| Nachweis | Bestehen |
+| --- | --- |
+| Implementierung | keine Kurs-Foundation-Funktionen im Lernendencode |
+| Shapes/Numerik | geprüft; Wahrscheinlichkeiten endlich und normiert |
+| Gradient Check | Absolutfehler unter `1e-6` |
+| Fehlerdiagnose | falsches Vorzeichen, steigender Loss/Parameterrichtung, Reparatur |
+| PyTorch | Forward → Zero → Backward → Finite-Check → Step |
+| Reproduzierbarkeit | zwei CPU-Läufe stimmen bis `1e-7` überein |
+
+Scheitert eine Zeile, kehre nur über ihren F01–F05-Link in der
+[Diagnose](/llm-engineering-course-pages/de/diagnostic) zurück und wiederhole sie.
+
+## Wie geht es weiter? [#wie-geht-es-weiter]
+
+Der Neural-Foundations-Meilenstein ist abgeschlossen. Dokumentiere das Gate in
+der [Diagnose](/llm-engineering-course-pages/de/diagnostic) und fahre mit der
+[Bigramm-Sprachmodell-Baseline](/llm-engineering-course-pages/de/bigram-baseline) fort.
+
+[← F05](/llm-engineering-course-pages/de/foundations-05-mlp-autograd) · [Diagnose](/llm-engineering-course-pages/de/diagnostic) · [→ Bigramm-Baseline](/llm-engineering-course-pages/de/bigram-baseline)

@@ -1,0 +1,134 @@
+---
+title: "C01 — Turn a company problem into a model decision"
+sidebar:
+  label: "C01 — Company strategy"
+---
+
+<span id="c01-turn-a-company-problem-into-a-model-decision" />
+
+
+[← Evaluation](/llm-engineering-course-pages/evaluation) · [Company data →](/llm-engineering-course-pages/company-data)
+
+You can train a model now. This unit asks whether training is the right next
+action. Prerequisites: compare an unchanged baseline with a candidate, distinguish
+training from evaluation data, and explain why a lower NLL is a limited result.
+Allow two sessions: one to define the problem, one to interpret measured evidence.
+
+## 1. Start with a workflow [#1-start-with-a-workflow]
+
+**Nordlicht Workspace** is a fictional support-software company. A support agent
+receives a request about billing, account access or exports. The proposed system
+returns a small structured routing response; requests for secrets or unauthorized
+data must be escalated. It does not execute account changes. Invented facts and
+synthetic identifiers prevent the exercise from requiring real customer data.
+
+Write requirements before selecting a model:
+
+| Requirement | What to measure or inspect |
+| --- | --- |
+| Users: support agents | Can they inspect and correct the suggested route? |
+| Languages: English and German | Report results separately by language. |
+| Must: correct route and valid JSON | Score task and format independently. |
+| Must: escalate restricted requests | Measure critical failures separately from average accuracy. |
+| Must: local processing | Exclude a remote-only candidate before scoring quality. |
+| Must: known model/data provenance | Inspect version, source permissions and license record. |
+| Budget: memory and response time | Measure the same input length and device; disclose scope. |
+| Can: conversational explanation | Add only after required behavior works. |
+
+The example is an advisory workflow with human review, not an autonomous access
+control mechanism. Authentication and authorization belong in application code.
+
+## 2. Match the intervention to the gap [#2-match-the-intervention-to-the-gap]
+
+| Observed gap | First intervention | Why |
+| --- | --- | --- |
+| Frequently changing facts | Retrieval and tools | Fetch the approved version at request time. |
+| Domain language is poorly predicted | Test continued pretraining | Learn its distribution, then check general-language regression. |
+| Correct format or response workflow is missing | SFT, possibly with LoRA | Provide target responses and supervise their tokens. |
+| Several responses work but one is preferred | DPO | Learn a relative preference from chosen/rejected pairs. |
+| Baseline already meets requirements | No training | Keep the simpler accepted system. |
+
+**SFT** specifies the objective and data. **LoRA** specifies which parameters can
+change; they are not competing tasks. **QLoRA** adds a frozen quantized base to
+low-rank adaptation. Training from scratch would need a reason such as an
+architecture experiment, not merely access to company documents.
+
+For the routing workflow, compare a transparent rule baseline and a model under
+the same evaluator. If the rule baseline meets the narrow task, keep it as a
+serious option. An open model may justify its maintenance cost only when the
+required capability exceeds that narrow rule coverage.
+
+## 3. Apply hard constraints before ranking [#3-apply-hard-constraints-before-ranking]
+
+Suppose an online candidate scores 95% accuracy and a local one 80%. Local
+processing is mandatory. Averaging privacy and accuracy into a single score can
+wrongly recommend the online candidate. Instead:
+
+1. Eliminate candidates that fail any **must** requirement.
+2. Rank the remaining measured candidates by task quality, latency and memory.
+3. Preserve failed cases and uncertainty, not only the ranking.
+
+`Requirements` and `score_candidates` implement these visible steps in
+`src/llm_course/company_strategy.py`. The default quality gate of 0.7 is an
+exercise threshold, not a production standard. A measured memory value must
+declare whether it means parameter bytes, tensor allocations or process peak.
+
+```python
+from llm_course.company_strategy import Requirements, choose_strategy
+
+requirements = Requirements(need="domain_language")
+print(choose_strategy(requirements))  # No evidence: collect a baseline.
+print(choose_strategy(requirements, domain_nll_gain=0.5,
+                      general_nll_regression=0.1))
+```
+
+The second decision only starts a review of continued pretraining. It does not
+establish that instruction-following or support quality improved.
+
+## 4. Count the work around training [#4-count-the-work-around-training]
+
+**TCO**, total cost of ownership, includes preparation and recurring work.
+Use hypothetical currency units to practice the arithmetic:
+
+- Setup: 2 hours × 40 units/hour = 80.
+- Training: 1 compute-hour × 3 units/hour = 3.
+- Six months: each month 1 maintenance-hour × 40 plus 2 compute-hours × 3 = 46.
+- Total: `80 + 3 + 6*46 = 359` units.
+
+These are invented rates, not vendor prices. Replace them with your own approved
+estimates, including data review, regression evaluation, deployment and rollback
+maintenance. Faster training can still be the more expensive system to maintain.
+
+## 5. Predict → trace → build → break → measure → explain [#5-predict-trace-build-break-measure-explain]
+
+Predict which approach the requirement selects. Trace one requirement to its
+measurement, then build a scorecard for the shared company task. Break it by
+giving the best-quality candidate an incompatible processing location. Measure
+the remaining candidates on identical cases. Explain at least two rejected
+alternatives, including what new evidence would change the decision.
+
+Exercise: a company needs fresh export limits and strict JSON. Propose a system
+with separate responsibilities. Which part needs current facts? Which part could
+benefit from SFT? Do not put access rights into model weights.
+
+<details>
+<summary>Hint</summary>
+
+A single user-facing response can combine retrieved facts, deterministic schema
+validation and a trained formatter. Select a mechanism for each observed gap.
+
+</details>
+
+<details>
+<summary>Reference answer</summary>
+
+Retrieve approved current limits, enforce access in the application, and validate
+the output schema. Try prompting or a deterministic formatter first. Use SFT/LoRA
+only if the unchanged evaluation shows a remaining response-format gap. Reject
+continued pretraining for freshness and DPO for adding missing facts.
+
+</details>
+
+**Checkpoint:** another learner can trace every chosen component to a requirement,
+a measured baseline gap and a reproducible acceptance test. Continue with
+[company data](/llm-engineering-course-pages/company-data), then [protected evaluation](/llm-engineering-course-pages/company-evaluation).

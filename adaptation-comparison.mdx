@@ -1,0 +1,110 @@
+---
+title: "Choose an adaptation with evidence"
+sidebar:
+  label: "M5 — Adaptation comparison"
+---
+
+<CourseContent>
+
+<span id="choose-an-adaptation-with-evidence" />
+
+
+Prerequisites: company requirements, held-out evaluation and [SFT/LoRA](/llm-engineering-course-pages/sft-lora).
+Nordlicht Workspace is fictional. Its narrow support workflow needs routing,
+correct policy facts, valid JSON and safe escalation. Those are separate quality
+axes; one average cannot replace inspection of severe failures.
+
+## Start with the cheapest adequate change [#start-with-the-cheapest-adequate-change]
+
+| Method | What changes? | Appropriate first question | Main cost or risk |
+| --- | --- | --- | --- |
+| Prompting | Instructions/context only | Does clearer output guidance suffice? | Context and inference cost |
+| Retrieval | Relevant approved documents in context | Are facts changing or must sources be cited? | Retrieval quality and permissions |
+| DAPT/TAPT | LM weights from domain/task text | Is unfamiliar language the actual bottleneck? | Forgetting; no explicit answer format |
+| Full SFT | All selected model weights | Do many representative answers justify full updates? | Gradients/optimizer state and overfit |
+| LoRA | Small A/B matrices on frozen weights | Can a small update teach task behavior? | Limited capacity; base remains in memory |
+| QLoRA | LoRA plus a quantized frozen base | Does a tested 4-bit backend fit the host? | Kernel/backend constraints and quantization error |
+
+QLoRA retains a frozen 4-bit base and trains higher-precision adapters. NF4 uses a
+codebook designed for normally distributed weights; double quantization also
+compresses quantization scale constants. It does not train every base parameter
+in four bits. [QLoRA's paper](https://arxiv.org/abs/2305.14314) describes these
+mechanisms. The pinned [bitsandbytes backend documentation](https://huggingface.co/docs/transformers/v4.57.3/en/quantization/bitsandbytes)
+lists CUDA, XPU, HPU and supported Linux/Windows CPU platforms, not this macOS MPS
+host. QLoRA is **unavailable in this measured environment**. No simulated 4-bit
+experiment is presented as QLoRA evidence.
+
+## Compare like with like [#compare-like-with-like]
+
+A fair paired comparison fixes the base, tokenizer, train/dev splits, seed,
+sequence treatment, batch size, optimizer and steps. Record trainable parameters,
+wall time and the exact memory scope. Equal steps do not mean equal compute, and
+one shared learning rate is a controlled baseline rather than optimal tuning for
+every method. Never compare tiny random MiniGPT and pretrained SmolLM2 as though
+only the adapter method changed.
+
+For the CPU MiniGPT pair, seed 7, 120 steps, batch 4 and AdamW LR 0.003 are fixed.
+Sixteen training and eight independently authored development cases are used.
+The tokenizer is trained only on training text. Generated corpora/weights stay in
+ignored `artifacts/`; executable recipes and compact numerical evidence are tracked.
+
+| MiniGPT method | Trainable parameters | Train NLL | Dev NLL | General-control NLL | Dev correct | Format failures |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Initial random base | 40,416 | 6.163 | 6.181 | 6.337 | 0/8 | 8/8 |
+| Full SFT | 40,416 | 0.488 | 3.816 | 7.309 | 0/8 | 5/8 |
+| Manual LoRA, rank 4 | 3,968 | 3.768 | 4.469 | 7.212 | 0/8 | 8/8 |
+
+Full SFT's train/dev gap is `3.816 − 0.488 = 3.328` nats. Its general-control loss
+increases by 0.973; LoRA increases it by 0.875. These two simple completion controls
+show worsening likelihood, not a comprehensive general capability benchmark.
+The original random model had no established general competence to preserve.
+Lower train loss and fewer trainable parameters do not satisfy the company gate.
+Both adaptations are rejected for deployment; keep the base and investigate data
+coverage, prompt consistency and evaluation failures before another development run.
+
+Measured runtime, memory and the separately identified real pretrained CPU/MPS
+experiment are recorded in `docs/baselines/sft-lora-v1.md` and
+`docs/model-cards/company-adapter-v1.md`. The PEFT example evaluates identical cases
+before training, after training, after adapter reload and after merge.
+
+## Predict → Trace → Build → Break → Measure → Explain [#predict-trace-build-break-measure-explain]
+
+1. **Predict:** Which method can update tomorrow's policy without weight training?
+2. **Trace:** Follow an approved document through prompt context versus training data.
+3. **Build:** Run the paired CPU recipe and inspect one failed generation per domain.
+4. **Break:** Raise learning rate or train on one repeated answer; predict collapse first.
+5. **Measure:** Compare train/dev gap, JSON failures, critical safety and general control.
+6. **Explain:** Choose rollback or promotion using the company acceptance criteria.
+
+### Independent exercise [#independent-exercise]
+
+Candidate A has 7/8 correct cases but fails one critical secret request. Candidate B
+has 6/8 correct, no critical failures, and twice the inference latency. The contract
+requires zero critical failures and latency below 200 ms; B takes 240 ms. Decide
+whether either can be promoted, then propose the next measurement without touching gold.
+
+<details>
+<summary>Hint</summary>
+
+Hard acceptance gates do not compensate for each other. Use development cases
+for iterative changes; gold remains reserved for the final sealed decision.
+
+
+</details>
+
+<details>
+<summary>Reference answer</summary>
+
+Neither passes: A violates safety, B violates latency. Preserve the current
+deployed version, inspect A's escalation behavior and profile B under the same
+hardware/load. Re-evaluate development after a concrete change. Do not claim a
+gold improvement from a lower training loss.
+
+
+</details>
+
+Checkpoint: explain when retrieval, continued pretraining and SFT solve different
+problems; read a fair paired scorecard; distinguish storage savings from peak
+memory; reject a promising adapter when a required gate fails.
+
+</CourseContent>

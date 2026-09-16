@@ -1,0 +1,57 @@
+---
+title: "B01 — Godot-RL-Brücke für Neural Foundations"
+sidebar:
+  label: "B01 — Godot-RL-Brücke"
+---
+
+<CourseContent>
+
+<span id="b01-godot-rl-brucke-fur-neural-foundations" />
+
+
+[← Diagnose](/llm-engineering-course-pages/de/diagnostic) · [Kursstart](/llm-engineering-course-pages/de/) · [→ Gemeinsamer Checkpoint](/llm-engineering-course-pages/de/foundations-06-pytorch-checkpoint)
+
+## Zweck [#zweck]
+
+Diese kompakte Seite erkennt nachgewiesene Godot-RL-Fähigkeiten an, ohne ein
+Kurszertifikat mit einem Nachweis gleichzusetzen. Löse die Aufgaben und
+wiederhole nur Grundlagenblöcke mit fehlender Evidenz.
+
+## Transferkarte [#transferkarte]
+
+| Godot-RL-Grundlage | LLM-Grundlage | Jetzt prüfen oder lernen |
+| --- | --- | --- |
+| gewichtete Summe, Bias, Aktivierung | Neuron und MLP | F04-Shapes und einen Gradienten prüfen |
+| Schichten und Forward Pass | Token-Repräsentationspipeline | `[B,T,C]`-Zeitachse in F02 ergänzen |
+| Loss und Backpropagation | Next-Token-Cross-Entropy | Vokabular-Softmax und F03-Loss lernen |
+| Policy-Logits | Next-Token-Logits | beide normieren Scores; Pretraining hat gelabelte Folgetoken |
+| PyTorch-Training | PyTorch-LLM-Training | Gradientenlöschen und kausale Target-Shapes prüfen |
+| Fehlerdiagnose | Experimentdiagnose | Trace, Baseline, Seed und Reparaturnachweis behalten |
+| ONNX/native Inferenz | optimierte LLM-Inferenz | später autoregressives Decoding und KV-Cache ergänzen |
+
+## Zwanzig-Minuten-Nachweis [#zwanzig-minuten-nachweis]
+
+1. Leite `[4,8,64]` aus Aktivierungen `[4,8,32]` und Gewicht `[32,64]` ab.
+2. Berechne Softmax und beide Target-Losses für Logits `[2,0]`.
+3. Erkläre, warum gewöhnliches Next-Token-Pretraining keinen Reward nutzt.
+4. Ermittle für `(2x+1)²` bei `x=3` per Kettenregel und Central Difference den Gradienten 28.
+5. Führe mit Seed 7 ein PyTorch-Update `[4,3] → [4,2]` mit endlichen Gradienten aus.
+
+| Ergebnis | Pfad |
+| --- | --- |
+| alle fünf selbstständig | direkt zum gemeinsamen F06-Checkpoint |
+| eine Antwort mit Hilfe | zugehörigen F02–F05-Abschnitt wiederholen, dann F06 |
+| kritischer Shape-, Loss- oder Gradientenfehler | ganzen betroffenen Block, dann F06 |
+
+Überspringe F03 nicht allein deshalb, weil Policy-Netze ebenfalls Logits
+ausgeben: Vokabularziele, Sequenzachsen, kausale Maskierung und
+Likelihood-Training sind neu.
+
+## Wie geht es weiter? [#wie-geht-es-weiter]
+
+Absolviere den gemeinsamen [F06-Checkpoint](/llm-engineering-course-pages/de/foundations-06-pytorch-checkpoint).
+Er ist für beide Einstiegspfade identisch.
+
+[← Diagnose](/llm-engineering-course-pages/de/diagnostic) · [→ Gemeinsamer Checkpoint](/llm-engineering-course-pages/de/foundations-06-pytorch-checkpoint)
+
+</CourseContent>

@@ -1,0 +1,52 @@
+---
+title: "Course data policy"
+sidebar:
+  label: "Data policy"
+---
+
+<span id="course-data-policy" />
+
+
+[Course home](/llm-engineering-course-pages/)
+
+The complete course must be possible without learners providing their own data.
+
+## Planned supplied profiles [#planned-supplied-profiles]
+
+| Profile | Approximate size | Purpose |
+|---|---:|---|
+| Starter | 5–20 MB | CPU exercises and smoke tests |
+| Local | 100–500 MB | normal local training path |
+| Extended | 1–5 GB | optional scaling exercises |
+
+The sizes above belong to M1A and are not yet supplied. Current offline fixtures
+are the 596-byte Unit-0 corpus, the multilingual BPE generator and the synthetic
+data-quality inventory. M2/M3 use these tiny course examples; no download or
+learner-owned dataset is required for their training path. The optional productive
+BPE comparison downloads its public `tiktoken` table on first use.
+
+## Required metadata [#required-metadata]
+
+Every released data package must include a data card, schema, origin or
+generation method, license and source manifest, stable splits, hashes, version,
+generator seed, and quality reports.
+
+## Gold evaluation separation [#gold-evaluation-separation]
+
+The independent gold test set must not be included in model training,
+synthetic-data prompts, few-shot examples, or hyperparameter selection.
+
+## Repository boundary [#repository-boundary]
+
+Only manifests, schemas, generators, and tiny offline fixtures belong in Git.
+Downloaded datasets, generated corpora, model weights, and training artifacts
+stay outside version control.
+
+Unit 0 follows this rule with a committed manifest and deterministic generator.
+Its 596-byte CC0 corpus and derived prepared checkpoint are materialized under
+the ignored `artifacts/unit0/` directory and verified by SHA-256.
+
+The [data-quality lab](/llm-engineering-course-pages/data-quality) audits provenance, duplicates, synthetic
+sensitive/toxic markers and split contamination, then measures a misleading
+score caused by leakage. Manifests live under `datasets/`; corresponding data
+cards live under `docs/data-cards/`. Tests regenerate content and verify hashes.

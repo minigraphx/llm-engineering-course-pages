@@ -1,0 +1,172 @@
+---
+title: "T01 — Bigram language-model baseline"
+sidebar:
+  label: "T01 — Bigram baseline"
+---
+
+<CourseContent>
+
+<span id="t01-bigram-language-model-baseline" />
+
+
+[← F06 checkpoint](/llm-engineering-course-pages/foundations-06-pytorch-checkpoint) · [Course home](/llm-engineering-course-pages/)
+
+## Learning outcome [#learning-outcome]
+
+In 75–90 minutes, you will build and compare a count-based and a neural
+character bigram model. You will trace the complete next-token training loop,
+measure negative log-likelihood on isolated data, sample reproducibly, and use
+fixed evidence to decide whether training improved the baseline. The supplied
+CC0 corpus is generated locally; you need no data of your own.
+
+## Predict · What can one character know? [#predict-what-can-one-character-know]
+
+A bigram model sees only the current character when predicting the next one.
+Before running the code, predict:
+
+1. which tensor shapes result from a batch `[B,T]`;
+2. whether a learned table can beat uniform probability `1/33`;
+3. why it still cannot remember the word before the current character.
+
+Then run the CPU reference:
+
+```
+python examples/run_bigram_baseline.py --device cpu
+```
+
+Keep the JSON output. It records the configuration, split hashes, losses,
+fixed prompts, probabilities, and seeded samples for both models.
+
+## Trace · Split before making windows [#trace-split-before-making-windows]
+
+`split_corpus` shuffles 16 unique lines with seed 7 and creates 12 training,
+2 validation, and 2 test lines. Only then does `CharacterWindowDataset` create
+overlapping next-character examples. This order prevents nearly identical
+windows from the same line leaking into multiple partitions.
+
+For `block_size=16` and `batch_size=8`, a batch has:
+
+| Value | Shape | Meaning |
+| --- | --- | --- |
+| `inputs` | `[8,16]` | current character IDs |
+| `targets` | `[8,16]` | the same windows shifted by one |
+| `logits` | `[8,16,33]` | one score per possible next character |
+
+The validation split chooses experiments. The test split is read only for the
+final report; repeatedly tuning on it would turn it into training information.
+
+## Build · Count probabilities [#build-count-probabilities]
+
+The count model records how often target character `y` follows source
+character `x`. Additive smoothing gives every transition non-zero probability:
+
+$$
+P(y\mid x)=\frac{N(x,y)+\alpha}{\sum_z N(x,z)+\alpha V}
+$$
+
+Here `V=33` and `alpha=0.25`. Inspect `fit_count_bigram`: counts become
+probabilities, then log-probabilities become the fixed transition logits.
+There is no optimizer and no gradient descent in this model.
+
+Use `bigram_probabilities(model, "the ")` and verify that all 33 values are
+finite, non-negative, and sum to one.
+
+## Build · Learn the same table with gradients [#build-learn-the-same-table-with-gradients]
+
+`TinyBigramLM` contains one trainable `[33,33]` transition table. An input ID
+selects a row. Cross-entropy compares that row with the observed next ID.
+
+For targets <InlineMath tex={"y_1,\\ldots,y_n"} />, mean negative log-likelihood is
+
+$$
+\mathrm{NLL}=-\frac{1}{n}\sum_i \log P(y_i\mid x_i).
+$$
+
+For a one-hot next-character target, this is exactly cross-entropy. Trace one
+iteration in `train_neural_bigram` in this order:
+
+1. load a seeded batch and move it to the selected device;
+2. clear old gradients;
+3. compute logits and cross-entropy;
+4. run backward and reject non-finite gradients;
+5. update parameters with AdamW;
+6. measure validation loss without gradients.
+
+Explain what would go wrong if step 2 happened only once before the loop.
+
+## Break · Expose weak evidence [#break-expose-weak-evidence]
+
+Run an intentionally under-trained comparison:
+
+```
+python examples/run_bigram_baseline.py --device cpu --steps 1
+```
+
+One training batch is not evidence that an experiment generalizes. A falling
+batch loss alone is also insufficient. Keep the split, seed, and prompts fixed,
+then restore 60 steps:
+
+```
+python examples/run_bigram_baseline.py --device cpu --steps 60
+```
+
+Now change only the learning rate to `0.02`. Predict the result, run it, and
+record whether the validation loss—not merely training loss—improved.
+
+## Measure · Compare like with like [#measure-compare-like-with-like]
+
+The reference configuration is seed 7, 60 steps, learning rate 0.2,
+`block_size=16`, and `batch_size=8`. On the course environment, the count model
+has validation loss about `1.861`; the neural model moves from about `3.497` to
+`1.547` and therefore beats both its initial state and the count baseline.
+Minor floating-point differences are acceptable; the direction and evidence
+contract are not.
+
+The prompts `"the "`, `"a "`, and `"each "` are fixed. Each report includes
+the three most likely next characters and a CPU-seeded sample. Generated text
+will remain locally plausible but incoherent because a bigram has one-character
+context. That limitation is a result, not a sampling bug.
+
+See the versioned [reference baseline](https://github.com/minigraphx/llm-engineering-course/blob/main/docs/baselines/bigram-v1.md)
+for hashes, thresholds, and the reproduction command.
+
+## Explain · Your model card paragraph [#explain-your-model-card-paragraph]
+
+Write one paragraph that names:
+
+- the input, target, parameter, and logits shapes;
+- how counts and gradient descent estimate the same conditional distribution;
+- why cross-entropy is negative log-likelihood here;
+- which partition supports model selection and which supports final reporting;
+- the measured validation comparison;
+- the one-character context limitation.
+
+## Completion gate [#completion-gate]
+
+You pass when you can recreate the full data → tokens → batches → logits →
+probabilities → loss → gradients → update → validation → sampling loop without
+looking at the diagram, and your saved report proves whether one controlled
+change improved the fixed baseline. Required evidence:
+
+- disjoint split counts and SHA-256 hashes;
+- asserted `[B,T]` and `[B,T,V]` shapes;
+- finite normalized probabilities;
+- initial, final, validation, and test losses;
+- all three fixed prompts with the same seed;
+- a conclusion based on validation loss, including a result that did not help.
+
+Run the automated contract checks:
+
+```
+pytest tests/test_bigram.py
+```
+
+## What's next [#whats-next]
+
+The character vocabulary is fixed and cannot represent useful subwords.
+Continue with the [byte-level BPE tokenizer](/llm-engineering-course-pages/bpe-tokenizer) and measure how
+vocabulary and sequence length change the same modelling problem.
+
+[← F06 checkpoint](/llm-engineering-course-pages/foundations-06-pytorch-checkpoint) · [→ BPE tokenizer](/llm-engineering-course-pages/bpe-tokenizer)
+
+</CourseContent>

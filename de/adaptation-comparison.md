@@ -1,0 +1,105 @@
+---
+title: "Anpassung anhand von Evidenz wählen"
+sidebar:
+  label: "M5 — Adaptationsvergleich"
+---
+
+<span id="anpassung-anhand-von-evidenz-wahlen" />
+
+
+Voraussetzungen: Firmenanforderungen, getrennte Evaluation und [SFT/LoRA](/llm-engineering-course-pages/de/sft-lora).
+Nordlicht Workspace ist fiktiv. Der enge Supportprozess benötigt Routing, korrekte
+Regeln, gültiges JSON und sichere Eskalation. Diese Qualitätsachsen müssen getrennt
+sichtbar bleiben; ein Mittelwert ersetzt keine Prüfung schwerwiegender Fehler.
+
+## Mit der günstigsten ausreichenden Änderung beginnen [#mit-der-gunstigsten-ausreichenden-anderung-beginnen]
+
+| Methode | Was ändert sich? | Erste sinnvolle Frage | Aufwand oder Risiko |
+| --- | --- | --- | --- |
+| Prompting | Anweisung/Kontext | Reicht eine klarere Ausgabeanweisung? | Kontext- und Inferenzkosten |
+| Retrieval | Freigegebene Dokumente im Kontext | Ändern sich Fakten, sind Quellen nötig? | Suchqualität und Zugriffsrechte |
+| DAPT/TAPT | LM-Gewichte durch Fach-/Aufgabentext | Ist unbekannte Fachsprache das Problem? | Vergessen; kein explizites Antwortformat |
+| Vollständiges SFT | Alle ausgewählten Modellgewichte | Gibt es genügend repräsentative Antworten? | Gradienten/Optimizer-Zustand, Überanpassung |
+| LoRA | Kleine A/B-Matrizen bei fester Basis | Reicht ein kleines Verhaltensupdate? | Begrenzte Kapazität; Basis bleibt im Speicher |
+| QLoRA | LoRA und quantisierte feste Basis | Funktioniert ein echtes 4-Bit-Backend auf dem Host? | Backendgrenzen und Quantisierungsfehler |
+
+QLoRA hält die Basis in 4 Bit eingefroren und trainiert Adapter in höherer Präzision.
+NF4 nutzt ein für normalverteilte Gewichte entworfenes Codebuch. Doppelte
+Quantisierung komprimiert zusätzlich Skalierungskonstanten. Die Basisparameter
+werden dabei nicht alle in 4 Bit trainiert. Quelle: [QLoRA](https://arxiv.org/abs/2305.14314).
+Die festgelegte [bitsandbytes-Dokumentation](https://huggingface.co/docs/transformers/v4.57.3/en/quantization/bitsandbytes)
+nennt CUDA, XPU, HPU und bestimmte Linux-/Windows-CPU-Plattformen, aber diesen
+macOS-MPS-Host nicht. QLoRA ist **in der gemessenen Umgebung nicht verfügbar**.
+Eine simulierte 4-Bit-Rechnung wird nicht als gemessener QLoRA-Lauf ausgegeben.
+
+## Vergleichsbedingungen konstant halten [#vergleichsbedingungen-konstant-halten]
+
+Basis, Tokenizer, Train/Dev-Splits, Seed, Sequenzbehandlung, Batchgröße, Optimizer
+und Schritte fixieren. Trainierbare Parameter, Laufzeit und genauen Umfang der
+Speichermessung erfassen. Gleiche Schritte bedeuten nicht gleiche Rechenkosten;
+eine gemeinsame Lernrate ist eine kontrollierte Baseline, keine optimale Abstimmung
+für jede Methode. Zufälliges MiniGPT und vortrainiertes SmolLM2 sind kein isolierter
+Vergleich der Adaptermethode.
+
+CPU-MiniGPT: Seed 7, 120 Schritte, Batch 4, AdamW-Lernrate 0,003, 16 Trainingsfälle
+und acht unabhängig verfasste Entwicklungsfälle. Der Tokenizer lernt nur aus
+Trainingstext. Korpora/Gewichte bleiben unter ignoriertem `artifacts/`; Rezepte
+und kompakte numerische Evidenz werden versioniert.
+
+| MiniGPT-Methode | Trainierbare Parameter | Train-NLL | Dev-NLL | Allgemeine Kontroll-NLL | Dev korrekt | Formatfehler |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Zufällige Basis | 40.416 | 6,163 | 6,181 | 6,337 | 0/8 | 8/8 |
+| Vollständiges SFT | 40.416 | 0,488 | 3,816 | 7,309 | 0/8 | 5/8 |
+| Manuelles LoRA, Rang 4 | 3.968 | 3,768 | 4,469 | 7,212 | 0/8 | 8/8 |
+
+Beim vollständigen SFT ist die Train/Dev-Lücke `3,816 − 0,488 = 3,328` Nats.
+Die allgemeine Kontroll-NLL steigt um 0,973, bei LoRA um 0,875. Die zwei einfachen
+Fortsetzungen belegen verschlechterte Likelihood, keine umfassende Messung
+allgemeiner Fähigkeiten. Das zufällige Ausgangsmodell besaß keine nachgewiesene
+allgemeine Kompetenz. Niedriger Trainingsverlust und wenige Parameter reichen
+für die Firmenfreigabe nicht. Beide Anpassungen werden abgelehnt; Basis behalten
+und Datenabdeckung, Promptkonsistenz und Fehler vor dem nächsten Dev-Lauf prüfen.
+
+Laufzeit, Speicherumfang und der separat ausgewiesene reale CPU-/MPS-Versuch stehen
+in `docs/baselines/sft-lora-v1.md` und `docs/model-cards/company-adapter-v1.md`.
+PEFT bewertet dieselben Fälle vor/nach Training, nach Adapter-Reload und nach Merge.
+
+## Vorhersagen → Nachvollziehen → Bauen → Beschädigen → Messen → Erklären [#vorhersagen-nachvollziehen-bauen-beschadigen-messen-erklaren]
+
+1. **Vorhersagen:** Welche Methode aktualisiert morgen eine Regel ohne Gewichtstraining?
+2. **Nachvollziehen:** Ein freigegebenes Dokument durch Kontext und Trainingsdaten verfolgen.
+3. **Bauen:** CPU-Paar ausführen und je Fachgebiet eine fehlerhafte Antwort untersuchen.
+4. **Beschädigen:** Lernrate erhöhen oder eine einzige Antwort wiederholen; Kollaps vorhersagen.
+5. **Messen:** Train/Dev-Lücke, JSON-Fehler, kritische Sicherheit und Kontrollaufgabe vergleichen.
+6. **Erklären:** Freigabe oder Rollback anhand der Firmenkriterien entscheiden.
+
+### Eigenständige Aufgabe [#eigenstandige-aufgabe]
+
+A löst 7/8 Fälle, gibt aber bei einem kritischen Fall ein Geheimnis preis. B löst
+6/8 ohne kritischen Fehler und braucht doppelte Inferenzzeit. Der Vertrag verlangt
+null kritische Fehler und weniger als 200 ms; B braucht 240 ms. Darf ein Kandidat
+freigegeben werden? Nächste Messung vorschlagen, ohne Gold zu verwenden.
+
+<details>
+<summary>Hinweis</summary>
+
+Harte Grenzen gleichen sich nicht gegenseitig aus. Entwicklungssätze dienen
+Iterationen; Gold bleibt für die versiegelte Schlussentscheidung reserviert.
+
+
+</details>
+
+<details>
+<summary>Referenzantwort</summary>
+
+Keiner besteht: A verletzt Sicherheit, B Latenz. Aktuelle Version behalten,
+Eskalation bei A prüfen und B unter identischer Hardware/Last profilieren.
+Nach konkreter Änderung erneut Dev messen. Weniger Trainingsverlust ist kein
+Nachweis einer Gold-Verbesserung.
+
+
+</details>
+
+Checkpoint: Retrieval, fortgesetztes Vortraining und SFT passend zu unterschiedlichen
+Problemen wählen; faire Ergebnistabelle lesen; Dateigröße und Spitzenspeicher
+unterscheiden; vielversprechenden Adapter bei verfehlter Pflichtgrenze ablehnen.

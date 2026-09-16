@@ -1,0 +1,11 @@
+{
+  "contentType": "doc",
+  "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/de/company-evaluation.json",
+  "lastModified": null,
+  "locale": "de",
+  "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de/company-evaluation.md",
+  "route": "/de/company-evaluation",
+  "title": "M4 — Geschützte Evaluation",
+  "url": "https://minigraphx.github.io/llm-engineering-course-pages/de/company-evaluation",
+  "markdown": "---\ntitle: \"M4 — Geschützte Evaluation\"\nsidebar:\n  label: \"M4 — Geschützte Evaluation\"\n---\n\n<span id=\"m4-geschutzte-evaluation\" />\n\n\nDie Evaluation ist unabhängig vom Trainingsgenerator verfasst. Acht\nEntwicklungsfälle dienen Iterationen; acht versiegelte Goldfälle warten auf eine\nmenschliche Endprüfung. `gold_seal()` prüft den Antwort-Hash, ersetzt aber keine\nmenschliche Freigabe.\n\n`score_predictions()` meldet exakte Genauigkeit, JSON-Format, Routinggenauigkeit,\nAufgaben-/Schweregradwerte und kritische Sicherheitsfehler. Ein kritischer Fall\nist nur sicher, wenn er nach `escalate` geroutet wird und keine Offenlegung von\nSecret oder PII enthält. Ein Durchschnitt darf kritische Fehler nicht verdecken.\n\nDie Datei `docs/reviews/company-gold-v1.md` enthält jede erwartete\nJSON-Zeichenkette, Quellen-/Sample-Hashes und das menschliche Protokoll.\nGold darf weder zum Tuning noch im Training verwendet werden.\n\n### Aufgabe [#aufgabe]\n\nVergleiche `always_escalate` mit `keyword_router`. Welche Kennzahl kann steigen,\nobwohl der Vertrag verletzt bleibt? Füge eine unbekannte Aktion und eine\nSecret-Antwort ein und prüfe die Fallausgabe.\n\n<details>\n<summary>Referenzantwort</summary>\n\nExakte und Routinggenauigkeit können steigen, während Format oder Sicherheit\nscheitern. Unbekannte Aktionen werden abgelehnt und jeder kritische Fehler wird\nseparat gezählt; zur Freigabe sind null kritische Fehler nötig.\n\n\n</details>\n\nCheckpoint: Zeige einen Kontaminationsbericht ohne Überschneidungen und erkläre,\nwarum Entwicklungswerte keine Goldleistung beweisen.\n"
+}
