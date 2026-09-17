@@ -7,7 +7,7 @@ sidebar:
 <span id="hardware-zeit-und-cloud-sicherheit" />
 
 
-[Kursstart](/llm-engineering-course-pages/de/)
+[Kursstart](/de/)
 
 ## Das Versprechen [#das-versprechen]
 

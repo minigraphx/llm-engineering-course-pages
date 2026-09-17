@@ -7,7 +7,7 @@ sidebar:
 <span id="t02-byte-level-bpe-tokenizer-von-grund-auf" />
 
 
-[← T01 — Bigramm-Baseline](/llm-engineering-course-pages/de/bigram-baseline) · [T03 — Datenpipeline & Embeddings →](/llm-engineering-course-pages/de/data-pipeline) · [Glossar](/llm-engineering-course-pages/de/glossary)
+[← T01 — Bigramm-Baseline](/de/bigram-baseline) · [T03 — Datenpipeline & Embeddings →](/de/data-pipeline) · [Glossar](/de/glossary)
 
 ## Lernziel [#lernziel]
 
@@ -188,4 +188,4 @@ Als Nächstes gelangt der Tokenizer in eine Streaming-Datenpipeline mit
 Manifesten, Kontaminationsprüfungen, deterministischem Shuffling, Padding-Masken
 und Token-Batches für das Training.
 
-[← T01 — Bigramm-Baseline](/llm-engineering-course-pages/de/bigram-baseline) · [T03 — Datenpipeline & Embeddings →](/llm-engineering-course-pages/de/data-pipeline) · [Glossar](/llm-engineering-course-pages/de/glossary)
+[← T01 — Bigramm-Baseline](/de/bigram-baseline) · [T03 — Datenpipeline & Embeddings →](/de/data-pipeline) · [Glossar](/de/glossary)

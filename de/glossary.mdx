@@ -9,7 +9,7 @@ sidebar:
 <span id="glossar" />
 
 
-[Kursstart](/llm-engineering-course-pages/de/) · [Lernleitfaden](/llm-engineering-course-pages/de/learning-guide)
+[Kursstart](/de/) · [Lernleitfaden](/de/learning-guide)
 
 Die Beispiele und Herleitungen stehen in den verlinkten Lektionen. Diese Seite hilft beim Nachschlagen.
 
@@ -41,27 +41,27 @@ Die Beispiele und Herleitungen stehen in den verlinkten Lektionen. Diese Seite h
 | Paired seeds, uncertainty / Gepaarte Seeds, Unsicherheit | Baseline und Änderung mit passenden Seeds ausführen; Streuung zeigt mögliche Unsicherheit der Differenz. |
 | FLOP, throughput, memory / FLOP, Durchsatz, Speicher | Eine Gleitkommaoperation; verarbeitete Tokens pro Sekunde; Bytes für Parameter, Gradienten, Optimizer und Aktivierungen. |
 | Mixed precision / Gemischte Präzision | Einige Operationen nutzen kleinere Zahlenformate, um Aufwand zu senken; im Kurs gibt es einen Float32-Fallback. |
-| Temperature / Temperatur | Divisor der Logits vor dem Softmax; unter 1 schärft die Verteilung, über 1 flacht sie ab, 0 bedeutet greedy. Die Reihenfolge ändert sich nie ([I01](/llm-engineering-course-pages/de/inference-decoding)). |
-| Greedy decoding / Greedy Decoding | Immer das wahrscheinlichste nächste Token nehmen; deterministisch bei festem Prompt; genau das bedeuten `do_sample=False` und `temperature=0` ([I01](/llm-engineering-course-pages/de/inference-decoding)). |
-| Top-k / top-p (nucleus) sampling / Top-k-/Top-p-Sampling | Nur unter den k wahrscheinlichsten Tokens / der kleinsten Menge mit kumulierter Wahrscheinlichkeit p ziehen, neu normiert ([I01](/llm-engineering-course-pages/de/inference-decoding)). |
-| EOS token / EOS-Token | End-of-sequence-Markierung; ein Decoder stoppt, sobald er sie erzeugt, sonst bei `max_new_tokens` oder der Kontextgrenze ([I01](/llm-engineering-course-pages/de/inference-decoding)). |
-| KV cache / KV-Cache | Keys und Values aller bisherigen Positionen, pro Block gespeichert, damit jedes neue Token einmal projiziert wird und die Attention über den Cache läuft ([I01](/llm-engineering-course-pages/de/inference-decoding)). |
-| Streaming / Streaming | Jedes erzeugte Token senden, sobald sein Schritt fertig ist, statt auf die ganze Antwort zu warten ([I01](/llm-engineering-course-pages/de/inference-decoding)). |
-| AdamW / AdamW | Optimizer mit geglättetem Gradienten `m` und quadriertem Gradienten `v` pro Parameter; der entkoppelte Weight Decay wird getrennt vom adaptiven Schritt angewendet ([E01](/llm-engineering-course-pages/de/pretraining)). |
-| Warmup / Warmup | Die ersten Schritte eines Zeitplans nutzen eine kleinere Lernrate; der Cosine Decay senkt sie danach gleichmäßig auf ein Minimum ([E01](/llm-engineering-course-pages/de/pretraining)). |
-| Gradient clipping / Gradient Clipping | Überschreitet die Norm des gesamten Gradientenvektors eine Schwelle, wird er einmal pro Update vor dem Optimizer-Schritt auf diese Norm skaliert ([E01](/llm-engineering-course-pages/de/pretraining)). |
-| Held-out data / Held-out-Daten | Daten ohne Parameter-Updates; Validierungsdaten dienen der Wahl von Einstellungen, ein Testset nur der finalen Messung ([E03](/llm-engineering-course-pages/de/evaluation)). |
-| Contamination / Kontamination | Evaluationsinhalt, der auch in Trainings- oder Auswahldaten vorkommt; der Score misst dann keine Generalisierung mehr ([E02](/llm-engineering-course-pages/de/data-quality), [C03](/llm-engineering-course-pages/de/company-evaluation)). |
-| Data card / Data Card | Kurzer Datensatzsteckbrief: Quelle, Generator, Lizenz, Splits, Anzahlen, Hashes und Ausschlüsse ([E02](/llm-engineering-course-pages/de/data-quality)). |
-| Model card / Model Card | Kurzer Modellsteckbrief: Basis, Daten, Konfiguration, gemessene Ergebnisse, Grenzen und wofür das Modell nicht freigegeben ist ([T01](/llm-engineering-course-pages/de/bigram-baseline), [C03](/llm-engineering-course-pages/de/company-evaluation)). |
-| Quantization / Quantisierung | Gewichte mit weniger Bits speichern (z. B. 4-Bit NF4), um Speicher zu sparen; QLoRA trainiert höher aufgelöste Adapter über einer eingefrorenen quantisierten Basis ([A02](/llm-engineering-course-pages/de/adaptation-comparison)). |
-| RAG, SFT, LoRA / RAG, SFT, LoRA | Externe Texte zur Anfragezeit abrufen ([R01](/llm-engineering-course-pages/de/rag-build)); überwachtes Finetuning auf Prompt/Antwort-Paaren mit Loss nur auf Antwort-Tokens; Anpassung durch kleine trainierbare Matrizen niedrigen Rangs neben einer eingefrorenen Basis ([A01](/llm-engineering-course-pages/de/sft-lora)). |
-| DPO / DPO | Direct Preference Optimization: Die Policy wird so trainiert, dass die Log-Wahrscheinlichkeit der bevorzugten Antwort relativ zur abgelehnten steigt, gemessen an einer eingefrorenen Referenz und skaliert mit Beta ([A03](/llm-engineering-course-pages/de/dpo)). |
-| Reward model / Reward-Modell | Ein auf Chosen/Rejected-Paaren trainiertes Modell, das Antworten bewertet; es ist ein Stellvertreter für die wahre Aufgabenqualität und kann ausgenutzt werden ([A04](/llm-engineering-course-pages/de/rlhf-bridge)). |
-| KL divergence / KL-Divergenz | Wie weit sich eine Wahrscheinlichkeitsverteilung von einer anderen entfernt hat; als Strafe genutzt, um eine trainierte Policy nahe an ihrer Referenz zu halten ([A04](/llm-engineering-course-pages/de/rlhf-bridge)). |
-| PPO / PPO | Proximal Policy Optimization: ein Policy-Gradient-Update, dessen Wahrscheinlichkeitsverhältnis geclippt wird, damit ein Schritt die Policy nicht zu weit bewegt ([A03](/llm-engineering-course-pages/de/dpo), [A04](/llm-engineering-course-pages/de/rlhf-bridge)). |
-| RLHF / RLHF | Reinforcement Learning from Human Feedback: ein Reward-Modell auf Präferenzen anpassen, dann die Policy unter einer KL-Strafe dagegen optimieren ([A04](/llm-engineering-course-pages/de/rlhf-bridge)). |
+| Temperature / Temperatur | Divisor der Logits vor dem Softmax; unter 1 schärft die Verteilung, über 1 flacht sie ab, 0 bedeutet greedy. Die Reihenfolge ändert sich nie ([I01](/de/inference-decoding)). |
+| Greedy decoding / Greedy Decoding | Immer das wahrscheinlichste nächste Token nehmen; deterministisch bei festem Prompt; genau das bedeuten `do_sample=False` und `temperature=0` ([I01](/de/inference-decoding)). |
+| Top-k / top-p (nucleus) sampling / Top-k-/Top-p-Sampling | Nur unter den k wahrscheinlichsten Tokens / der kleinsten Menge mit kumulierter Wahrscheinlichkeit p ziehen, neu normiert ([I01](/de/inference-decoding)). |
+| EOS token / EOS-Token | End-of-sequence-Markierung; ein Decoder stoppt, sobald er sie erzeugt, sonst bei `max_new_tokens` oder der Kontextgrenze ([I01](/de/inference-decoding)). |
+| KV cache / KV-Cache | Keys und Values aller bisherigen Positionen, pro Block gespeichert, damit jedes neue Token einmal projiziert wird und die Attention über den Cache läuft ([I01](/de/inference-decoding)). |
+| Streaming / Streaming | Jedes erzeugte Token senden, sobald sein Schritt fertig ist, statt auf die ganze Antwort zu warten ([I01](/de/inference-decoding)). |
+| AdamW / AdamW | Optimizer mit geglättetem Gradienten `m` und quadriertem Gradienten `v` pro Parameter; der entkoppelte Weight Decay wird getrennt vom adaptiven Schritt angewendet ([E01](/de/pretraining)). |
+| Warmup / Warmup | Die ersten Schritte eines Zeitplans nutzen eine kleinere Lernrate; der Cosine Decay senkt sie danach gleichmäßig auf ein Minimum ([E01](/de/pretraining)). |
+| Gradient clipping / Gradient Clipping | Überschreitet die Norm des gesamten Gradientenvektors eine Schwelle, wird er einmal pro Update vor dem Optimizer-Schritt auf diese Norm skaliert ([E01](/de/pretraining)). |
+| Held-out data / Held-out-Daten | Daten ohne Parameter-Updates; Validierungsdaten dienen der Wahl von Einstellungen, ein Testset nur der finalen Messung ([E03](/de/evaluation)). |
+| Contamination / Kontamination | Evaluationsinhalt, der auch in Trainings- oder Auswahldaten vorkommt; der Score misst dann keine Generalisierung mehr ([E02](/de/data-quality), [C03](/de/company-evaluation)). |
+| Data card / Data Card | Kurzer Datensatzsteckbrief: Quelle, Generator, Lizenz, Splits, Anzahlen, Hashes und Ausschlüsse ([E02](/de/data-quality)). |
+| Model card / Model Card | Kurzer Modellsteckbrief: Basis, Daten, Konfiguration, gemessene Ergebnisse, Grenzen und wofür das Modell nicht freigegeben ist ([T01](/de/bigram-baseline), [C03](/de/company-evaluation)). |
+| Quantization / Quantisierung | Gewichte mit weniger Bits speichern (z. B. 4-Bit NF4), um Speicher zu sparen; QLoRA trainiert höher aufgelöste Adapter über einer eingefrorenen quantisierten Basis ([A02](/de/adaptation-comparison)). |
+| RAG, SFT, LoRA / RAG, SFT, LoRA | Externe Texte zur Anfragezeit abrufen ([R01](/de/rag-build)); überwachtes Finetuning auf Prompt/Antwort-Paaren mit Loss nur auf Antwort-Tokens; Anpassung durch kleine trainierbare Matrizen niedrigen Rangs neben einer eingefrorenen Basis ([A01](/de/sft-lora)). |
+| DPO / DPO | Direct Preference Optimization: Die Policy wird so trainiert, dass die Log-Wahrscheinlichkeit der bevorzugten Antwort relativ zur abgelehnten steigt, gemessen an einer eingefrorenen Referenz und skaliert mit Beta ([A03](/de/dpo)). |
+| Reward model / Reward-Modell | Ein auf Chosen/Rejected-Paaren trainiertes Modell, das Antworten bewertet; es ist ein Stellvertreter für die wahre Aufgabenqualität und kann ausgenutzt werden ([A04](/de/rlhf-bridge)). |
+| KL divergence / KL-Divergenz | Wie weit sich eine Wahrscheinlichkeitsverteilung von einer anderen entfernt hat; als Strafe genutzt, um eine trainierte Policy nahe an ihrer Referenz zu halten ([A04](/de/rlhf-bridge)). |
+| PPO / PPO | Proximal Policy Optimization: ein Policy-Gradient-Update, dessen Wahrscheinlichkeitsverhältnis geclippt wird, damit ein Schritt die Policy nicht zu weit bewegt ([A03](/de/dpo), [A04](/de/rlhf-bridge)). |
+| RLHF / RLHF | Reinforcement Learning from Human Feedback: ein Reward-Modell auf Präferenzen anpassen, dann die Policy unter einer KL-Strafe dagegen optimieren ([A04](/de/rlhf-bridge)). |
 
-[F01](/llm-engineering-course-pages/de/foundations-01-python-numpy) · [F02](/llm-engineering-course-pages/de/foundations-02-shapes) · [F03](/llm-engineering-course-pages/de/foundations-03-probability) · [F04](/llm-engineering-course-pages/de/foundations-04-neuron) · [F05](/llm-engineering-course-pages/de/foundations-05-mlp-autograd) · [F06](/llm-engineering-course-pages/de/foundations-06-pytorch-checkpoint)
+[F01](/de/foundations-01-python-numpy) · [F02](/de/foundations-02-shapes) · [F03](/de/foundations-03-probability) · [F04](/de/foundations-04-neuron) · [F05](/de/foundations-05-mlp-autograd) · [F06](/de/foundations-06-pytorch-checkpoint)
 
 </CourseContent>

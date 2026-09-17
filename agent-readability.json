@@ -1,21 +1,21 @@
 {
   "artifacts": {
     "markdown": {
-      "pattern": "https://minigraphx.github.io/llm-engineering-course-pages/{route}.md"
+      "pattern": "https://llm.onlinekurs.training/{route}.md"
     },
     "api": {
-      "openapi": "https://minigraphx.github.io/llm-engineering-course-pages/openapi.json",
-      "pages": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages.json"
+      "openapi": "https://llm.onlinekurs.training/openapi.json",
+      "pages": "https://llm.onlinekurs.training/api/docs/pages.json"
     },
-    "llmsFullTxt": "https://minigraphx.github.io/llm-engineering-course-pages/llms-full.txt",
-    "llmsTxt": "https://minigraphx.github.io/llm-engineering-course-pages/llms.txt",
-    "apiCatalog": "https://minigraphx.github.io/llm-engineering-course-pages/.well-known/api-catalog",
-    "sitemap": "https://minigraphx.github.io/llm-engineering-course-pages/sitemap.xml"
+    "llmsFullTxt": "https://llm.onlinekurs.training/llms-full.txt",
+    "llmsTxt": "https://llm.onlinekurs.training/llms.txt",
+    "apiCatalog": "https://llm.onlinekurs.training/.well-known/api-catalog",
+    "sitemap": "https://llm.onlinekurs.training/sitemap.xml"
   },
   "description": "Understand, build, train, evaluate, align, and serve language models",
   "generator": "blume@1.6.4",
   "name": "LLM Engineering Course",
-  "site": "https://minigraphx.github.io",
+  "site": "https://llm.onlinekurs.training",
   "contentUsage": {
     "search": true,
     "ai-input": true,

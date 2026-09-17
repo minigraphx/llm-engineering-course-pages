@@ -7,7 +7,7 @@ sidebar:
 <span id="t01-bigram-language-model-baseline" />
 
 
-[← F06 — PyTorch & checkpoint](/llm-engineering-course-pages/foundations-06-pytorch-checkpoint) · [T02 — Byte-level BPE →](/llm-engineering-course-pages/bpe-tokenizer) · [Glossary](/llm-engineering-course-pages/glossary)
+[← F06 — PyTorch & checkpoint](/foundations-06-pytorch-checkpoint) · [T02 — Byte-level BPE →](/bpe-tokenizer) · [Glossary](/glossary)
 
 ## Learning outcome [#learning-outcome]
 
@@ -162,7 +162,7 @@ pytest tests/test_bigram.py
 ## What's next [#whats-next]
 
 The character vocabulary is fixed and cannot represent useful subwords.
-Continue with the [byte-level BPE tokenizer](/llm-engineering-course-pages/bpe-tokenizer) and measure how
+Continue with the [byte-level BPE tokenizer](/bpe-tokenizer) and measure how
 vocabulary and sequence length change the same modelling problem.
 
-[← F06 — PyTorch & checkpoint](/llm-engineering-course-pages/foundations-06-pytorch-checkpoint) · [T02 — Byte-level BPE →](/llm-engineering-course-pages/bpe-tokenizer) · [Glossary](/llm-engineering-course-pages/glossary)
+[← F06 — PyTorch & checkpoint](/foundations-06-pytorch-checkpoint) · [T02 — Byte-level BPE →](/bpe-tokenizer) · [Glossary](/glossary)

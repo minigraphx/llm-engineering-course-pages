@@ -7,7 +7,7 @@ sidebar:
 <span id="f03-wahrscheinlichkeit-logits-und-loss" />
 
 
-[← F02 — Tensoren & Shapes](/llm-engineering-course-pages/de/foundations-02-shapes) · [F04 — Neuron & Gradient Descent →](/llm-engineering-course-pages/de/foundations-04-neuron) · [Glossar](/llm-engineering-course-pages/de/glossary)
+[← F02 — Tensoren & Shapes](/de/foundations-02-shapes) · [F04 — Neuron & Gradient Descent →](/de/foundations-04-neuron) · [Glossar](/de/glossary)
 
 ## Lernziel [#lernziel]
 
@@ -73,6 +73,6 @@ endlichen Wert und stelle die Max-Subtraktion wieder her.
 
 ## Wie geht es weiter? [#wie-geht-es-weiter]
 
-Weiter mit [F04 — Neuron und Gradient Descent](/llm-engineering-course-pages/de/foundations-04-neuron).
+Weiter mit [F04 — Neuron und Gradient Descent](/de/foundations-04-neuron).
 
-[← F02 — Tensoren & Shapes](/llm-engineering-course-pages/de/foundations-02-shapes) · [F04 — Neuron & Gradient Descent →](/llm-engineering-course-pages/de/foundations-04-neuron) · [Glossar](/llm-engineering-course-pages/de/glossary)
+[← F02 — Tensoren & Shapes](/de/foundations-02-shapes) · [F04 — Neuron & Gradient Descent →](/de/foundations-04-neuron) · [Glossar](/de/glossary)

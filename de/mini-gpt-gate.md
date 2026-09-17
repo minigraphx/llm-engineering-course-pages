@@ -7,10 +7,10 @@ sidebar:
 <span id="t06-kernprufung-programmieren-fehler-finden-erklaren" />
 
 
-[← T05 — Mini-GPT](/llm-engineering-course-pages/de/mini-gpt) · [I01 — Decoding, Sampling & KV-Cache →](/llm-engineering-course-pages/de/inference-decoding) · [Glossar](/llm-engineering-course-pages/de/glossary)
+[← T05 — Mini-GPT](/de/mini-gpt) · [I01 — Decoding, Sampling & KV-Cache →](/de/inference-decoding) · [Glossar](/de/glossary)
 
-Bearbeite zuerst [Decoder](/llm-engineering-course-pages/de/mini-gpt), [Datenpipeline](/llm-engineering-course-pages/de/data-pipeline) und
-[Attention](/llm-engineering-course-pages/de/attention). Plane 60–90 Minuten. Zeige eine eigene Umsetzung;
+Bearbeite zuerst [Decoder](/de/mini-gpt), [Datenpipeline](/de/data-pipeline) und
+[Attention](/de/attention). Plane 60–90 Minuten. Zeige eine eigene Umsetzung;
 das blosse Ausführen der Musterlösung reicht nicht. Speichere eigene Versuche in
 `artifacts/mini-gpt/`; generierte Korpora und Gewichte gehören nicht in Git.
 
@@ -168,4 +168,4 @@ keinen Sicherheits-, Fakten- oder allgemeinen Sprachbenchmark.
 
 </details>
 
-[← T05 — Mini-GPT](/llm-engineering-course-pages/de/mini-gpt) · [I01 — Decoding, Sampling & KV-Cache →](/llm-engineering-course-pages/de/inference-decoding) · [Glossar](/llm-engineering-course-pages/de/glossary)
+[← T05 — Mini-GPT](/de/mini-gpt) · [I01 — Decoding, Sampling & KV-Cache →](/de/inference-decoding) · [Glossar](/de/glossary)

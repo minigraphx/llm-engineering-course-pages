@@ -9,12 +9,12 @@ sidebar:
 <span id="dein-weg-durch-den-kurs" />
 
 
-[← Einrichtung](/llm-engineering-course-pages/de/setup) · [Kursstart](/llm-engineering-course-pages/de/) · [Glossar](/llm-engineering-course-pages/de/glossary)
+[← Einrichtung](/de/setup) · [Kursstart](/de/) · [Glossar](/de/glossary)
 
 Du brauchst keine Vorkenntnisse in Machine Learning, Analysis oder PyTorch.
 Du brauchst einen Computer, auf dem du Python installieren kannst, und Zeit für
 kleine eigene Programme. Ist Programmieren neu, bearbeite den Python-Einstieg
-in [F01](/llm-engineering-course-pages/de/foundations-01-python-numpy) in deinem Tempo. Einheit 0 ist ein
+in [F01](/de/foundations-01-python-numpy) in deinem Tempo. Einheit 0 ist ein
 geführter erster Erfolg; das gesamte Trainingssystem musst du dort noch nicht
 verstehen.
 
@@ -24,42 +24,42 @@ verstehen.
 | --- | --- |
 | Neu in Programmierung und ML | Einrichtung → Einheit 0 → Diagnose → F01–F06 → T01–T06 → I01 → E01–E04 → C01–C04 → A01–A04 → Capstone |
 | Python-Erfahrung, neu in ML | Derselbe Weg; belege F01-Fähigkeiten vor dem Überspringen in der Diagnose. |
-| Erfahrung aus dem Godot-RL-Kurs | Einheit 0 → Diagnose → [B01-Brücke](/llm-engineering-course-pages/de/foundations-godot-rl-bridge) → fehlende Grundlagen → gemeinsames F06-Gate → T01–T06 → I01 → E01–E04 → C01–C04 → A01–A04 → Capstone. |
-| Python und ein LLM-Aufruf, will zuerst Retrieval | Einrichtung → [R01](/llm-engineering-course-pages/de/rag-build) → [R02](/llm-engineering-course-pages/de/rag-quality), danach der Kernweg oben. |
+| Erfahrung aus dem Godot-RL-Kurs | Einheit 0 → Diagnose → [B01-Brücke](/de/foundations-godot-rl-bridge) → fehlende Grundlagen → gemeinsames F06-Gate → T01–T06 → I01 → E01–E04 → C01–C04 → A01–A04 → Capstone. |
+| Python und ein LLM-Aufruf, will zuerst Retrieval | Einrichtung → [R01](/de/rag-build) → [R02](/de/rag-quality), danach der Kernweg oben. |
 
-Die [Diagnose](/llm-engineering-course-pages/de/diagnostic) ist keine Hürde. Eine unbeantwortete Frage bedeutet
+Die [Diagnose](/de/diagnostic) ist keine Hürde. Eine unbeantwortete Frage bedeutet
 „Das lernst du als Nächstes“. Du kannst jederzeit die ganze Lektion wählen.
 
 ## Was jede Stufe ergänzt [#was-jede-stufe-erganzt]
 
 | Stufe | Frage, die du danach beantworten kannst | Prüfung vor dem Weitergehen |
 | --- | --- | --- |
-| [Einheit 0](/llm-engineering-course-pages/de/unit-00) | Was ändert sich, wenn ich einen Score für das nächste Zeichen erhöhe? | Eigene Änderung vorhersagen, ausführen und erklären; JSON-Bericht aufbewahren. Bei fehlgeschlagenen Checks: [Fehlerbehebung](/llm-engineering-course-pages/de/unit-00-troubleshooting). |
-| [Diagnose](/llm-engineering-course-pages/de/diagnostic) | Welche Grundlagen darf ich sicher überspringen, und wo steige ich wieder ein? | Gemeinsames Gate: eine Batch-Shape, ein stabiler Kreuzentropiewert, ein Backward/Update-Zyklus, Gradient-Löschen erklärt, Reproduktion mit Seed. |
-| [B01-Brücke](/llm-engineering-course-pages/de/foundations-godot-rl-bridge) | Welche Godot-RL-Fähigkeiten übertragen sich direkt auf Sprachmodelle? | Transferaufgaben abschließen, dann den gemeinsamen F06-Checkpoint nehmen. |
-| [F01–F06](/llm-engineering-course-pages/de/foundations-01-python-numpy) | Wie berechnet ein Programm Fehler und verbessert seine Zahlen? | F06-Rubrik: eigene `checkpoint.py`, Gradientencheck unter `1e-6`, Diagnose des falschen Vorzeichens, zwei CPU-Läufe innerhalb von `1e-7`. |
-| [T01 Bigramm](/llm-engineering-course-pages/de/bigram-baseline) | Kann das letzte Token das nächste vorhersagen? | Die Schleife Daten → Loss → Update → Validation → Sampling nachbauen und einen Baselinevergleich erklären. |
-| [T02 Tokenizer](/llm-engineering-course-pages/de/bpe-tokenizer) | Wie wird Text verlustfrei zu Ganzzahlen? | Roundtrip- und Randfalltests bestehen; den Kompromiss Vokabular/Sequenzlänge/OOV erklären. |
-| [T03 Pipeline](/llm-engineering-course-pages/de/data-pipeline) | Wie werden Dokumente zu Batches mit Ziel-Tokens? | Die Kette Text → Batch → Embeddings nachzeichnen und jeden Tensor, jede Grenze und Maske erklären. |
-| [T04 Attention](/llm-engineering-course-pages/de/attention) | Welche früheren Positionen tragen zur Vorhersage bei? | Handrechnung einer Attention-Zeile, Heatmap und Kausalitätstest im Bericht. |
-| [T05 Mini-GPT](/llm-engineering-course-pages/de/mini-gpt) | Wie wird aus diesen Teilen ein trainierbarer Decoder? | Tiny-Batch überfitten, identisch laden; jede Shape verfolgen und Attention-Maske von Lossmaske trennen. |
-| [T06 Kerngate](/llm-engineering-course-pages/de/mini-gpt-gate) | Kann ich einen Decoder eigenständig implementieren, diagnostizieren und erklären? | Mindestens 8/10 inklusive aller Coding- und Defektpunkte, Tiny-Batch-NLL unter 0,1 und exakter Reload. |
-| [I01 Decoding](/llm-engineering-course-pages/de/inference-decoding) | Wie wird aus einer Logit-Zeile ein Token, wann stoppt die Generierung, und was behält der Cache? | Temperaturspalten und Masken von Hand; Stoppregel nennen und was der KV-Cache pro Block speichert. |
-| [E01 Training](/llm-engineering-course-pages/de/pretraining) | Kann ich einen Lauf unterbrechen und dasselbe Experiment fortsetzen? | CPU-Parameter mit ununterbrochenem Lauf vergleichen, Accumulation-Gewichte herleiten und die Position des Clippings erklären. |
-| [E02 Datenqualität](/llm-engineering-course-pages/de/data-quality) | Kommt die Verbesserung nur von kontaminierten Daten? | Absichtlich undichte Evaluation prüfen, reparieren und messen; eine Data Card schreiben. |
-| [E03 Evaluation](/llm-engineering-course-pages/de/evaluation) | Verbessert eine Änderung unbekannte Vorhersagen über mehrere Seeds? | Gepaarter Vergleich mit Unsicherheit; die unveränderte Kontrolle zurückweisen; einen blinden Fleck der Smoke-Checks nennen. |
-| [E04 Profiling](/llm-engineering-course-pages/de/profiling) | Was passt in mein Zeit- und Speicherbudget? | Parameterzahl herleiten, Schätzung mit gemessenem CPU-Lauf vergleichen und den Speicherumfang benennen. |
-| [C01 Strategie](/llm-engineering-course-pages/de/company-strategy) | Ist Training der richtige nächste Schritt für dieses Firmenproblem? | Jede gewählte Komponente auf Anforderung, gemessene Baselinelücke und Abnahmetest zurückführen. |
-| [C02 Firmendaten](/llm-engineering-course-pages/de/company-data) | Wie wird ein Quellen-Snapshot zu prüfbaren Trainingsdaten? | Snapshot, Trainingsdatensatz, Entwicklungsfall und geschützten Gold-Fall unterscheiden. |
-| [C03 Geschützte Evaluation](/llm-engineering-course-pages/de/company-evaluation) | Warum ist ein Entwicklungs-Score kein Gold-Nachweis? | Kontaminationsbericht ohne Überschneidungen; Iteration und versiegelten Nachweis unterscheiden. |
-| [C04 Continued Pretraining](/llm-engineering-course-pages/de/continued-pretraining) | Hilft Domänentext, ohne die allgemeine Baseline zu verlieren? | Promotionsschwelle nennen, Rollback-Artefakt benennen, erklären, warum DAPT eine Instruktionsevaluation braucht. |
-| [A01 SFT & LoRA](/llm-engineering-course-pages/de/sft-lora) | Wie bringe ich eine Antwort bei und bewahre die Basis? | Loss-Ausrichtung ohne Trainer; LoRA-Delta anfangs null, eingefrorene Basis, sicherer Reload und Merge; ein gescheitertes Gate ehrlich berichten. |
-| [A02 Adaptationsvergleich](/llm-engineering-course-pages/de/adaptation-comparison) | Welche Adaptation rechtfertigen die Belege? | Faire gepaarte Scorecard lesen; Speicherersparnis von Spitzenspeicher trennen; einen Adapter ablehnen, der ein Gate verfehlt. |
-| [A03 DPO](/llm-engineering-course-pages/de/dpo) | Wie verändert ein Präferenzpaar eine Policy? | Eine Log-Wahrscheinlichkeitssumme, das geclippte PPO-Verhältnis, Proxy-Reward gegenüber Aufgabenerfolg. |
-| [A04 RLHF-Brücke](/llm-engineering-course-pages/de/rlhf-bridge) | Wie wird ein Reward-Modell ausgenutzt, und was löst einen Rollback aus? | Einen Rollback-Monitor und die unveränderliche Referenz zu seiner Reproduktion beschreiben. |
-| [Capstone](/llm-engineering-course-pages/de/company-capstone) | Kann eine andere Person meine Firmenmodell-Entscheidung reproduzieren? | Entscheidungsrecord: CPU-Rezepte aus frischem Checkout, Baseline-Hashes, zwei verworfene Alternativen, der Rollback-Schritt. |
-| [R01 RAG bauen](/llm-engineering-course-pages/de/rag-build) | Wie wird aus einem Dokument eine belegte Antwort ohne Training? | Eine Frage zum Evaluationsset ergänzen und ihren Recall@5 für beide Presets berichten. |
-| [R02 RAG-Qualität](/llm-engineering-course-pages/de/rag-quality) | Verweigert und belegt mein Retrieval-System korrekt? | Mit Zahlen aus dem eigenen Lauf sagen, welches Preset besser abruft, wie oft jedes verweigert und was der Judge nicht sieht. |
+| [Einheit 0](/de/unit-00) | Was ändert sich, wenn ich einen Score für das nächste Zeichen erhöhe? | Eigene Änderung vorhersagen, ausführen und erklären; JSON-Bericht aufbewahren. Bei fehlgeschlagenen Checks: [Fehlerbehebung](/de/unit-00-troubleshooting). |
+| [Diagnose](/de/diagnostic) | Welche Grundlagen darf ich sicher überspringen, und wo steige ich wieder ein? | Gemeinsames Gate: eine Batch-Shape, ein stabiler Kreuzentropiewert, ein Backward/Update-Zyklus, Gradient-Löschen erklärt, Reproduktion mit Seed. |
+| [B01-Brücke](/de/foundations-godot-rl-bridge) | Welche Godot-RL-Fähigkeiten übertragen sich direkt auf Sprachmodelle? | Transferaufgaben abschließen, dann den gemeinsamen F06-Checkpoint nehmen. |
+| [F01–F06](/de/foundations-01-python-numpy) | Wie berechnet ein Programm Fehler und verbessert seine Zahlen? | F06-Rubrik: eigene `checkpoint.py`, Gradientencheck unter `1e-6`, Diagnose des falschen Vorzeichens, zwei CPU-Läufe innerhalb von `1e-7`. |
+| [T01 Bigramm](/de/bigram-baseline) | Kann das letzte Token das nächste vorhersagen? | Die Schleife Daten → Loss → Update → Validation → Sampling nachbauen und einen Baselinevergleich erklären. |
+| [T02 Tokenizer](/de/bpe-tokenizer) | Wie wird Text verlustfrei zu Ganzzahlen? | Roundtrip- und Randfalltests bestehen; den Kompromiss Vokabular/Sequenzlänge/OOV erklären. |
+| [T03 Pipeline](/de/data-pipeline) | Wie werden Dokumente zu Batches mit Ziel-Tokens? | Die Kette Text → Batch → Embeddings nachzeichnen und jeden Tensor, jede Grenze und Maske erklären. |
+| [T04 Attention](/de/attention) | Welche früheren Positionen tragen zur Vorhersage bei? | Handrechnung einer Attention-Zeile, Heatmap und Kausalitätstest im Bericht. |
+| [T05 Mini-GPT](/de/mini-gpt) | Wie wird aus diesen Teilen ein trainierbarer Decoder? | Tiny-Batch überfitten, identisch laden; jede Shape verfolgen und Attention-Maske von Lossmaske trennen. |
+| [T06 Kerngate](/de/mini-gpt-gate) | Kann ich einen Decoder eigenständig implementieren, diagnostizieren und erklären? | Mindestens 8/10 inklusive aller Coding- und Defektpunkte, Tiny-Batch-NLL unter 0,1 und exakter Reload. |
+| [I01 Decoding](/de/inference-decoding) | Wie wird aus einer Logit-Zeile ein Token, wann stoppt die Generierung, und was behält der Cache? | Temperaturspalten und Masken von Hand; Stoppregel nennen und was der KV-Cache pro Block speichert. |
+| [E01 Training](/de/pretraining) | Kann ich einen Lauf unterbrechen und dasselbe Experiment fortsetzen? | CPU-Parameter mit ununterbrochenem Lauf vergleichen, Accumulation-Gewichte herleiten und die Position des Clippings erklären. |
+| [E02 Datenqualität](/de/data-quality) | Kommt die Verbesserung nur von kontaminierten Daten? | Absichtlich undichte Evaluation prüfen, reparieren und messen; eine Data Card schreiben. |
+| [E03 Evaluation](/de/evaluation) | Verbessert eine Änderung unbekannte Vorhersagen über mehrere Seeds? | Gepaarter Vergleich mit Unsicherheit; die unveränderte Kontrolle zurückweisen; einen blinden Fleck der Smoke-Checks nennen. |
+| [E04 Profiling](/de/profiling) | Was passt in mein Zeit- und Speicherbudget? | Parameterzahl herleiten, Schätzung mit gemessenem CPU-Lauf vergleichen und den Speicherumfang benennen. |
+| [C01 Strategie](/de/company-strategy) | Ist Training der richtige nächste Schritt für dieses Firmenproblem? | Jede gewählte Komponente auf Anforderung, gemessene Baselinelücke und Abnahmetest zurückführen. |
+| [C02 Firmendaten](/de/company-data) | Wie wird ein Quellen-Snapshot zu prüfbaren Trainingsdaten? | Snapshot, Trainingsdatensatz, Entwicklungsfall und geschützten Gold-Fall unterscheiden. |
+| [C03 Geschützte Evaluation](/de/company-evaluation) | Warum ist ein Entwicklungs-Score kein Gold-Nachweis? | Kontaminationsbericht ohne Überschneidungen; Iteration und versiegelten Nachweis unterscheiden. |
+| [C04 Continued Pretraining](/de/continued-pretraining) | Hilft Domänentext, ohne die allgemeine Baseline zu verlieren? | Promotionsschwelle nennen, Rollback-Artefakt benennen, erklären, warum DAPT eine Instruktionsevaluation braucht. |
+| [A01 SFT & LoRA](/de/sft-lora) | Wie bringe ich eine Antwort bei und bewahre die Basis? | Loss-Ausrichtung ohne Trainer; LoRA-Delta anfangs null, eingefrorene Basis, sicherer Reload und Merge; ein gescheitertes Gate ehrlich berichten. |
+| [A02 Adaptationsvergleich](/de/adaptation-comparison) | Welche Adaptation rechtfertigen die Belege? | Faire gepaarte Scorecard lesen; Speicherersparnis von Spitzenspeicher trennen; einen Adapter ablehnen, der ein Gate verfehlt. |
+| [A03 DPO](/de/dpo) | Wie verändert ein Präferenzpaar eine Policy? | Eine Log-Wahrscheinlichkeitssumme, das geclippte PPO-Verhältnis, Proxy-Reward gegenüber Aufgabenerfolg. |
+| [A04 RLHF-Brücke](/de/rlhf-bridge) | Wie wird ein Reward-Modell ausgenutzt, und was löst einen Rollback aus? | Einen Rollback-Monitor und die unveränderliche Referenz zu seiner Reproduktion beschreiben. |
+| [Capstone](/de/company-capstone) | Kann eine andere Person meine Firmenmodell-Entscheidung reproduzieren? | Entscheidungsrecord: CPU-Rezepte aus frischem Checkout, Baseline-Hashes, zwei verworfene Alternativen, der Rollback-Schritt. |
+| [R01 RAG bauen](/de/rag-build) | Wie wird aus einem Dokument eine belegte Antwort ohne Training? | Eine Frage zum Evaluationsset ergänzen und ihren Recall@5 für beide Presets berichten. |
+| [R02 RAG-Qualität](/de/rag-quality) | Verweigert und belegt mein Retrieval-System korrekt? | Mit Zahlen aus dem eigenen Lauf sagen, welches Preset besser abruft, wie oft jedes verweigert und was der Judge nicht sieht. |
 
 Die Labs liefern Nachweise für die Kursrubriken, aber kein automatisch
 ausgestelltes Zertifikat und keine Freigabe des öffentlichen Kurses.
@@ -83,16 +83,16 @@ in `artifacts/`.
 
 | Schwierigkeit | Zurück zu |
 | --- | --- |
-| `def`, Klammern, Schleifen oder Exceptions sind unklar | [F01](/llm-engineering-course-pages/de/foundations-01-python-numpy) |
-| Du kannst `[B,T,D]` nicht erklären | [F02](/llm-engineering-course-pages/de/foundations-02-shapes) |
-| Scores, Wahrscheinlichkeiten und Loss wirken austauschbar | [F03](/llm-engineering-course-pages/de/foundations-03-probability) |
-| Die Richtung eines Updates ist unklar | [F04](/llm-engineering-course-pages/de/foundations-04-neuron) |
-| Rückwärtslauf oder Gradientencheck bleiben rätselhaft | [F05](/llm-engineering-course-pages/de/foundations-05-mlp-autograd) |
-| Optimizer oder Seeds wirken wie Magie | [F06](/llm-engineering-course-pages/de/foundations-06-pytorch-checkpoint) |
-| Du kannst nicht sagen, welche Positionen eine Attention-Zeile liest | [T04](/llm-engineering-course-pages/de/attention) |
-| Temperatur, Top-k/Top-p oder der KV-Cache sind unklar | [I01](/llm-engineering-course-pages/de/inference-decoding) |
-| Ein gepaarter Vergleich, Seed oder Held-out-Anspruch ist unklar | [E03](/llm-engineering-course-pages/de/evaluation) |
-| Ein neues Kürzel stört beim Lesen | [Glossar](/llm-engineering-course-pages/de/glossary) |
+| `def`, Klammern, Schleifen oder Exceptions sind unklar | [F01](/de/foundations-01-python-numpy) |
+| Du kannst `[B,T,D]` nicht erklären | [F02](/de/foundations-02-shapes) |
+| Scores, Wahrscheinlichkeiten und Loss wirken austauschbar | [F03](/de/foundations-03-probability) |
+| Die Richtung eines Updates ist unklar | [F04](/de/foundations-04-neuron) |
+| Rückwärtslauf oder Gradientencheck bleiben rätselhaft | [F05](/de/foundations-05-mlp-autograd) |
+| Optimizer oder Seeds wirken wie Magie | [F06](/de/foundations-06-pytorch-checkpoint) |
+| Du kannst nicht sagen, welche Positionen eine Attention-Zeile liest | [T04](/de/attention) |
+| Temperatur, Top-k/Top-p oder der KV-Cache sind unklar | [I01](/de/inference-decoding) |
+| Ein gepaarter Vergleich, Seed oder Held-out-Anspruch ist unklar | [E03](/de/evaluation) |
+| Ein neues Kürzel stört beim Lesen | [Glossar](/de/glossary) |
 
 Versuche die Aufgabe vor dem Öffnen von Hinweis oder Lösung. Bleibt die Lösung
 unklar, reduziere sie auf eine Zeile und eine Zahl. Wiederhole nur den fehlenden

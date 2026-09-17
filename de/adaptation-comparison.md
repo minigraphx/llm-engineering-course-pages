@@ -7,9 +7,9 @@ sidebar:
 <span id="a02-anpassung-anhand-von-evidenz-wahlen" />
 
 
-[← A01 — SFT & LoRA](/llm-engineering-course-pages/de/sft-lora) · [A03 — DPO →](/llm-engineering-course-pages/de/dpo) · [Glossar](/llm-engineering-course-pages/de/glossary)
+[← A01 — SFT & LoRA](/de/sft-lora) · [A03 — DPO →](/de/dpo) · [Glossar](/de/glossary)
 
-Voraussetzungen: Firmenanforderungen, getrennte Evaluation und [SFT/LoRA](/llm-engineering-course-pages/de/sft-lora).
+Voraussetzungen: Firmenanforderungen, getrennte Evaluation und [SFT/LoRA](/de/sft-lora).
 Nordlicht Workspace ist fiktiv. Der enge Supportprozess benötigt Routing, korrekte
 Regeln, gültiges JSON und sichere Eskalation. Diese Qualitätsachsen müssen getrennt
 sichtbar bleiben; ein Mittelwert ersetzt keine Prüfung schwerwiegender Fehler.
@@ -106,4 +106,4 @@ Checkpoint: Retrieval, fortgesetztes Vortraining und SFT passend zu unterschiedl
 Problemen wählen; faire Ergebnistabelle lesen; Dateigröße und Spitzenspeicher
 unterscheiden; vielversprechenden Adapter bei verfehlter Pflichtgrenze ablehnen.
 
-[← A01 — SFT & LoRA](/llm-engineering-course-pages/de/sft-lora) · [A03 — DPO →](/llm-engineering-course-pages/de/dpo) · [Glossar](/llm-engineering-course-pages/de/glossary)
+[← A01 — SFT & LoRA](/de/sft-lora) · [A03 — DPO →](/de/dpo) · [Glossar](/de/glossary)

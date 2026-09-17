@@ -7,9 +7,9 @@ sidebar:
 <span id="a01-sft-and-lora-teach-a-response-preserve-a-base" />
 
 
-[← C04 — Continued pretraining](/llm-engineering-course-pages/continued-pretraining) · [A02 — Adaptation comparison →](/llm-engineering-course-pages/adaptation-comparison) · [Glossary](/llm-engineering-course-pages/glossary)
+[← C04 — Continued pretraining](/continued-pretraining) · [A02 — Adaptation comparison →](/adaptation-comparison) · [Glossary](/glossary)
 
-Prerequisites: [the decoder](/llm-engineering-course-pages/mini-gpt), [training](/llm-engineering-course-pages/pretraining), and the fictional
+Prerequisites: [the decoder](/mini-gpt), [training](/pretraining), and the fictional
 company data/evaluation contracts. Run the explicit CPU mechanism before the
 optional pretrained lab. Both entry paths need no private data or teacher API.
 
@@ -74,7 +74,7 @@ cases; none opens gold. The same evaluator checks actual generated predictions
 before/after. Response NLL and exact/format/safety metrics answer different
 questions. A lower teacher-forced NLL does not prove usable generated answers.
 Reload and merged outputs are checked against the trained adapter. See the
-[adaptation comparison](/llm-engineering-course-pages/adaptation-comparison) and `docs/baselines/sft-lora-v1.md`
+[adaptation comparison](/adaptation-comparison) and `docs/baselines/sft-lora-v1.md`
 for measured results, runtime, memory scope and limitations.
 
 ## Predict → Trace → Build → Break → Measure → Explain [#predict-trace-build-break-measure-explain]
@@ -118,4 +118,4 @@ LoRA delta, frozen base, safe reload and merge; report a failed quality gate hon
 The mechanism follows [LoRA](https://arxiv.org/abs/2106.09685); production wrappers
 are documented by [PEFT](https://huggingface.co/docs/peft/v0.18.0/index).
 
-[← C04 — Continued pretraining](/llm-engineering-course-pages/continued-pretraining) · [A02 — Adaptation comparison →](/llm-engineering-course-pages/adaptation-comparison) · [Glossary](/llm-engineering-course-pages/glossary)
+[← C04 — Continued pretraining](/continued-pretraining) · [A02 — Adaptation comparison →](/adaptation-comparison) · [Glossary](/glossary)

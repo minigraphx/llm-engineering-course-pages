@@ -7,9 +7,9 @@ sidebar:
 <span id="a04-rlhf-bridge-inspect-the-failure-mode" />
 
 
-[← A03 — DPO](/llm-engineering-course-pages/dpo) · [Capstone — Company model →](/llm-engineering-course-pages/company-capstone) · [Glossary](/llm-engineering-course-pages/glossary)
+[← A03 — DPO](/dpo) · [Capstone — Company model →](/company-capstone) · [Glossary](/glossary)
 
-Prerequisites: [A03](/llm-engineering-course-pages/dpo). Allow one session. The code is the second half of
+Prerequisites: [A03](/dpo). Allow one session. The code is the second half of
 `src/llm_course/alignment.py`: `reward_pair_loss`, `categorical_kl`,
 `ppo_clipped_loss`, `_fit_reward_model` and `_ppo_policy`. The page is optional
 for the course path and required before touching any RLHF library.
@@ -57,7 +57,7 @@ quantities after the run: proxy reward, true quality and hack rate. A policy is
 not safer merely because its learned reward increased. Critical routing remains
 an application gate and must be evaluated separately.
 
-Run the CPU recipe from [DPO](/llm-engineering-course-pages/dpo). For an accelerator, keep the same seed,
+Run the CPU recipe from [DPO](/dpo). For an accelerator, keep the same seed,
 data and evaluator; retain the CPU fallback when the accelerator is unavailable.
 With `--dpo-steps 80 --ppo-steps 60` and seed 7 the report records:
 
@@ -118,4 +118,4 @@ Checkpoint: describe one monitor that would trigger rollback (for example, a
 critical safety failure or a rising hack rate) and name the immutable reference
 needed to reproduce it.
 
-[← A03 — DPO](/llm-engineering-course-pages/dpo) · [Capstone — Company model →](/llm-engineering-course-pages/company-capstone) · [Glossary](/llm-engineering-course-pages/glossary)
+[← A03 — DPO](/dpo) · [Capstone — Company model →](/company-capstone) · [Glossary](/glossary)

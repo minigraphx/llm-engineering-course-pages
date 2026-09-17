@@ -7,7 +7,7 @@ sidebar:
 <span id="f01-python-und-numpy" />
 
 
-[← B01 — Godot-RL-Brücke](/llm-engineering-course-pages/de/foundations-godot-rl-bridge) · [F02 — Tensoren & Shapes →](/llm-engineering-course-pages/de/foundations-02-shapes) · [Glossar](/llm-engineering-course-pages/de/glossary)
+[← B01 — Godot-RL-Brücke](/de/foundations-godot-rl-bridge) · [F02 — Tensoren & Shapes →](/de/foundations-02-shapes) · [Glossar](/de/glossary)
 
 ## Lernziel [#lernziel]
 
@@ -20,7 +20,7 @@ Ist Programmieren ganz neu, teile diese Einheit in mehrere Sitzungen auf; die
 
 ## Wenn dies dein erstes Python-Programm ist [#wenn-dies-dein-erstes-python-programm-ist]
 
-Schließe zuerst die [Einrichtung](/llm-engineering-course-pages/de/setup) ab. Erstelle mit dem Dateimanager
+Schließe zuerst die [Einrichtung](/de/setup) ab. Erstelle mit dem Dateimanager
 `artifacts/my-work` und darin eine reine Textdatei `hello.py` (nicht `hello.py.txt`).
 Schreibe diesen Python-Code hinein:
 
@@ -135,11 +135,11 @@ Eingaben ablehnt. Jede Fehlermeldung nennt den fehlerhaften Wert.
 
 ## Wie geht es weiter? [#wie-geht-es-weiter]
 
-Weiter mit [F02 — Tensoren und Shapes](/llm-engineering-course-pages/de/foundations-02-shapes). Kehre zu F01
+Weiter mit [F02 — Tensoren und Shapes](/de/foundations-02-shapes). Kehre zu F01
 zurück, wenn Python-Ablauf, Tests, Exceptions oder NumPy-dtypes Verhalten
 verdecken.
 
-[← Diagnose](/llm-engineering-course-pages/de/diagnostic) · [→ F02](/llm-engineering-course-pages/de/foundations-02-shapes)
+[← Diagnose](/de/diagnostic) · [→ F02](/de/foundations-02-shapes)
 
 <details>
 <summary>Hinweis zum Validator</summary>
@@ -168,4 +168,4 @@ def validate_token_batch(array):
 
 </details>
 
-[← B01 — Godot-RL-Brücke](/llm-engineering-course-pages/de/foundations-godot-rl-bridge) · [F02 — Tensoren & Shapes →](/llm-engineering-course-pages/de/foundations-02-shapes) · [Glossar](/llm-engineering-course-pages/de/glossary)
+[← B01 — Godot-RL-Brücke](/de/foundations-godot-rl-bridge) · [F02 — Tensoren & Shapes →](/de/foundations-02-shapes) · [Glossar](/de/glossary)

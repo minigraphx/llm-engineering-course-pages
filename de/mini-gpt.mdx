@@ -9,15 +9,15 @@ sidebar:
 <span id="t05-mini-gpt-einen-kleinen-decoder-zusammensetzen" />
 
 
-[← T04 — Self-Attention](/llm-engineering-course-pages/de/attention) · [T06 — Kerngate →](/llm-engineering-course-pages/de/mini-gpt-gate) · [Glossar](/llm-engineering-course-pages/de/glossary)
+[← T04 — Self-Attention](/de/attention) · [T06 — Kerngate →](/de/mini-gpt-gate) · [Glossar](/de/glossary)
 
 **Lernziel:** ein trainierbares Modell für das nächste Token bauen und jede
 Operation von IDs bis zu Wahrscheinlichkeiten erklären. Plane 90–120 Minuten,
-danach folgt die [Kernprüfung](/llm-engineering-course-pages/de/mini-gpt-gate). Voraussetzungen:
-[Tensorformen](/llm-engineering-course-pages/de/foundations-02-shapes), [Autograd](/llm-engineering-course-pages/de/foundations-05-mlp-autograd),
-[Dokumentpipeline](/llm-engineering-course-pages/de/data-pipeline) und [kausale Attention](/llm-engineering-course-pages/de/attention).
+danach folgt die [Kernprüfung](/de/mini-gpt-gate). Voraussetzungen:
+[Tensorformen](/de/foundations-02-shapes), [Autograd](/de/foundations-05-mlp-autograd),
+[Dokumentpipeline](/de/data-pipeline) und [kausale Attention](/de/attention).
 Sowohl der eigenständige Einstieg als auch die
-[Godot-RL-Brücke](/llm-engineering-course-pages/de/foundations-godot-rl-bridge) führen hierher.
+[Godot-RL-Brücke](/de/foundations-godot-rl-bridge) führen hierher.
 
 ## Mit einer Vorhersage anfangen [#mit-einer-vorhersage-anfangen]
 
@@ -96,7 +96,7 @@ kein Padding lesen. Probiere eine komplett gepaddete Zeile und prüfe
 
 ## Die Referenz ausführen [#die-referenz-ausfuhren]
 
-Nach dem [Setup](/llm-engineering-course-pages/de/setup) im Repository-Verzeichnis:
+Nach dem [Setup](/de/setup) im Repository-Verzeichnis:
 
 ```bash
 python -m pytest tests/test_mini_gpt.py -q
@@ -153,7 +153,7 @@ bei Temperatur 2 zu `[0,1]`; die grössere Wahrscheinlichkeit sinkt von 0.881 au
 Trainings-/Auswertungsmodus. Bei zu langem Kontext wird nur das letzte Fenster
 gelesen, mit Positionsindizes wieder ab null. Der zurückgegebene Präfix bleibt
 erhalten. Prompts sind ungepaddet. Es werden genau die angeforderten Tokens erzeugt,
-ohne EOS-Stoppregel und ohne KV-Cache ([I01](/llm-engineering-course-pages/de/inference-decoding)). Checkpoints enthalten Architektur und
+ohne EOS-Stoppregel und ohne KV-Cache ([I01](/de/inference-decoding)). Checkpoints enthalten Architektur und
 Gewichte; Fortsetzen inklusive Optimierer/Zufallszustand gehört zu E01.
 
 ## Absichtlich kaputtmachen und weitergehen [#absichtlich-kaputtmachen-und-weitergehen]
@@ -162,10 +162,10 @@ Setze in einem lokalen Versuch die Ziele gleich den Eingaben. Der Loss fällt
 möglicherweise schneller, weil das Modell die Antwort an der aktuellen Position
 sieht. Erkläre, warum das keine Vorhersage des nächsten Tokens mehr ist, und stelle
 die verschobenen Ziele wieder her. Generierte Korpora und Checkpoints nicht
-committen. Gehe zur [Kernprüfung](/llm-engineering-course-pages/de/mini-gpt-gate), sobald du jede Form verfolgen,
+committen. Gehe zur [Kernprüfung](/de/mini-gpt-gate), sobald du jede Form verfolgen,
 Attention-Maske und Loss-Maske unterscheiden und Tiny-Batch-Überanpassung als
 Fehlersuche statt als Qualitätsbeleg erklären kannst.
 
-[← T04 — Self-Attention](/llm-engineering-course-pages/de/attention) · [T06 — Kerngate →](/llm-engineering-course-pages/de/mini-gpt-gate) · [Glossar](/llm-engineering-course-pages/de/glossary)
+[← T04 — Self-Attention](/de/attention) · [T06 — Kerngate →](/de/mini-gpt-gate) · [Glossar](/de/glossary)
 
 </CourseContent>

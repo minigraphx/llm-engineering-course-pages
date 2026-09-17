@@ -7,7 +7,7 @@ sidebar:
 <span id="unit-0-troubleshooting" />
 
 
-[← Unit 0 — First Tiny-LM Run](/llm-engineering-course-pages/unit-00) · [Diagnostic & learning path →](/llm-engineering-course-pages/diagnostic) · [Glossary](/llm-engineering-course-pages/glossary)
+[← Unit 0 — First Tiny-LM Run](/unit-00) · [Diagnostic & learning path →](/diagnostic) · [Glossary](/glossary)
 
 Run the diagnostic first and fix the first failing check:
 
@@ -52,4 +52,4 @@ Include:
 Never attach generated checkpoints, company data, credentials, or personal
 information.
 
-[← Unit 0 — First Tiny-LM Run](/llm-engineering-course-pages/unit-00) · [Diagnostic & learning path →](/llm-engineering-course-pages/diagnostic) · [Glossary](/llm-engineering-course-pages/glossary)
+[← Unit 0 — First Tiny-LM Run](/unit-00) · [Diagnostic & learning path →](/diagnostic) · [Glossary](/glossary)

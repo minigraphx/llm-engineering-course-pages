@@ -7,9 +7,9 @@ sidebar:
 <span id="c03-geschutzte-evaluation" />
 
 
-[← C02 — Firmendaten](/llm-engineering-course-pages/de/company-data) · [C04 — Continued Pretraining →](/llm-engineering-course-pages/de/continued-pretraining) · [Glossar](/llm-engineering-course-pages/de/glossary)
+[← C02 — Firmendaten](/de/company-data) · [C04 — Continued Pretraining →](/de/continued-pretraining) · [Glossar](/de/glossary)
 
-Voraussetzungen: [C02](/llm-engineering-course-pages/de/company-data), [E03](/llm-engineering-course-pages/de/evaluation). Eine Sitzung.
+Voraussetzungen: [C02](/de/company-data), [E03](/de/evaluation). Eine Sitzung.
 Der Code steht in `src/llm_course/company_eval.py`; lies `score_predictions`,
 `gold_seal` und `contamination_report` neben dieser Seite. Hier wird nichts trainiert.
 
@@ -125,4 +125,4 @@ separat gezählt; zur Freigabe sind null kritische Fehler nötig.
 Checkpoint: Zeige einen Kontaminationsbericht ohne Überschneidungen und erkläre,
 warum Entwicklungswerte keine Goldleistung beweisen.
 
-[← C02 — Firmendaten](/llm-engineering-course-pages/de/company-data) · [C04 — Continued Pretraining →](/llm-engineering-course-pages/de/continued-pretraining) · [Glossar](/llm-engineering-course-pages/de/glossary)
+[← C02 — Firmendaten](/de/company-data) · [C04 — Continued Pretraining →](/de/continued-pretraining) · [Glossar](/de/glossary)

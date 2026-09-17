@@ -1,16 +1,16 @@
 {
   "linkset": [
     {
-      "anchor": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs",
+      "anchor": "https://llm.onlinekurs.training/api/docs",
       "service-desc": [
         {
-          "href": "https://minigraphx.github.io/llm-engineering-course-pages/openapi.json",
+          "href": "https://llm.onlinekurs.training/openapi.json",
           "type": "application/json"
         }
       ],
       "service-doc": [
         {
-          "href": "https://minigraphx.github.io/llm-engineering-course-pages",
+          "href": "https://llm.onlinekurs.training/",
           "type": "text/html"
         }
       ]

@@ -7,7 +7,7 @@ sidebar:
 <span id="t01-bigramm-sprachmodell-als-baseline" />
 
 
-[← F06 — PyTorch & Checkpoint](/llm-engineering-course-pages/de/foundations-06-pytorch-checkpoint) · [T02 — Byte-Level-BPE →](/llm-engineering-course-pages/de/bpe-tokenizer) · [Glossar](/llm-engineering-course-pages/de/glossary)
+[← F06 — PyTorch & Checkpoint](/de/foundations-06-pytorch-checkpoint) · [T02 — Byte-Level-BPE →](/de/bpe-tokenizer) · [Glossar](/de/glossary)
 
 ## Lernziel [#lernziel]
 
@@ -165,7 +165,7 @@ pytest tests/test_bigram.py
 ## Wie geht es weiter? [#wie-geht-es-weiter]
 
 Das Zeichen-Vokabular ist fest und kann keine nützlichen Subwörter darstellen.
-Weiter mit dem [Byte-Level-BPE-Tokenizer](/llm-engineering-course-pages/de/bpe-tokenizer): Dort misst du, wie
+Weiter mit dem [Byte-Level-BPE-Tokenizer](/de/bpe-tokenizer): Dort misst du, wie
 Vokabular und Sequenzlänge dasselbe Modellierungsproblem verändern.
 
-[← F06 — PyTorch & Checkpoint](/llm-engineering-course-pages/de/foundations-06-pytorch-checkpoint) · [T02 — Byte-Level-BPE →](/llm-engineering-course-pages/de/bpe-tokenizer) · [Glossar](/llm-engineering-course-pages/de/glossary)
+[← F06 — PyTorch & Checkpoint](/de/foundations-06-pytorch-checkpoint) · [T02 — Byte-Level-BPE →](/de/bpe-tokenizer) · [Glossar](/de/glossary)

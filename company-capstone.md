@@ -7,9 +7,9 @@ sidebar:
 <span id="capstone-from-requirement-to-a-reversible-company-model" />
 
 
-[← A04 — RLHF bridge](/llm-engineering-course-pages/rlhf-bridge) · [Course home →](/llm-engineering-course-pages/) · [Glossary](/llm-engineering-course-pages/glossary)
+[← A04 — RLHF bridge](/rlhf-bridge) · [Course home →](/) · [Glossary](/glossary)
 
-Prerequisites: [C01](/llm-engineering-course-pages/company-strategy), [A02](/llm-engineering-course-pages/adaptation-comparison), [C04](/llm-engineering-course-pages/continued-pretraining).
+Prerequisites: [C01](/company-strategy), [A02](/adaptation-comparison), [C04](/continued-pretraining).
 Allow two sessions: one to rerun and collect the evidence, one to write the
 record. You reuse `src/llm_course/company_strategy.py` (`Requirements`,
 `score_candidates`, `total_cost`) and every module from C02 to A04; nothing new is trained.
@@ -125,4 +125,4 @@ followed by the sealed human review.
 
 </details>
 
-[← A04 — RLHF bridge](/llm-engineering-course-pages/rlhf-bridge) · [Course home →](/llm-engineering-course-pages/) · [Glossary](/llm-engineering-course-pages/glossary)
+[← A04 — RLHF bridge](/rlhf-bridge) · [Course home →](/) · [Glossary](/glossary)

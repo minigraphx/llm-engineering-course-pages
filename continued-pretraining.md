@@ -7,9 +7,9 @@ sidebar:
 <span id="c04-continued-pretraining-without-losing-the-baseline" />
 
 
-[← C03 — Protected evaluation](/llm-engineering-course-pages/company-evaluation) · [A01 — SFT & LoRA →](/llm-engineering-course-pages/sft-lora) · [Glossary](/llm-engineering-course-pages/glossary)
+[← C03 — Protected evaluation](/company-evaluation) · [A01 — SFT & LoRA →](/sft-lora) · [Glossary](/glossary)
 
-Prerequisites: [C02](/llm-engineering-course-pages/company-data), [E01](/llm-engineering-course-pages/pretraining). Allow one session.
+Prerequisites: [C02](/company-data), [E01](/pretraining). Allow one session.
 The code is `src/llm_course/continued_pretraining.py`; read `document_batches`,
 `adaptation_decision` and `run_continued_pretraining` beside this page.
 
@@ -114,4 +114,4 @@ a preregistered seed change is a new run that must be recorded, not hidden.
 Checkpoint: state a promotion threshold, name the rollback artifact and explain
 why DAPT must be followed by instruction evaluation.
 
-[← C03 — Protected evaluation](/llm-engineering-course-pages/company-evaluation) · [A01 — SFT & LoRA →](/llm-engineering-course-pages/sft-lora) · [Glossary](/llm-engineering-course-pages/glossary)
+[← C03 — Protected evaluation](/company-evaluation) · [A01 — SFT & LoRA →](/sft-lora) · [Glossary](/glossary)

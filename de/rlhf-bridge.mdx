@@ -9,9 +9,9 @@ sidebar:
 <span id="a04-rlhf-brucke-fehler-sichtbar-machen" />
 
 
-[← A03 — DPO](/llm-engineering-course-pages/de/dpo) · [Capstone — Firmenmodell →](/llm-engineering-course-pages/de/company-capstone) · [Glossar](/llm-engineering-course-pages/de/glossary)
+[← A03 — DPO](/de/dpo) · [Capstone — Firmenmodell →](/de/company-capstone) · [Glossar](/de/glossary)
 
-Voraussetzungen: [A03](/llm-engineering-course-pages/de/dpo). Eine Sitzung. Der Code ist die zweite Hälfte
+Voraussetzungen: [A03](/de/dpo). Eine Sitzung. Der Code ist die zweite Hälfte
 von `src/llm_course/alignment.py`: `reward_pair_loss`, `categorical_kl`,
 `ppo_clipped_loss`, `_fit_reward_model` und `_ppo_policy`. Die Seite ist für den
 Kurspfad optional und Pflicht, bevor du eine RLHF-Bibliothek anfasst.
@@ -61,7 +61,7 @@ Prüfe nach dem Lauf Proxy-Reward, echte Qualität und Hackrate. Höherer Reward
 bedeutet nicht automatisch mehr Sicherheit. Kritisches Routing bleibt eine
 Anwendungsprüfung.
 
-Nutze das CPU-Rezept aus [DPO](/llm-engineering-course-pages/de/dpo) und behalte bei fehlendem Accelerator
+Nutze das CPU-Rezept aus [DPO](/de/dpo) und behalte bei fehlendem Accelerator
 den CPU-Fallback. Für einen Accelerator bleiben Seed, Daten und Evaluator gleich.
 Mit `--dpo-steps 80 --ppo-steps 60` und Seed 7 hält der Bericht fest:
 
@@ -123,6 +123,6 @@ Reward-Scores `6.45, 2.66, -2.24, 10.46` sind für jeden Seed gleich, jede
 Checkpoint: Nenne ein Rollback-Signal, etwa einen kritischen Sicherheitsfehler
 oder steigende Hackrate, und die unveränderliche Referenz für Reproduktion.
 
-[← A03 — DPO](/llm-engineering-course-pages/de/dpo) · [Capstone — Firmenmodell →](/llm-engineering-course-pages/de/company-capstone) · [Glossar](/llm-engineering-course-pages/de/glossary)
+[← A03 — DPO](/de/dpo) · [Capstone — Firmenmodell →](/de/company-capstone) · [Glossar](/de/glossary)
 
 </CourseContent>

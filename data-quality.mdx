@@ -9,12 +9,12 @@ sidebar:
 <span id="e02-data-quality-and-provenance" />
 
 
-[← E01 — Reproducible training](/llm-engineering-course-pages/pretraining) · [E03 — Evaluation →](/llm-engineering-course-pages/evaluation) · [Glossary](/llm-engineering-course-pages/glossary)
+[← E01 — Reproducible training](/pretraining) · [E03 — Evaluation →](/evaluation) · [Glossary](/glossary)
 
 ## Before you start [#before-you-start]
 
-Complete [T03](/llm-engineering-course-pages/data-pipeline): distinguish a document, a token window and a
-split. Review [loss](/llm-engineering-course-pages/foundations-03-probability) if an apparently lower score
+Complete [T03](/data-pipeline): distinguish a document, a token window and a
+split. Review [loss](/foundations-03-probability) if an apparently lower score
 still feels automatically better. Allow 60–90 minutes; this lab needs only CPU
 and generates fictional examples in memory.
 
@@ -143,7 +143,7 @@ have data cards under `docs/data-cards/`; each manifest records generator, licen
 UTF-8 byte count, SHA-256 and split policy. A **hash** identifies exact bytes: one
 changed space changes the identity. Never update a hash to make an unexplained
 mismatch disappear. A new version needs a new baseline and documented migration.
-The [data policy](/llm-engineering-course-pages/data-policy) distinguishes current tiny fixtures from planned
+The [data policy](/data-policy) distinguishes current tiny fixtures from planned
 larger supplied data packs. Do not commit generated corpora, real personal data
 or weights.
 
@@ -154,6 +154,6 @@ repaired contamination defect, an explained mixture and a data card for an inven
 source. Explain why `ready=true` means only that these teaching checks passed,
 and why preserving test integrity can make a reported score worse.
 
-[← E01 — Reproducible training](/llm-engineering-course-pages/pretraining) · [E03 — Evaluation →](/llm-engineering-course-pages/evaluation) · [Glossary](/llm-engineering-course-pages/glossary)
+[← E01 — Reproducible training](/pretraining) · [E03 — Evaluation →](/evaluation) · [Glossary](/glossary)
 
 </CourseContent>

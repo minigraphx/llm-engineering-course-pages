@@ -7,7 +7,7 @@ sidebar:
 <span id="f04-neuron-and-gradient-descent" />
 
 
-[← F03 — Probability & loss](/llm-engineering-course-pages/foundations-03-probability) · [F05 — MLP, backprop & autograd →](/llm-engineering-course-pages/foundations-05-mlp-autograd) · [Glossary](/llm-engineering-course-pages/glossary)
+[← F03 — Probability & loss](/foundations-03-probability) · [F05 — MLP, backprop & autograd →](/foundations-05-mlp-autograd) · [Glossary](/glossary)
 
 ## Learning outcome [#learning-outcome]
 
@@ -74,6 +74,6 @@ to form a hypothesis, identify the faulty equation, and predict the repair.
 
 ## What's next [#whats-next]
 
-Continue with [F05 — MLP, backpropagation, and autograd](/llm-engineering-course-pages/foundations-05-mlp-autograd).
+Continue with [F05 — MLP, backpropagation, and autograd](/foundations-05-mlp-autograd).
 
-[← F03 — Probability & loss](/llm-engineering-course-pages/foundations-03-probability) · [F05 — MLP, backprop & autograd →](/llm-engineering-course-pages/foundations-05-mlp-autograd) · [Glossary](/llm-engineering-course-pages/glossary)
+[← F03 — Probability & loss](/foundations-03-probability) · [F05 — MLP, backprop & autograd →](/foundations-05-mlp-autograd) · [Glossary](/glossary)

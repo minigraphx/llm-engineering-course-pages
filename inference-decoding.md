@@ -7,9 +7,9 @@ sidebar:
 <span id="i01-decoding-sampling-and-the-kv-cache" />
 
 
-[← T06 — Core gate](/llm-engineering-course-pages/mini-gpt-gate) · [E01 — Reproducible training →](/llm-engineering-course-pages/pretraining) · [Glossary](/llm-engineering-course-pages/glossary)
+[← T06 — Core gate](/mini-gpt-gate) · [E01 — Reproducible training →](/pretraining) · [Glossary](/glossary)
 
-Prerequisites: [T05](/llm-engineering-course-pages/mini-gpt), [T06](/llm-engineering-course-pages/mini-gpt-gate). Allow one session.
+Prerequisites: [T05](/mini-gpt), [T06](/mini-gpt-gate). Allow one session.
 T05's `MiniGPT.generate` draws a fixed number of tokens at one temperature and
 nothing else. Every generation loop makes three further decisions: how one row of
 logits becomes one token, when the loop stops, and what it keeps between steps.
@@ -118,7 +118,7 @@ context: `decode` refuses `prompt + max_new_tokens > block_size` with a
 restarts the learned positions at zero. A rolling window keeps generating but
 silently forgets the prompt.
 
-[R01](/llm-engineering-course-pages/rag-build)'s default generator, a 4-billion-parameter model, makes the
+[R01](/rag-build)'s default generator, a 4-billion-parameter model, makes the
 same choices. `TransformersGenerator.generate` in `src/llm_course/rag/generate.py`
 calls
 `model.generate(**inputs, max_new_tokens=max_tokens, do_sample=False)` with
@@ -238,4 +238,4 @@ Checkpoint: compute both temperature columns and both masks by hand; state which
 stop rule ended a sample; name what the cache stores per block and why the mask
 makes it valid; read the timing table without claiming more than it measured.
 
-[← T06 — Core gate](/llm-engineering-course-pages/mini-gpt-gate) · [E01 — Reproducible training →](/llm-engineering-course-pages/pretraining) · [Glossary](/llm-engineering-course-pages/glossary)
+[← T06 — Core gate](/mini-gpt-gate) · [E01 — Reproducible training →](/pretraining) · [Glossary](/glossary)

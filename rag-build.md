@@ -7,9 +7,9 @@ sidebar:
 <span id="r01-from-document-to-answer-build-rag-yourself" />
 
 
-[← Learning guide](/llm-engineering-course-pages/learning-guide) · [R02 — So it does not lie →](/llm-engineering-course-pages/rag-quality) · [Glossary](/llm-engineering-course-pages/glossary)
+[← Learning guide](/learning-guide) · [R02 — So it does not lie →](/rag-quality) · [Glossary](/glossary)
 
-Prerequisites: [Setup](/llm-engineering-course-pages/setup) and Python. No training knowledge is needed; this
+Prerequisites: [Setup](/setup) and Python. No training knowledge is needed; this
 track never computes a gradient. Allow two sessions. The corpus is this course itself,
 its English pages including the two RAG lessons, so the index you build contains the
 page you are reading. Everything runs locally on CPU or Apple silicon; an Anthropic
@@ -27,7 +27,7 @@ leave your machine to become training data. Provenance is required: a reader who
 "where does that come from?" needs a section and a date, not a probability.
 
 Fine-tuning wins when the gap is behaviour rather than knowledge: a house style, a
-strict output format, a tool-calling protocol. [C01's decision table](/llm-engineering-course-pages/company-strategy)
+strict output format, a tool-calling protocol. [C01's decision table](/company-strategy)
 puts these side by side; the two rows that matter here are:
 
 | Observed gap | First intervention |
@@ -199,7 +199,7 @@ of memory); `qwen-small` (`Qwen3-1.7B`, 3.4 GB) is the choice for a 16 GB machin
 `granite` (`granite-4.2-3b`) is a second local family; `anthropic` sends the same
 prompt to the Messages API and reports the cost. The local generators decode
 greedily (`do_sample=False`) and stop after `max_new_tokens=300`;
-[I01](/llm-engineering-course-pages/inference-decoding) traces what those two settings do. `--offline` uses a
+[I01](/inference-decoding) traces what those two settings do. `--offline` uses a
 hash embedder and an echo generator, downloads nothing and reads `build/rag-index/offline`, so run
 `python rag/ingest.py --config improved --offline` first. The loop itself is
 `pipeline.ask()`: retrieve, build the prompt, generate, apply the guardrails;
@@ -211,7 +211,7 @@ $ python rag/ask.py "How does the causal mask hide future tokens?" --offline
 Based on the provided context, the answer is in the first passage [1].
 
 Sources:
-  [1] Evaluation: make a claim the evidence can support — 6. Practice, diagnose, explain (https://minigraphx.github.io/llm-engineering-course-pages/evaluation, 2026-09-09)
+  [1] Evaluation: make a claim the evidence can support — 6. Practice, diagnose, explain (https://llm.onlinekurs.training/evaluation, 2026-09-09)
 
 Latency 0.00 s · cost $0.00000 · guardrails: ok, ok
 ```
@@ -227,10 +227,10 @@ retrieval; the numbers a 64-bucket hash produces are not a judgement about the
 content. With the real models the same command took 16.4 s on an Apple-silicon
 laptop and answered that the mask sets future positions to negative infinity before
 the softmax, citing `[2]`, which was this section rather than
-[T04](/llm-engineering-course-pages/attention), where the mask is actually built: the corpus contains the page
+[T04](/attention), where the mask is actually built: the corpus contains the page
 you are reading, and a section that names the question can outrank the section that
 answers it. The answer passes the guardrails and cites a page that only describes the
-answer. [R02](/llm-engineering-course-pages/rag-quality) measures how often that happens; the reproducible
+answer. [R02](/rag-quality) measures how often that happens; the reproducible
 numbers for both presets are in `rag/README.md`.
 
 ## Predict → Trace → Build → Break → Measure → Explain [#predict-trace-build-break-measure-explain]
@@ -277,6 +277,6 @@ always `0.0`, because fixed windows carry no section.
 
 </details>
 
-Next: [R02 — So it does not lie](/llm-engineering-course-pages/rag-quality).
+Next: [R02 — So it does not lie](/rag-quality).
 
-[← Learning guide](/llm-engineering-course-pages/learning-guide) · [R02 — So it does not lie →](/llm-engineering-course-pages/rag-quality) · [Glossary](/llm-engineering-course-pages/glossary)
+[← Learning guide](/learning-guide) · [R02 — So it does not lie →](/rag-quality) · [Glossary](/glossary)

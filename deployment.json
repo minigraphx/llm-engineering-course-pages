@@ -1,6 +1,6 @@
 {
-  "source_commit": "19d83d2dda41c0d87e300cdc5ece0fe0f3c9fdd8",
-  "ci_run": 35173378996,
+  "source_commit": "ff0aaaf8381cbc37b8206b88450b5495aa66c4cb",
+  "ci_run": 35263523916,
   "artifact": "blume-pages-static",
-  "site": "https://minigraphx.github.io/llm-engineering-course-pages/"
+  "site": "https://llm.onlinekurs.training/"
 }

@@ -4,7 +4,7 @@ sidebar:
   hidden: true
 ---
 
-[Course home](/llm-engineering-course-pages/) · English source reference
+[Course home](/) · English source reference
 
 Status: ready to run; human pilot evidence is still required for MIN-76
 

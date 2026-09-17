@@ -7,12 +7,12 @@ sidebar:
 <span id="e02-datenqualitat-und-provenienz" />
 
 
-[← E01 — Reproduzierbares Training](/llm-engineering-course-pages/de/pretraining) · [E03 — Evaluation →](/llm-engineering-course-pages/de/evaluation) · [Glossar](/llm-engineering-course-pages/de/glossary)
+[← E01 — Reproduzierbares Training](/de/pretraining) · [E03 — Evaluation →](/de/evaluation) · [Glossar](/de/glossary)
 
 ## Bevor du beginnst [#bevor-du-beginnst]
 
-Schließe [T03](/llm-engineering-course-pages/de/data-pipeline) ab: Unterscheide Dokument, Tokenfenster und
-Split. Wiederhole [Loss](/llm-engineering-course-pages/de/foundations-03-probability), falls ein kleinerer Wert
+Schließe [T03](/de/data-pipeline) ab: Unterscheide Dokument, Tokenfenster und
+Split. Wiederhole [Loss](/de/foundations-03-probability), falls ein kleinerer Wert
 noch automatisch besser wirkt. Plane 60–90 Minuten. Das Lab braucht nur CPU
 und erzeugt erfundene Beispiele im Speicher.
 
@@ -148,7 +148,7 @@ Alle drei haben Data Cards unter `docs/data-cards/`. Jedes Manifest nennt
 Generator, Lizenz, UTF-8-Bytezahl, SHA-256 und Splitregeln. Ein **Hash** bezeichnet
 exakte Bytes: Ein geändertes Leerzeichen ändert die Identität. Ändere einen Hash
 nicht, um eine ungeklärte Abweichung zu verstecken. Eine neue Version braucht
-eine neue Baseline und eine dokumentierte Migration. Die [Datenrichtlinie](/llm-engineering-course-pages/de/data-policy)
+eine neue Baseline und eine dokumentierte Migration. Die [Datenrichtlinie](/de/data-policy)
 unterscheidet heutige Mini-Fixtures von geplanten größeren Datenpaketen. Erzeugte
 Korpora, reale personenbezogene Daten und Gewichte gehören nicht ins Git.
 
@@ -160,4 +160,4 @@ für eine erfundene Quelle ein. Erkläre, warum `ready=true` nur bestandene
 Lehrprüfungen bedeutet und warum die Wiederherstellung der Testintegrität einen
 berichteten Wert verschlechtern kann.
 
-[← E01 — Reproduzierbares Training](/llm-engineering-course-pages/de/pretraining) · [E03 — Evaluation →](/llm-engineering-course-pages/de/evaluation) · [Glossar](/llm-engineering-course-pages/de/glossary)
+[← E01 — Reproduzierbares Training](/de/pretraining) · [E03 — Evaluation →](/de/evaluation) · [Glossar](/de/glossary)

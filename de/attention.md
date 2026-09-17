@@ -7,7 +7,7 @@ sidebar:
 <span id="t04-self-attention-als-zahlenexperiment" />
 
 
-[← T03 — Datenpipeline & Embeddings](/llm-engineering-course-pages/de/data-pipeline) · [T05 — Mini-GPT →](/llm-engineering-course-pages/de/mini-gpt) · [Glossar](/llm-engineering-course-pages/de/glossary)
+[← T03 — Datenpipeline & Embeddings](/de/data-pipeline) · [T05 — Mini-GPT →](/de/mini-gpt) · [Glossar](/de/glossary)
 
 ## Lernziel [#lernziel]
 
@@ -170,7 +170,7 @@ vergleicht also in einem schmaleren Raum. Die Parameterzahl bleibt bei
 auf, sie fügen keine hinzu.
 
 Referenzwerte und Änderungsprotokoll stehen in der versionierten
-[Attention-Referenz](/llm-engineering-course-pages/sources/attention-v1).
+[Attention-Referenz](/sources/attention-v1).
 
 ## Erklären · Dein Attention-Absatz [#erklaren-dein-attention-absatz]
 
@@ -207,4 +207,4 @@ Eine Attention-Schicht mischt Information über Positionen hinweg, kann sie aber
 kaum transformieren. Als Nächstes ergänzt du Residualpfade, Normierung und ein
 Feed-Forward-Netz zu einem vollständigen Decoder-Block und einem Mini-GPT.
 
-[← T03 — Datenpipeline & Embeddings](/llm-engineering-course-pages/de/data-pipeline) · [T05 — Mini-GPT →](/llm-engineering-course-pages/de/mini-gpt) · [Glossar](/llm-engineering-course-pages/de/glossary)
+[← T03 — Datenpipeline & Embeddings](/de/data-pipeline) · [T05 — Mini-GPT →](/de/mini-gpt) · [Glossar](/de/glossary)

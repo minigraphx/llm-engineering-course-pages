@@ -7,9 +7,9 @@ sidebar:
 <span id="i01-decoding-sampling-und-der-kv-cache" />
 
 
-[← T06 — Kerngate](/llm-engineering-course-pages/de/mini-gpt-gate) · [E01 — Reproduzierbares Training →](/llm-engineering-course-pages/de/pretraining) · [Glossar](/llm-engineering-course-pages/de/glossary)
+[← T06 — Kerngate](/de/mini-gpt-gate) · [E01 — Reproduzierbares Training →](/de/pretraining) · [Glossar](/de/glossary)
 
-Voraussetzungen: [T05](/llm-engineering-course-pages/de/mini-gpt), [T06](/llm-engineering-course-pages/de/mini-gpt-gate). Plane eine Sitzung.
+Voraussetzungen: [T05](/de/mini-gpt), [T06](/de/mini-gpt-gate). Plane eine Sitzung.
 `MiniGPT.generate` aus T05 zieht eine feste Zahl von Tokens bei einer Temperatur
 und sonst nichts. Jede Generierungsschleife trifft drei weitere Entscheidungen:
 wie aus einer Zeile Logits ein Token wird, wann die Schleife endet und was sie
@@ -123,7 +123,7 @@ Kontext: `decode` lehnt `prompt + max_new_tokens > block_size` mit einem
 zuschneidet und die gelernten Positionen wieder bei null beginnt. Ein rollendes
 Fenster generiert weiter, vergisst aber stillschweigend den Prompt.
 
-Der Standardgenerator von [R01](/llm-engineering-course-pages/de/rag-build), ein Modell mit 4 Milliarden
+Der Standardgenerator von [R01](/de/rag-build), ein Modell mit 4 Milliarden
 Parametern, trifft dieselben Entscheidungen. `TransformersGenerator.generate` in
 `src/llm_course/rag/generate.py` ruft
 `model.generate(**inputs, max_new_tokens=max_tokens, do_sample=False)` mit
@@ -251,4 +251,4 @@ Stoppregel eine Stichprobe beendet hat; nenne, was der Cache pro Block speichert
 und warum die Maske das gültig macht; lies die Zeittabelle, ohne mehr zu behaupten,
 als sie gemessen hat.
 
-[← T06 — Kerngate](/llm-engineering-course-pages/de/mini-gpt-gate) · [E01 — Reproduzierbares Training →](/llm-engineering-course-pages/de/pretraining) · [Glossar](/llm-engineering-course-pages/de/glossary)
+[← T06 — Kerngate](/de/mini-gpt-gate) · [E01 — Reproduzierbares Training →](/de/pretraining) · [Glossar](/de/glossary)

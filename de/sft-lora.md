@@ -7,9 +7,9 @@ sidebar:
 <span id="a01-sft-und-lora-antworten-lernen-basismodell-erhalten" />
 
 
-[← C04 — Continued Pretraining](/llm-engineering-course-pages/de/continued-pretraining) · [A02 — Adaptationsvergleich →](/llm-engineering-course-pages/de/adaptation-comparison) · [Glossar](/llm-engineering-course-pages/de/glossary)
+[← C04 — Continued Pretraining](/de/continued-pretraining) · [A02 — Adaptationsvergleich →](/de/adaptation-comparison) · [Glossar](/de/glossary)
 
-Voraussetzungen: [Decoder](/llm-engineering-course-pages/de/mini-gpt), [Training](/llm-engineering-course-pages/de/pretraining) sowie die Daten-
+Voraussetzungen: [Decoder](/de/mini-gpt), [Training](/de/pretraining) sowie die Daten-
 und Evaluationsverträge der fiktiven Firma. Zuerst den expliziten CPU-Versuch
 verstehen, danach den optionalen Versuch mit einem vortrainierten Modell ausführen.
 Beide Wege benötigen weder private Daten noch eine kostenpflichtige Lehrer-API.
@@ -74,7 +74,7 @@ niemals Gold. Derselbe Evaluator bewertet generierte Antworten vor/nach Training
 Antwort-NLL und exakte/Format-/Sicherheitsmetriken messen Verschiedenes: Bessere NLL
 unter Teacher Forcing garantiert keine brauchbaren Antworten. Reload und Merge
 werden gegen den trainierten Adapter geprüft. Messwerte und Grenzen stehen im
-[Anpassungsvergleich](/llm-engineering-course-pages/de/adaptation-comparison) und in `docs/baselines/sft-lora-v1.md`.
+[Anpassungsvergleich](/de/adaptation-comparison) und in `docs/baselines/sft-lora-v1.md`.
 
 ## Vorhersagen → Nachvollziehen → Bauen → Beschädigen → Messen → Erklären [#vorhersagen-nachvollziehen-bauen-beschadigen-messen-erklaren]
 
@@ -116,4 +116,4 @@ eingefrorene Basis sowie sicheres Laden/Mergen belegen; verfehlte Qualitätsziel
 klar benennen. Quellen: [LoRA](https://arxiv.org/abs/2106.09685),
 [PEFT](https://huggingface.co/docs/peft/v0.18.0/index).
 
-[← C04 — Continued Pretraining](/llm-engineering-course-pages/de/continued-pretraining) · [A02 — Adaptationsvergleich →](/llm-engineering-course-pages/de/adaptation-comparison) · [Glossar](/llm-engineering-course-pages/de/glossary)
+[← C04 — Continued Pretraining](/de/continued-pretraining) · [A02 — Adaptationsvergleich →](/de/adaptation-comparison) · [Glossar](/de/glossary)

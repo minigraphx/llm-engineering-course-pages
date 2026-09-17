@@ -7,7 +7,7 @@ sidebar:
 <span id="hardware-time-and-cloud-safety" />
 
 
-[Course home](/llm-engineering-course-pages/)
+[Course home](/)
 
 ## The promise [#the-promise]
 

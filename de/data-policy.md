@@ -7,7 +7,7 @@ sidebar:
 <span id="datenrichtlinie-des-kurses" />
 
 
-[Kursstart](/llm-engineering-course-pages/de/) · [Datenqualitätslab](/llm-engineering-course-pages/de/data-quality)
+[Kursstart](/de/) · [Datenqualitätslab](/de/data-quality)
 
 Der vollständige Kurs muss ohne eigene Daten der Lernenden durchführbar sein.
 
@@ -46,7 +46,7 @@ Git. Heruntergeladene Daten, erzeugte Korpora, Gewichte und Trainingsartefakte
 bleiben außerhalb der Versionskontrolle. Einheit 0 erzeugt ihren CC0-Korpus und
 Checkpoint unter `artifacts/unit0/` und prüft SHA-256.
 
-Das [Datenqualitätslab](/llm-engineering-course-pages/de/data-quality) prüft Provenienz, Duplikate, erfundene
+Das [Datenqualitätslab](/de/data-quality) prüft Provenienz, Duplikate, erfundene
 sensible/problematische Marker und Split-Kontamination. Es misst eine durch
 Leakage irreführende Verbesserung. Manifeste stehen unter `datasets/`, die Data
 Cards unter `docs/data-cards/`. Tests erzeugen Inhalte neu und prüfen ihre Hashes.

@@ -7,7 +7,7 @@ sidebar:
 <span id="fehlerbehebung-fur-einheit-0" />
 
 
-[← Einheit 0 — Erster Tiny-LM-Lauf](/llm-engineering-course-pages/de/unit-00) · [Diagnose & Lernpfad →](/llm-engineering-course-pages/de/diagnostic) · [Glossar](/llm-engineering-course-pages/de/glossary)
+[← Einheit 0 — Erster Tiny-LM-Lauf](/de/unit-00) · [Diagnose & Lernpfad →](/de/diagnostic) · [Glossar](/de/glossary)
 
 Starte mit der Diagnose und behebe den ersten fehlschlagenden Check:
 
@@ -51,4 +51,4 @@ ist optional.
 Hänge niemals generierte Checkpoints, Firmendaten, Zugangsdaten oder persönliche
 Informationen an.
 
-[← Einheit 0 — Erster Tiny-LM-Lauf](/llm-engineering-course-pages/de/unit-00) · [Diagnose & Lernpfad →](/llm-engineering-course-pages/de/diagnostic) · [Glossar](/llm-engineering-course-pages/de/glossary)
+[← Einheit 0 — Erster Tiny-LM-Lauf](/de/unit-00) · [Diagnose & Lernpfad →](/de/diagnostic) · [Glossar](/de/glossary)

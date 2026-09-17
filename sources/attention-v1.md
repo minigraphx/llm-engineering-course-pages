@@ -4,7 +4,7 @@ sidebar:
   hidden: true
 ---
 
-[Course home](/llm-engineering-course-pages/) · English source reference
+[Course home](/) · English source reference
 
 This is the reproducibility contract for the self-attention lab. It runs on the
 embedded batches of the `data-pipeline-v1` pipeline; no dataset, checkpoint, or

@@ -1,11 +1,11 @@
 {
   "contentType": "doc",
-  "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/de/rag-build.json",
+  "json": "https://llm.onlinekurs.training/api/docs/pages/de/rag-build.json",
   "lastModified": null,
   "locale": "de",
-  "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de/rag-build.md",
+  "markdownUrl": "https://llm.onlinekurs.training/de/rag-build.md",
   "route": "/de/rag-build",
   "title": "R01 — Vom Dokument zur Antwort: RAG selbst gebaut",
-  "url": "https://minigraphx.github.io/llm-engineering-course-pages/de/rag-build",
-  "markdown": "---\ntitle: \"R01 — Vom Dokument zur Antwort: RAG selbst gebaut\"\nsidebar:\n  label: \"R01 — Vom Dokument zur Antwort\"\n---\n\n<span id=\"r01-vom-dokument-zur-antwort-rag-selbst-gebaut\" />\n\n\n[← Lernleitfaden](/llm-engineering-course-pages/de/learning-guide) · [R02 — Damit es nicht lügt →](/llm-engineering-course-pages/de/rag-quality) · [Glossar](/llm-engineering-course-pages/de/glossary)\n\nDiese Lektion liegt derzeit nur auf Englisch vor: [R01 — From document to answer](/llm-engineering-course-pages/de/rag-build).\nDie deutsche Fassung folgt (Linear MIN-129). Alle Befehle und Artefakte im Ordner `rag/`\nsind sprachunabhängig.\n\n## Inhalt [#inhalt]\n\nWarum RAG statt weiterem Training, Korpus vorbereiten (Bereinigung, Chunking, Metadaten),\nEmbeddings, Vektorspeicher und Top-k, Prompt-Zusammenbau mit Quellenzwang, erster Durchlauf.\n\nWeiter: [R02 — Damit es nicht lügt](/llm-engineering-course-pages/de/rag-quality).\n\n[← Lernleitfaden](/llm-engineering-course-pages/de/learning-guide) · [R02 — Damit es nicht lügt →](/llm-engineering-course-pages/de/rag-quality) · [Glossar](/llm-engineering-course-pages/de/glossary)\n"
+  "url": "https://llm.onlinekurs.training/de/rag-build",
+  "markdown": "---\ntitle: \"R01 — Vom Dokument zur Antwort: RAG selbst gebaut\"\nsidebar:\n  label: \"R01 — Vom Dokument zur Antwort\"\n---\n\n<span id=\"r01-vom-dokument-zur-antwort-rag-selbst-gebaut\" />\n\n\n[← Lernleitfaden](/de/learning-guide) · [R02 — Damit es nicht lügt →](/de/rag-quality) · [Glossar](/de/glossary)\n\nDiese Lektion liegt derzeit nur auf Englisch vor: [R01 — From document to answer](/de/rag-build).\nDie deutsche Fassung folgt (Linear MIN-129). Alle Befehle und Artefakte im Ordner `rag/`\nsind sprachunabhängig.\n\n## Inhalt [#inhalt]\n\nWarum RAG statt weiterem Training, Korpus vorbereiten (Bereinigung, Chunking, Metadaten),\nEmbeddings, Vektorspeicher und Top-k, Prompt-Zusammenbau mit Quellenzwang, erster Durchlauf.\n\nWeiter: [R02 — Damit es nicht lügt](/de/rag-quality).\n\n[← Lernleitfaden](/de/learning-guide) · [R02 — Damit es nicht lügt →](/de/rag-quality) · [Glossar](/de/glossary)\n"
 }

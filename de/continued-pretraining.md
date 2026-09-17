@@ -7,9 +7,9 @@ sidebar:
 <span id="c04-continued-pretraining-ohne-verlust-der-baseline" />
 
 
-[← C03 — Geschützte Evaluation](/llm-engineering-course-pages/de/company-evaluation) · [A01 — SFT & LoRA →](/llm-engineering-course-pages/de/sft-lora) · [Glossar](/llm-engineering-course-pages/de/glossary)
+[← C03 — Geschützte Evaluation](/de/company-evaluation) · [A01 — SFT & LoRA →](/de/sft-lora) · [Glossar](/de/glossary)
 
-Voraussetzungen: [C02](/llm-engineering-course-pages/de/company-data), [E01](/llm-engineering-course-pages/de/pretraining). Eine Sitzung.
+Voraussetzungen: [C02](/de/company-data), [E01](/de/pretraining). Eine Sitzung.
 Der Code steht in `src/llm_course/continued_pretraining.py`; lies
 `document_batches`, `adaptation_decision` und `run_continued_pretraining` neben dieser Seite.
 
@@ -112,4 +112,4 @@ ein geänderter Seed ist ein neuer, zu dokumentierender Lauf.
 Checkpoint: Lege eine Freigabeschwelle fest, benenne das Rollback-Artefakt und
 begründe die anschließende Instruktions-Evaluation.
 
-[← C03 — Geschützte Evaluation](/llm-engineering-course-pages/de/company-evaluation) · [A01 — SFT & LoRA →](/llm-engineering-course-pages/de/sft-lora) · [Glossar](/llm-engineering-course-pages/de/glossary)
+[← C03 — Geschützte Evaluation](/de/company-evaluation) · [A01 — SFT & LoRA →](/de/sft-lora) · [Glossar](/de/glossary)

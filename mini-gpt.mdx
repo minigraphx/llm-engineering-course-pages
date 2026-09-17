@@ -9,14 +9,14 @@ sidebar:
 <span id="t05-mini-gpt-assemble-a-tiny-decoder" />
 
 
-[← T04 — Self-attention](/llm-engineering-course-pages/attention) · [T06 — Core gate →](/llm-engineering-course-pages/mini-gpt-gate) · [Glossary](/llm-engineering-course-pages/glossary)
+[← T04 — Self-attention](/attention) · [T06 — Core gate →](/mini-gpt-gate) · [Glossary](/glossary)
 
 **Outcome:** build a trainable next-token model and explain every operation from
 integer IDs to a probability distribution. Allow 90–120 minutes, then take the
-[core gate](/llm-engineering-course-pages/mini-gpt-gate). You need [tensor shapes](/llm-engineering-course-pages/foundations-02-shapes),
-[autograd](/llm-engineering-course-pages/foundations-05-mlp-autograd), the [document pipeline](/llm-engineering-course-pages/data-pipeline),
-and [causal attention](/llm-engineering-course-pages/attention). Either the standalone route or the
-[Godot-RL bridge](/llm-engineering-course-pages/foundations-godot-rl-bridge) leads here.
+[core gate](/mini-gpt-gate). You need [tensor shapes](/foundations-02-shapes),
+[autograd](/foundations-05-mlp-autograd), the [document pipeline](/data-pipeline),
+and [causal attention](/attention). Either the standalone route or the
+[Godot-RL bridge](/foundations-godot-rl-bridge) leads here.
 
 ## Start with one prediction [#start-with-one-prediction]
 
@@ -92,7 +92,7 @@ queries still cannot read padding. Try an entirely padded batch and inspect
 
 ## Run the reference experiment [#run-the-reference-experiment]
 
-From the repository root after [setup](/llm-engineering-course-pages/setup):
+From the repository root after [setup](/setup):
 
 ```bash
 python -m pytest tests/test_mini_gpt.py -q
@@ -148,7 +148,7 @@ A local seed makes repeated sampling reproducible and preserves the model's prio
 train/eval state. When context exceeds the block size, only the latest window is
 read and its learned positions restart at zero; the returned prefix is retained.
 Prompts are unpadded, and generation always produces the requested number of
-new tokens, without an EOS stop rule or KV cache ([I01](/llm-engineering-course-pages/inference-decoding)). Checkpoints store architecture
+new tokens, without an EOS stop rule or KV cache ([I01](/inference-decoding)). Checkpoints store architecture
 and weights; optimizer/RNG resume belongs to E01.
 
 ## Controlled break and next step [#controlled-break-and-next-step]
@@ -156,11 +156,11 @@ and weights; optimizer/RNG resume belongs to E01.
 In a local experiment, change the dataset targets to equal its inputs. The loss
 may fall even faster because the model sees the answer at the current position.
 Explain why this is no longer next-token learning, then restore shifted targets.
-Do not commit generated corpora or checkpoints. Move to the [core gate](/llm-engineering-course-pages/mini-gpt-gate)
+Do not commit generated corpora or checkpoints. Move to the [core gate](/mini-gpt-gate)
 when you can trace every shape, distinguish the attention mask from loss masking,
 and explain why tiny-batch overfitting is a debugging check rather than held-out
 quality evidence.
 
-[← T04 — Self-attention](/llm-engineering-course-pages/attention) · [T06 — Core gate →](/llm-engineering-course-pages/mini-gpt-gate) · [Glossary](/llm-engineering-course-pages/glossary)
+[← T04 — Self-attention](/attention) · [T06 — Core gate →](/mini-gpt-gate) · [Glossary](/glossary)
 
 </CourseContent>

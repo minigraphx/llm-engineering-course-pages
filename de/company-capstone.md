@@ -7,9 +7,9 @@ sidebar:
 <span id="capstone-von-der-anforderung-zum-reversiblen-firmenmodell" />
 
 
-[← A04 — RLHF-Brücke](/llm-engineering-course-pages/de/rlhf-bridge) · [Kursstart →](/llm-engineering-course-pages/de/) · [Glossar](/llm-engineering-course-pages/de/glossary)
+[← A04 — RLHF-Brücke](/de/rlhf-bridge) · [Kursstart →](/de/) · [Glossar](/de/glossary)
 
-Voraussetzungen: [C01](/llm-engineering-course-pages/de/company-strategy), [A02](/llm-engineering-course-pages/de/adaptation-comparison), [C04](/llm-engineering-course-pages/de/continued-pretraining).
+Voraussetzungen: [C01](/de/company-strategy), [A02](/de/adaptation-comparison), [C04](/de/continued-pretraining).
 Zwei Sitzungen: eine für das Neuerzeugen und Sammeln der Evidenz, eine für das
 Protokoll. Du nutzt `src/llm_course/company_strategy.py` (`Requirements`,
 `score_candidates`, `total_cost`) und jedes Modul von C02 bis A04; nichts Neues wird trainiert.
@@ -127,4 +127,4 @@ null kritischen Fehlern, gefolgt von der versiegelten menschlichen Prüfung.
 
 </details>
 
-[← A04 — RLHF-Brücke](/llm-engineering-course-pages/de/rlhf-bridge) · [Kursstart →](/llm-engineering-course-pages/de/) · [Glossar](/llm-engineering-course-pages/de/glossary)
+[← A04 — RLHF-Brücke](/de/rlhf-bridge) · [Kursstart →](/de/) · [Glossar](/de/glossary)

@@ -7,9 +7,9 @@ sidebar:
 <span id="r02-so-it-does-not-lie-quality-guardrails-operations" />
 
 
-[← R01 — From document to answer](/llm-engineering-course-pages/rag-build) · [Course home →](/llm-engineering-course-pages/) · [Glossary](/llm-engineering-course-pages/glossary)
+[← R01 — From document to answer](/rag-build) · [Course home →](/) · [Glossary](/glossary)
 
-Prerequisites: [R01](/llm-engineering-course-pages/rag-build) with both indexes built. Allow two sessions. The
+Prerequisites: [R01](/rag-build) with both indexes built. Allow two sessions. The
 first session measures; the second hardens and ships. Nothing here needs an API key,
 but two steps are better with one.
 
@@ -288,6 +288,6 @@ the chunk for the four original reasons.
 
 Checkpoint: you can say, with numbers from your own run, which preset retrieves
 better, how often each refuses, and what the judge can and cannot see. Back to
-[R01 — From document to answer](/llm-engineering-course-pages/rag-build) for the loop these numbers describe.
+[R01 — From document to answer](/rag-build) for the loop these numbers describe.
 
-[← R01 — From document to answer](/llm-engineering-course-pages/rag-build) · [Course home →](/llm-engineering-course-pages/) · [Glossary](/llm-engineering-course-pages/glossary)
+[← R01 — From document to answer](/rag-build) · [Course home →](/) · [Glossary](/glossary)

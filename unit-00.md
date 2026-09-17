@@ -7,7 +7,7 @@ sidebar:
 <span id="unit-0-first-tiny-lm-run" />
 
 
-[← Learning guide](/llm-engineering-course-pages/learning-guide) · [Unit 0 troubleshooting →](/llm-engineering-course-pages/unit-00-troubleshooting) · [Glossary](/llm-engineering-course-pages/glossary)
+[← Learning guide](/learning-guide) · [Unit 0 troubleshooting →](/unit-00-troubleshooting) · [Glossary](/glossary)
 
 ## Learning outcome [#learning-outcome]
 
@@ -28,7 +28,7 @@ python examples/diagnose_unit0.py
 
 Every check should say `pass`. The command verifies Python, the selected
 CPU/MPS/CUDA backend, writable artifact storage, checkpoint loading, and a smoke
-generation. If it fails, use the [troubleshooting guide](/llm-engineering-course-pages/unit-00-troubleshooting).
+generation. If it fails, use the [troubleshooting guide](/unit-00-troubleshooting).
 
 ## 10–20 min · First generation [#1020-min-first-generation]
 
@@ -136,12 +136,12 @@ you identify tokens/probabilities/loss, and your prediction and explanation
 match the measured intervention. Keep the JSON report as evidence.
 
 Course release acceptance additionally requires the documented
-[five-learner pilot](/llm-engineering-course-pages/sources/unit-00-pilot).
+[five-learner pilot](/sources/unit-00-pilot).
 
 ## What's next [#whats-next]
 
-Continue with the [diagnostic and learning-path check](/llm-engineering-course-pages/diagnostic). It
+Continue with the [diagnostic and learning-path check](/diagnostic). It
 determines which foundations you can safely skip and preserves a re-entry link
 for every shortcut.
 
-[← Learning guide](/llm-engineering-course-pages/learning-guide) · [Unit 0 troubleshooting →](/llm-engineering-course-pages/unit-00-troubleshooting) · [Glossary](/llm-engineering-course-pages/glossary)
+[← Learning guide](/learning-guide) · [Unit 0 troubleshooting →](/unit-00-troubleshooting) · [Glossary](/glossary)

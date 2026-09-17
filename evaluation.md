@@ -7,9 +7,9 @@ sidebar:
 <span id="e03-evaluation-make-a-claim-the-evidence-can-support" />
 
 
-[← E02 — Data quality](/llm-engineering-course-pages/data-quality) · [E04 — Profiling & budgets →](/llm-engineering-course-pages/profiling) · [Glossary](/llm-engineering-course-pages/glossary)
+[← E02 — Data quality](/data-quality) · [E04 — Profiling & budgets →](/profiling) · [Glossary](/glossary)
 
-Prerequisites: complete the [decoder](/llm-engineering-course-pages/mini-gpt) and [training](/llm-engineering-course-pages/pretraining)
+Prerequisites: complete the [decoder](/mini-gpt) and [training](/pretraining)
 labs. You should be able to identify logits, shifted labels, and an optimizer step.
 Allow about 50 minutes. Everything below runs offline on a CPU.
 
@@ -80,7 +80,7 @@ training behavior and gradients, then restores each module's previous mode.
 ## 3. Run all three seeds and read the report [#3-run-all-three-seeds-and-read-the-report]
 
 From the repository root after the normal editable installation. For PowerShell,
-use the [portable Python-file convention](/llm-engineering-course-pages/setup#shell-conventions) for the
+use the [portable Python-file convention](/setup#shell-conventions) for the
 multiline readout below:
 
 ```bash
@@ -214,4 +214,4 @@ reject the unchanged claim, and name a specific blind spot for all four smoke ch
 Use `docs/experiment-report-template.md` to write your experiment card before the
 next controlled comparison, and retain the machine-readable report locally.
 
-[← E02 — Data quality](/llm-engineering-course-pages/data-quality) · [E04 — Profiling & budgets →](/llm-engineering-course-pages/profiling) · [Glossary](/llm-engineering-course-pages/glossary)
+[← E02 — Data quality](/data-quality) · [E04 — Profiling & budgets →](/profiling) · [Glossary](/glossary)

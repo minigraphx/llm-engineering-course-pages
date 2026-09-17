@@ -7,7 +7,7 @@ sidebar:
 <span id="diagnostic-and-learning-path" />
 
 
-[← Unit 0 troubleshooting](/llm-engineering-course-pages/unit-00-troubleshooting) · [B01 — Godot-RL bridge →](/llm-engineering-course-pages/foundations-godot-rl-bridge) · [Glossary](/llm-engineering-course-pages/glossary)
+[← Unit 0 troubleshooting](/unit-00-troubleshooting) · [B01 — Godot-RL bridge →](/foundations-godot-rl-bridge) · [Glossary](/glossary)
 
 ## Learning outcome [#learning-outcome]
 
@@ -16,7 +16,7 @@ control and receive a conservative route through the course. This is routing,
 not an exam: choosing more foundation work is always allowed and every shortcut
 is reversible.
 
-Complete [Unit 0](/llm-engineering-course-pages/unit-00) first. Every path joins again before text and
+Complete [Unit 0](/unit-00) first. Every path joins again before text and
 tokenization.
 
 ## Two entry paths [#two-entry-paths]
@@ -121,13 +121,13 @@ When uncertain, choose Review.
 
 | Block | Evidence | Re-entry link |
 | --- | --- | --- |
-| F01 Python and development | Python theory + Task A | [Re-enter F01](/llm-engineering-course-pages/foundations-01-python-numpy) |
-| F02 Tensors and shapes | shape questions + Task B assertions | [Re-enter F02](/llm-engineering-course-pages/foundations-02-shapes) |
-| F03 Probability and loss | probability/loss questions + Task B values | [Re-enter F03](/llm-engineering-course-pages/foundations-03-probability) |
-| F04 Neuron and gradient descent | calculus + traced parameter update | [Re-enter F04](/llm-engineering-course-pages/foundations-04-neuron) |
-| F05 MLP and autograd | backprop questions + gradient check | [Re-enter F05](/llm-engineering-course-pages/foundations-05-mlp-autograd) |
-| F06 PyTorch and reproducibility | Task C + repeatable checkpoint | [Re-enter F06](/llm-engineering-course-pages/foundations-06-pytorch-checkpoint) |
-| B01 Godot-RL bridge | optional bridge prompt + verified experience | [Re-enter B01](/llm-engineering-course-pages/foundations-godot-rl-bridge) |
+| F01 Python and development | Python theory + Task A | [Re-enter F01](/foundations-01-python-numpy) |
+| F02 Tensors and shapes | shape questions + Task B assertions | [Re-enter F02](/foundations-02-shapes) |
+| F03 Probability and loss | probability/loss questions + Task B values | [Re-enter F03](/foundations-03-probability) |
+| F04 Neuron and gradient descent | calculus + traced parameter update | [Re-enter F04](/foundations-04-neuron) |
+| F05 MLP and autograd | backprop questions + gradient check | [Re-enter F05](/foundations-05-mlp-autograd) |
+| F06 PyTorch and reproducibility | Task C + repeatable checkpoint | [Re-enter F06](/foundations-06-pytorch-checkpoint) |
+| B01 Godot-RL bridge | optional bridge prompt + verified experience | [Re-enter B01](/foundations-godot-rl-bridge) |
 
 All routes complete tokenization, causal modelling, attention, and evaluation.
 
@@ -154,32 +154,32 @@ and retry the item. You never restart the whole course.
 ### Python and development [#python-and-development]
 
 Return here when functions, iteration, tests, exceptions, or environment
-commands block progress. Take [F01](/llm-engineering-course-pages/foundations-01-python-numpy) and rerun Task A.
+commands block progress. Take [F01](/foundations-01-python-numpy) and rerun Task A.
 
 ### Tensors and shapes [#tensors-and-shapes]
 
 Return here when batch/time/channel axes, broadcasting, matrix multiplication,
-or shape assertions become unclear. Take [F02](/llm-engineering-course-pages/foundations-02-shapes) and retry the shape item.
+or shape assertions become unclear. Take [F02](/foundations-02-shapes) and retry the shape item.
 
 ### Probability and loss [#probability-and-loss]
 
 Return here when logits, stable softmax, log probabilities, or cross-entropy are
-unclear or non-finite. Take [F03](/llm-engineering-course-pages/foundations-03-probability) and rerun Task B.
+unclear or non-finite. Take [F03](/foundations-03-probability) and rerun Task B.
 
 ### Gradients and neural networks [#gradients-and-neural-networks]
 
 Return here when chain-rule paths, parameter updates, or loss movement are
-unclear. Take [F04](/llm-engineering-course-pages/foundations-04-neuron) and trace one update by hand and in code.
+unclear. Take [F04](/foundations-04-neuron) and trace one update by hand and in code.
 
 ### MLP and autograd [#mlp-and-autograd]
 
 Return here when MLP shapes, graph paths, local derivatives, or gradient checks
-are unclear. Take [F05](/llm-engineering-course-pages/foundations-05-mlp-autograd) and verify one parameter.
+are unclear. Take [F05](/foundations-05-mlp-autograd) and verify one parameter.
 
 ### Reproducible experiments [#reproducible-experiments]
 
 Return here when PyTorch update order, seeds, baselines, or comparisons are
-unreliable. Take [F06](/llm-engineering-course-pages/foundations-06-pytorch-checkpoint) and reproduce the checkpoint twice.
+unreliable. Take [F06](/foundations-06-pytorch-checkpoint) and reproduce the checkpoint twice.
 
 ### Godot-RL bridge [#godot-rl-bridge]
 
@@ -192,15 +192,15 @@ unreliable. Take [F06](/llm-engineering-course-pages/foundations-06-pytorch-chec
 | reward | preference/verifier signal | not every LM stage uses reward |
 | behaviour cloning | supervised fine-tuning | masking and chat formatting matter |
 | PPO | RLHF update | reference-policy and KL controls are added |
-| ONNX inference | optimized inference | decoding benefits from a KV cache ([I01](/llm-engineering-course-pages/inference-decoding)) |
+| ONNX inference | optimized inference | decoding benefits from a KV cache ([I01](/inference-decoding)) |
 
 ## What's next [#whats-next]
 
 Record your Required, Review, Skip, and Stretch blocks, keep every re-entry link,
-and start [F01](/llm-engineering-course-pages/foundations-01-python-numpy), or take the compact
-[Godot-RL bridge](/llm-engineering-course-pages/foundations-godot-rl-bridge). All paths meet at F06.
+and start [F01](/foundations-01-python-numpy), or take the compact
+[Godot-RL bridge](/foundations-godot-rl-bridge). All paths meet at F06.
 
-[← Unit 0](/llm-engineering-course-pages/unit-00) · [→ F01](/llm-engineering-course-pages/foundations-01-python-numpy) · [Godot-RL bridge](/llm-engineering-course-pages/foundations-godot-rl-bridge)
+[← Unit 0](/unit-00) · [→ F01](/foundations-01-python-numpy) · [Godot-RL bridge](/foundations-godot-rl-bridge)
 
 ## Reference answers after your first attempt [#reference-answers-after-your-first-attempt]
 
@@ -232,4 +232,4 @@ your own answer and mark any help honestly in your routing evidence.
 
 </details>
 
-[← Unit 0 troubleshooting](/llm-engineering-course-pages/unit-00-troubleshooting) · [B01 — Godot-RL bridge →](/llm-engineering-course-pages/foundations-godot-rl-bridge) · [Glossary](/llm-engineering-course-pages/glossary)
+[← Unit 0 troubleshooting](/unit-00-troubleshooting) · [B01 — Godot-RL bridge →](/foundations-godot-rl-bridge) · [Glossary](/glossary)

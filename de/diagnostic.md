@@ -7,7 +7,7 @@ sidebar:
 <span id="diagnose-und-lernpfad" />
 
 
-[← Fehlerbehebung für Einheit 0](/llm-engineering-course-pages/de/unit-00-troubleshooting) · [B01 — Godot-RL-Brücke →](/llm-engineering-course-pages/de/foundations-godot-rl-bridge) · [Glossar](/llm-engineering-course-pages/de/glossary)
+[← Fehlerbehebung für Einheit 0](/de/unit-00-troubleshooting) · [B01 — Godot-RL-Brücke →](/de/foundations-godot-rl-bridge) · [Glossar](/de/glossary)
 
 ## Lernziel [#lernziel]
 
@@ -15,7 +15,7 @@ In 45–60 Minuten sammelst du Nachweise über bereits beherrschte Grundlagen un
 erhältst einen vorsichtigen Lernpfad. Dies ist eine Wegempfehlung, keine Prüfung:
 Du darfst immer mehr Grundlagen bearbeiten, und jede Abkürzung ist umkehrbar.
 
-Schließe zuerst [Einheit 0](/llm-engineering-course-pages/de/unit-00) ab. Alle Pfade treffen sich vor Text und
+Schließe zuerst [Einheit 0](/de/unit-00) ab. Alle Pfade treffen sich vor Text und
 Tokenisierung wieder.
 
 ## Zwei Einstiegspfade [#zwei-einstiegspfade]
@@ -121,13 +121,13 @@ Bei Unsicherheit gilt Wiederholung.
 
 | Block | Nachweis | Re-Entry-Link |
 | --- | --- | --- |
-| F01 Python und Entwicklung | Python-Theorie + Aufgabe A | [F01 wieder aufnehmen](/llm-engineering-course-pages/de/foundations-01-python-numpy) |
-| F02 Tensoren und Shapes | Shape-Fragen + Assertions aus Aufgabe B | [F02 wieder aufnehmen](/llm-engineering-course-pages/de/foundations-02-shapes) |
-| F03 Wahrscheinlichkeit und Loss | Wahrscheinlichkeits-/Loss-Fragen + Aufgabe B | [F03 wieder aufnehmen](/llm-engineering-course-pages/de/foundations-03-probability) |
-| F04 Neuron und Gradient Descent | Ableitungen + nachvollzogenes Update | [F04 wieder aufnehmen](/llm-engineering-course-pages/de/foundations-04-neuron) |
-| F05 MLP und Autograd | Backprop-Fragen + Gradient Check | [F05 wieder aufnehmen](/llm-engineering-course-pages/de/foundations-05-mlp-autograd) |
-| F06 PyTorch und Reproduzierbarkeit | Aufgabe C + reproduzierbarer Checkpoint | [F06 wieder aufnehmen](/llm-engineering-course-pages/de/foundations-06-pytorch-checkpoint) |
-| B01 Godot-RL-Brücke | Brückenfrage + bestätigte Erfahrung | [B01 wieder aufnehmen](/llm-engineering-course-pages/de/foundations-godot-rl-bridge) |
+| F01 Python und Entwicklung | Python-Theorie + Aufgabe A | [F01 wieder aufnehmen](/de/foundations-01-python-numpy) |
+| F02 Tensoren und Shapes | Shape-Fragen + Assertions aus Aufgabe B | [F02 wieder aufnehmen](/de/foundations-02-shapes) |
+| F03 Wahrscheinlichkeit und Loss | Wahrscheinlichkeits-/Loss-Fragen + Aufgabe B | [F03 wieder aufnehmen](/de/foundations-03-probability) |
+| F04 Neuron und Gradient Descent | Ableitungen + nachvollzogenes Update | [F04 wieder aufnehmen](/de/foundations-04-neuron) |
+| F05 MLP und Autograd | Backprop-Fragen + Gradient Check | [F05 wieder aufnehmen](/de/foundations-05-mlp-autograd) |
+| F06 PyTorch und Reproduzierbarkeit | Aufgabe C + reproduzierbarer Checkpoint | [F06 wieder aufnehmen](/de/foundations-06-pytorch-checkpoint) |
+| B01 Godot-RL-Brücke | Brückenfrage + bestätigte Erfahrung | [B01 wieder aufnehmen](/de/foundations-godot-rl-bridge) |
 
 Alle Pfade bearbeiten Tokenisierung, kausale Modellierung, Attention und Evaluation.
 
@@ -155,32 +155,32 @@ wiederhole den Punkt. Ein kompletter Neustart ist nie erforderlich.
 ### Python und Entwicklung [#python-und-entwicklung]
 
 Kehre hierher zurück, wenn Funktionen, Iteration, Tests, Exceptions oder
-Umgebungsbefehle blockieren. Bearbeite [F01](/llm-engineering-course-pages/de/foundations-01-python-numpy) und wiederhole Aufgabe A.
+Umgebungsbefehle blockieren. Bearbeite [F01](/de/foundations-01-python-numpy) und wiederhole Aufgabe A.
 
 ### Tensoren und Shapes [#tensoren-und-shapes]
 
 Kehre bei unklaren Batch-/Zeit-/Kanalachsen, Broadcasting, Matrixmultiplikation
-oder Shape-Assertions zurück. Bearbeite [F02](/llm-engineering-course-pages/de/foundations-02-shapes) und wiederhole den Shape-Punkt.
+oder Shape-Assertions zurück. Bearbeite [F02](/de/foundations-02-shapes) und wiederhole den Shape-Punkt.
 
 ### Wahrscheinlichkeit und Loss [#wahrscheinlichkeit-und-loss]
 
 Kehre bei unklaren oder nicht endlichen Logits, Softmax-, Log-Probability- oder
-Cross-Entropy-Werten zurück. Bearbeite [F03](/llm-engineering-course-pages/de/foundations-03-probability) und wiederhole Aufgabe B.
+Cross-Entropy-Werten zurück. Bearbeite [F03](/de/foundations-03-probability) und wiederhole Aufgabe B.
 
 ### Gradienten und neuronale Netze [#gradienten-und-neuronale-netze]
 
 Kehre bei unklarer Kettenregel, Parameterupdates oder Lossbewegung zurück.
-Bearbeite [F04](/llm-engineering-course-pages/de/foundations-04-neuron) und verfolge ein Update von Hand und im Code.
+Bearbeite [F04](/de/foundations-04-neuron) und verfolge ein Update von Hand und im Code.
 
 ### MLP und Autograd [#mlp-und-autograd]
 
 Kehre bei unklaren MLP-Shapes, Graphpfaden, lokalen Ableitungen oder Gradient
-Checks zurück. Bearbeite [F05](/llm-engineering-course-pages/de/foundations-05-mlp-autograd) und prüfe einen Parameter.
+Checks zurück. Bearbeite [F05](/de/foundations-05-mlp-autograd) und prüfe einen Parameter.
 
 ### Reproduzierbare Experimente [#reproduzierbare-experimente]
 
 Kehre bei Problemen mit PyTorch-Update-Reihenfolge, Seeds, Baselines oder
-Vergleichen zurück. Bearbeite [F06](/llm-engineering-course-pages/de/foundations-06-pytorch-checkpoint) und reproduziere den Checkpoint zweimal.
+Vergleichen zurück. Bearbeite [F06](/de/foundations-06-pytorch-checkpoint) und reproduziere den Checkpoint zweimal.
 
 ### Godot-RL-Brücke [#godot-rl-brucke]
 
@@ -193,15 +193,15 @@ Vergleichen zurück. Bearbeite [F06](/llm-engineering-course-pages/de/foundation
 | Reward | Präferenz-/Verifier-Signal | nicht jede LM-Phase verwendet Reward |
 | Behaviour Cloning | Supervised Fine-Tuning | Maskierung und Chatformat sind wichtig |
 | PPO | RLHF-Update | Referenz-Policy und KL-Kontrolle kommen hinzu |
-| ONNX-Inferenz | optimierte Inferenz | Decoding profitiert vom KV-Cache ([I01](/llm-engineering-course-pages/de/inference-decoding)) |
+| ONNX-Inferenz | optimierte Inferenz | Decoding profitiert vom KV-Cache ([I01](/de/inference-decoding)) |
 
 ## Wie geht es weiter? [#wie-geht-es-weiter]
 
 Halte Pflicht-, Wiederholungs-, Überspringen- und Vertiefungsblöcke fest,
-behalte jeden Re-Entry-Link und starte [F01](/llm-engineering-course-pages/de/foundations-01-python-numpy) oder
-die kompakte [Godot-RL-Brücke](/llm-engineering-course-pages/de/foundations-godot-rl-bridge). Alle Pfade treffen sich in F06.
+behalte jeden Re-Entry-Link und starte [F01](/de/foundations-01-python-numpy) oder
+die kompakte [Godot-RL-Brücke](/de/foundations-godot-rl-bridge). Alle Pfade treffen sich in F06.
 
-[← Einheit 0](/llm-engineering-course-pages/de/unit-00) · [→ F01](/llm-engineering-course-pages/de/foundations-01-python-numpy) · [Godot-RL-Brücke](/llm-engineering-course-pages/de/foundations-godot-rl-bridge)
+[← Einheit 0](/de/unit-00) · [→ F01](/de/foundations-01-python-numpy) · [Godot-RL-Brücke](/de/foundations-godot-rl-bridge)
 
 ## Referenzantworten nach deinem ersten Versuch [#referenzantworten-nach-deinem-ersten-versuch]
 
@@ -235,4 +235,4 @@ nach deinem Versuch und markiere genutzte Hilfe ehrlich in der Diagnose.
 
 </details>
 
-[← Fehlerbehebung für Einheit 0](/llm-engineering-course-pages/de/unit-00-troubleshooting) · [B01 — Godot-RL-Brücke →](/llm-engineering-course-pages/de/foundations-godot-rl-bridge) · [Glossar](/llm-engineering-course-pages/de/glossary)
+[← Fehlerbehebung für Einheit 0](/de/unit-00-troubleshooting) · [B01 — Godot-RL-Brücke →](/de/foundations-godot-rl-bridge) · [Glossar](/de/glossary)

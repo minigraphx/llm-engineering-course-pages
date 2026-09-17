@@ -7,12 +7,12 @@ sidebar:
 <span id="a03-dpo-und-die-kleine-rlhf-brucke" />
 
 
-[← A02 — Adaptationsvergleich](/llm-engineering-course-pages/de/adaptation-comparison) · [A04 — RLHF-Brücke →](/llm-engineering-course-pages/de/rlhf-bridge) · [Glossar](/llm-engineering-course-pages/de/glossary)
+[← A02 — Adaptationsvergleich](/de/adaptation-comparison) · [A04 — RLHF-Brücke →](/de/rlhf-bridge) · [Glossar](/de/glossary)
 
-Voraussetzungen: [A01](/llm-engineering-course-pages/de/sft-lora), [C03](/llm-engineering-course-pages/de/company-evaluation). Eine Sitzung.
+Voraussetzungen: [A01](/de/sft-lora), [C03](/de/company-evaluation). Eine Sitzung.
 Der Code steht in `src/llm_course/alignment.py`; lies `response_log_probs` und
 `dpo_loss` neben dieser Seite und hebe `_fit_reward_model` und `_ppo_policy` für
-[A04](/llm-engineering-course-pages/de/rlhf-bridge) auf. Jede Funktion validiert ihre Tensoren und gibt einen
+[A04](/de/rlhf-bridge) auf. Jede Funktion validiert ihre Tensoren und gibt einen
 neuen Wert zurück; die Referenzpolicy wird nie verändert.
 
 ## Antwort-Logwahrscheinlichkeiten summieren [#antwort-logwahrscheinlichkeiten-summieren]
@@ -83,7 +83,7 @@ angeforderten Updates:
 Ein größeres `beta` hält die Policy näher an der Referenz und lässt mehr Masse
 auf der Abkürzung; das Paar `(0,3)` wegzulassen, das die Abkürzung als abgelehnt
 benennt, wirkt genauso. Jeder Lauf wählt greedy in allen vier Kontexten weiterhin
-die richtige Aktion. Vergleiche die PPO-Zeilen in [A04](/llm-engineering-course-pages/de/rlhf-bridge), bevor du
+die richtige Aktion. Vergleiche die PPO-Zeilen in [A04](/de/rlhf-bridge), bevor du
 schließt, dass Präferenzdaten allein sicher sind.
 
 ## Vorhersagen → Nachvollziehen → Bauen → Beschädigen → Messen → Erklären [#vorhersagen-nachvollziehen-bauen-beschadigen-messen-erklaren]
@@ -122,4 +122,4 @@ Gradienten.
 Checkpoint: Summiere eine Antwort-Logwahrscheinlichkeit, finde das PPO-Clipping
 und erkläre Proxy-Reward gegenüber Aufgabenqualität.
 
-[← A02 — Adaptationsvergleich](/llm-engineering-course-pages/de/adaptation-comparison) · [A04 — RLHF-Brücke →](/llm-engineering-course-pages/de/rlhf-bridge) · [Glossar](/llm-engineering-course-pages/de/glossary)
+[← A02 — Adaptationsvergleich](/de/adaptation-comparison) · [A04 — RLHF-Brücke →](/de/rlhf-bridge) · [Glossar](/de/glossary)

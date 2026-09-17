@@ -7,9 +7,9 @@ sidebar:
 <span id="c02-auditable-company-data" />
 
 
-[← C01 — Company strategy](/llm-engineering-course-pages/company-strategy) · [C03 — Protected evaluation →](/llm-engineering-course-pages/company-evaluation) · [Glossary](/llm-engineering-course-pages/glossary)
+[← C01 — Company strategy](/company-strategy) · [C03 — Protected evaluation →](/company-evaluation) · [Glossary](/glossary)
 
-Prerequisites: [C01 strategy](/llm-engineering-course-pages/company-strategy) and [data quality](/llm-engineering-course-pages/data-quality).
+Prerequisites: [C01 strategy](/company-strategy) and [data quality](/data-quality).
 Nordlicht Workspace is fictional, so every learner can inspect the complete source
 inventory without handling customer data.
 
@@ -77,6 +77,6 @@ source, so retaining it would break provenance and policy review.
 
 Checkpoint: explain the difference between a source snapshot, a training record,
 a development case and a protected gold case. Continue with
-[company evaluation](/llm-engineering-course-pages/company-evaluation).
+[company evaluation](/company-evaluation).
 
-[← C01 — Company strategy](/llm-engineering-course-pages/company-strategy) · [C03 — Protected evaluation →](/llm-engineering-course-pages/company-evaluation) · [Glossary](/llm-engineering-course-pages/glossary)
+[← C01 — Company strategy](/company-strategy) · [C03 — Protected evaluation →](/company-evaluation) · [Glossary](/glossary)

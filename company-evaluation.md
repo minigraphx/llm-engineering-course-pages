@@ -7,9 +7,9 @@ sidebar:
 <span id="c03-protected-evaluation" />
 
 
-[← C02 — Company data](/llm-engineering-course-pages/company-data) · [C04 — Continued pretraining →](/llm-engineering-course-pages/continued-pretraining) · [Glossary](/llm-engineering-course-pages/glossary)
+[← C02 — Company data](/company-data) · [C04 — Continued pretraining →](/continued-pretraining) · [Glossary](/glossary)
 
-Prerequisites: [C02](/llm-engineering-course-pages/company-data), [E03](/llm-engineering-course-pages/evaluation). Allow one session.
+Prerequisites: [C02](/company-data), [E03](/evaluation). Allow one session.
 The code is `src/llm_course/company_eval.py`; read `score_predictions`,
 `gold_seal` and `contamination_report` beside this page. Nothing here trains.
 
@@ -124,4 +124,4 @@ failure separately; promotion requires zero critical failures.
 Checkpoint: show a contamination report with no overlaps and explain why a held
 out development score is evidence for iteration, not proof of gold performance.
 
-[← C02 — Company data](/llm-engineering-course-pages/company-data) · [C04 — Continued pretraining →](/llm-engineering-course-pages/continued-pretraining) · [Glossary](/llm-engineering-course-pages/glossary)
+[← C02 — Company data](/company-data) · [C04 — Continued pretraining →](/continued-pretraining) · [Glossary](/glossary)

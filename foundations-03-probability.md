@@ -7,7 +7,7 @@ sidebar:
 <span id="f03-probability-logits-and-loss" />
 
 
-[← F02 — Tensors & shapes](/llm-engineering-course-pages/foundations-02-shapes) · [F04 — Neuron & gradient descent →](/llm-engineering-course-pages/foundations-04-neuron) · [Glossary](/llm-engineering-course-pages/glossary)
+[← F02 — Tensors & shapes](/foundations-02-shapes) · [F04 — Neuron & gradient descent →](/foundations-04-neuron) · [Glossary](/glossary)
 
 ## Learning outcome [#learning-outcome]
 
@@ -72,6 +72,6 @@ non-finite value, then restore max subtraction.
 
 ## What's next [#whats-next]
 
-Continue with [F04 — Neuron and gradient descent](/llm-engineering-course-pages/foundations-04-neuron).
+Continue with [F04 — Neuron and gradient descent](/foundations-04-neuron).
 
-[← F02 — Tensors & shapes](/llm-engineering-course-pages/foundations-02-shapes) · [F04 — Neuron & gradient descent →](/llm-engineering-course-pages/foundations-04-neuron) · [Glossary](/llm-engineering-course-pages/glossary)
+[← F02 — Tensors & shapes](/foundations-02-shapes) · [F04 — Neuron & gradient descent →](/foundations-04-neuron) · [Glossary](/glossary)

@@ -7,7 +7,7 @@ sidebar:
 <span id="einheit-0-erster-tiny-lm-lauf" />
 
 
-[← Lernleitfaden](/llm-engineering-course-pages/de/learning-guide) · [Fehlerbehebung für Einheit 0 →](/llm-engineering-course-pages/de/unit-00-troubleshooting) · [Glossar](/llm-engineering-course-pages/de/glossary)
+[← Lernleitfaden](/de/learning-guide) · [Fehlerbehebung für Einheit 0 →](/de/unit-00-troubleshooting) · [Glossar](/de/glossary)
 
 ## Lernziel [#lernziel]
 
@@ -29,7 +29,7 @@ python examples/diagnose_unit0.py
 Jede Prüfung soll `pass` melden. Der Befehl prüft Python, CPU/MPS/CUDA,
 beschreibbaren Artefaktspeicher, das Laden des Checkpoints und eine
 Testgenerierung. Bei einem Fehler hilft die
-[Fehlerbehebung](/llm-engineering-course-pages/de/unit-00-troubleshooting).
+[Fehlerbehebung](/de/unit-00-troubleshooting).
 
 ## 10–20 Min. · Erste Generierung [#1020-min-erste-generierung]
 
@@ -135,7 +135,7 @@ Lernenden.
 
 ## Wie geht es weiter? [#wie-geht-es-weiter]
 
-Weiter mit [Diagnose und Lernpfad](/llm-engineering-course-pages/de/diagnostic). Dort bestimmst du sicher
+Weiter mit [Diagnose und Lernpfad](/de/diagnostic). Dort bestimmst du sicher
 überspringbare Grundlagen und behältst für jede Abkürzung einen Re-Entry-Link.
 
-[← Lernleitfaden](/llm-engineering-course-pages/de/learning-guide) · [Fehlerbehebung für Einheit 0 →](/llm-engineering-course-pages/de/unit-00-troubleshooting) · [Glossar](/llm-engineering-course-pages/de/glossary)
+[← Lernleitfaden](/de/learning-guide) · [Fehlerbehebung für Einheit 0 →](/de/unit-00-troubleshooting) · [Glossar](/de/glossary)
