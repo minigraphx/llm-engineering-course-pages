@@ -27,6 +27,26 @@
       "children": [
         {
           "kind": "page",
+          "label": "R01 — From document to answer",
+          "pageId": "filesystem:(applied-rag)/rag-build.mdx",
+          "route": "/rag-build"
+        },
+        {
+          "kind": "page",
+          "label": "R02 — So it does not lie",
+          "pageId": "filesystem:(applied-rag)/rag-quality.mdx",
+          "route": "/rag-quality"
+        }
+      ],
+      "display": "flat",
+      "kind": "group",
+      "label": "Applied: RAG",
+      "path": "/"
+    },
+    {
+      "children": [
+        {
+          "kind": "page",
           "label": "Unit 0 — First Tiny-LM Run",
           "pageId": "filesystem:(course)/unit-00.mdx",
           "route": "/unit-00"
@@ -42,6 +62,12 @@
           "label": "Diagnostic & learning path",
           "pageId": "filesystem:(course)/diagnostic.mdx",
           "route": "/diagnostic"
+        },
+        {
+          "kind": "page",
+          "label": "B01 — Godot-RL bridge",
+          "pageId": "filesystem:(course)/foundations-godot-rl-bridge.mdx",
+          "route": "/foundations-godot-rl-bridge"
         },
         {
           "kind": "page",
@@ -81,12 +107,6 @@
         },
         {
           "kind": "page",
-          "label": "B01 — Godot-RL bridge",
-          "pageId": "filesystem:(course)/foundations-godot-rl-bridge.mdx",
-          "route": "/foundations-godot-rl-bridge"
-        },
-        {
-          "kind": "page",
           "label": "T01 — Bigram baseline",
           "pageId": "filesystem:(course)/bigram-baseline.mdx",
           "route": "/bigram-baseline"
@@ -111,15 +131,21 @@
         },
         {
           "kind": "page",
-          "label": "M2 — Mini-GPT",
+          "label": "T05 — Mini-GPT",
           "pageId": "filesystem:(course)/mini-gpt.mdx",
           "route": "/mini-gpt"
         },
         {
           "kind": "page",
-          "label": "M2 — Core gate",
+          "label": "T06 — Core gate",
           "pageId": "filesystem:(course)/mini-gpt-gate.mdx",
           "route": "/mini-gpt-gate"
+        },
+        {
+          "kind": "page",
+          "label": "I01 — Decoding, sampling & KV cache",
+          "pageId": "filesystem:(course)/inference-decoding.mdx",
+          "route": "/inference-decoding"
         },
         {
           "kind": "page",
@@ -153,43 +179,43 @@
         },
         {
           "kind": "page",
-          "label": "M4 — Company data",
+          "label": "C02 — Company data",
           "pageId": "filesystem:(course)/company-data.mdx",
           "route": "/company-data"
         },
         {
           "kind": "page",
-          "label": "M4 — Protected evaluation",
+          "label": "C03 — Protected evaluation",
           "pageId": "filesystem:(course)/company-evaluation.mdx",
           "route": "/company-evaluation"
         },
         {
           "kind": "page",
-          "label": "M4 — Continued pretraining",
+          "label": "C04 — Continued pretraining",
           "pageId": "filesystem:(course)/continued-pretraining.mdx",
           "route": "/continued-pretraining"
         },
         {
           "kind": "page",
-          "label": "M5 — SFT & LoRA",
+          "label": "A01 — SFT & LoRA",
           "pageId": "filesystem:(course)/sft-lora.mdx",
           "route": "/sft-lora"
         },
         {
           "kind": "page",
-          "label": "M5 — Adaptation comparison",
+          "label": "A02 — Adaptation comparison",
           "pageId": "filesystem:(course)/adaptation-comparison.mdx",
           "route": "/adaptation-comparison"
         },
         {
           "kind": "page",
-          "label": "M5 — DPO",
+          "label": "A03 — DPO",
           "pageId": "filesystem:(course)/dpo.mdx",
           "route": "/dpo"
         },
         {
           "kind": "page",
-          "label": "M5 — RLHF bridge",
+          "label": "A04 — RLHF bridge",
           "pageId": "filesystem:(course)/rlhf-bridge.mdx",
           "route": "/rlhf-bridge"
         },

@@ -7,7 +7,7 @@ sidebar:
 <span id="e02-datenqualitat-und-provenienz" />
 
 
-[Kursstart](/llm-engineering-course-pages/de/) · [← Training](/llm-engineering-course-pages/de/pretraining) · [→ Evaluation](/llm-engineering-course-pages/de/evaluation)
+[← E01 — Reproduzierbares Training](/llm-engineering-course-pages/de/pretraining) · [E03 — Evaluation →](/llm-engineering-course-pages/de/evaluation) · [Glossar](/llm-engineering-course-pages/de/glossary)
 
 ## Bevor du beginnst [#bevor-du-beginnst]
 
@@ -159,3 +159,5 @@ einen reparierten Kontaminationsfehler, eine erklärte Mischung und eine Data Ca
 für eine erfundene Quelle ein. Erkläre, warum `ready=true` nur bestandene
 Lehrprüfungen bedeutet und warum die Wiederherstellung der Testintegrität einen
 berichteten Wert verschlechtern kann.
+
+[← E01 — Reproduzierbares Training](/llm-engineering-course-pages/de/pretraining) · [E03 — Evaluation →](/llm-engineering-course-pages/de/evaluation) · [Glossar](/llm-engineering-course-pages/de/glossary)

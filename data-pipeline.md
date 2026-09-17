@@ -7,7 +7,7 @@ sidebar:
 <span id="t03-data-pipeline-embeddings" />
 
 
-[← T02 byte-level BPE](/llm-engineering-course-pages/bpe-tokenizer) · [Course home](/llm-engineering-course-pages/)
+[← T02 — Byte-level BPE](/llm-engineering-course-pages/bpe-tokenizer) · [T04 — Self-attention →](/llm-engineering-course-pages/attention) · [Glossary](/llm-engineering-course-pages/glossary)
 
 ## Learning outcome [#learning-outcome]
 
@@ -216,4 +216,4 @@ The batches now carry meaning per position but no way to compare positions with
 each other. Next, you will build self-attention as a visible number experiment
 and give these embeddings context.
 
-[← T02 byte-level BPE](/llm-engineering-course-pages/bpe-tokenizer) · [Course home](/llm-engineering-course-pages/)
+[← T02 — Byte-level BPE](/llm-engineering-course-pages/bpe-tokenizer) · [T04 — Self-attention →](/llm-engineering-course-pages/attention) · [Glossary](/llm-engineering-course-pages/glossary)

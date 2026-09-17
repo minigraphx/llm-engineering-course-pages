@@ -7,7 +7,7 @@ sidebar:
 <span id="c01-turn-a-company-problem-into-a-model-decision" />
 
 
-[← Evaluation](/llm-engineering-course-pages/evaluation) · [Company data →](/llm-engineering-course-pages/company-data)
+[← E04 — Profiling & budgets](/llm-engineering-course-pages/profiling) · [C02 — Company data →](/llm-engineering-course-pages/company-data) · [Glossary](/llm-engineering-course-pages/glossary)
 
 You can train a model now. This unit asks whether training is the right next
 action. Prerequisites: compare an unchanged baseline with a candidate, distinguish
@@ -42,11 +42,13 @@ control mechanism. Authentication and authorization belong in application code.
 
 | Observed gap | First intervention | Why |
 | --- | --- | --- |
-| Frequently changing facts | Retrieval and tools | Fetch the approved version at request time. |
-| Domain language is poorly predicted | Test continued pretraining | Learn its distribution, then check general-language regression. |
-| Correct format or response workflow is missing | SFT, possibly with LoRA | Provide target responses and supervise their tokens. |
-| Several responses work but one is preferred | DPO | Learn a relative preference from chosen/rejected pairs. |
+| Frequently changing facts | [Retrieval and tools](/llm-engineering-course-pages/rag-build) | Fetch the approved version at request time. |
+| Domain language is poorly predicted | Test [continued pretraining](/llm-engineering-course-pages/continued-pretraining) | Learn its distribution, then check general-language regression. |
+| Correct format or response workflow is missing | [SFT, possibly with LoRA](/llm-engineering-course-pages/sft-lora) | Provide target responses and supervise their tokens. |
+| Several responses work but one is preferred | [DPO](/llm-engineering-course-pages/dpo) | Learn a relative preference from chosen/rejected pairs. |
 | Baseline already meets requirements | No training | Keep the simpler accepted system. |
+
+The [Applied: RAG track](/llm-engineering-course-pages/rag-build) builds and measures exactly the first option, retrieval.
 
 **SFT** specifies the objective and data. **LoRA** specifies which parameters can
 change; they are not competing tasks. **QLoRA** adds a frozen quantized base to
@@ -132,3 +134,5 @@ continued pretraining for freshness and DPO for adding missing facts.
 **Checkpoint:** another learner can trace every chosen component to a requirement,
 a measured baseline gap and a reproducible acceptance test. Continue with
 [company data](/llm-engineering-course-pages/company-data), then [protected evaluation](/llm-engineering-course-pages/company-evaluation).
+
+[← E04 — Profiling & budgets](/llm-engineering-course-pages/profiling) · [C02 — Company data →](/llm-engineering-course-pages/company-data) · [Glossary](/llm-engineering-course-pages/glossary)

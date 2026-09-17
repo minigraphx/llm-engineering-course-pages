@@ -7,7 +7,7 @@ sidebar:
 <span id="f06-pytorch-ubersetzung-und-grundlagen-checkpoint" />
 
 
-[← F05](/llm-engineering-course-pages/de/foundations-05-mlp-autograd) · [Kursstart](/llm-engineering-course-pages/de/) · [Godot-RL-Brücke](/llm-engineering-course-pages/de/foundations-godot-rl-bridge)
+[← F05 — MLP, Backprop & Autograd](/llm-engineering-course-pages/de/foundations-05-mlp-autograd) · [T01 — Bigramm-Baseline →](/llm-engineering-course-pages/de/bigram-baseline) · [Glossar](/llm-engineering-course-pages/de/glossary)
 
 ## Lernziel [#lernziel]
 
@@ -153,4 +153,4 @@ Der Neural-Foundations-Meilenstein ist abgeschlossen. Dokumentiere das Gate in
 der [Diagnose](/llm-engineering-course-pages/de/diagnostic) und fahre mit der
 [Bigramm-Sprachmodell-Baseline](/llm-engineering-course-pages/de/bigram-baseline) fort.
 
-[← F05](/llm-engineering-course-pages/de/foundations-05-mlp-autograd) · [Diagnose](/llm-engineering-course-pages/de/diagnostic) · [→ Bigramm-Baseline](/llm-engineering-course-pages/de/bigram-baseline)
+[← F05 — MLP, Backprop & Autograd](/llm-engineering-course-pages/de/foundations-05-mlp-autograd) · [T01 — Bigramm-Baseline →](/llm-engineering-course-pages/de/bigram-baseline) · [Glossar](/llm-engineering-course-pages/de/glossary)

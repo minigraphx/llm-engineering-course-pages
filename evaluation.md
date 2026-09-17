@@ -1,11 +1,13 @@
 ---
-title: "Evaluation: make a claim the evidence can support"
+title: "E03 — Evaluation: make a claim the evidence can support"
 sidebar:
   label: "E03 — Evaluation"
 ---
 
-<span id="evaluation-make-a-claim-the-evidence-can-support" />
+<span id="e03-evaluation-make-a-claim-the-evidence-can-support" />
 
+
+[← E02 — Data quality](/llm-engineering-course-pages/data-quality) · [E04 — Profiling & budgets →](/llm-engineering-course-pages/profiling) · [Glossary](/llm-engineering-course-pages/glossary)
 
 Prerequisites: complete the [decoder](/llm-engineering-course-pages/mini-gpt) and [training](/llm-engineering-course-pages/pretraining)
 labs. You should be able to identify logits, shifted labels, and an optimizer step.
@@ -211,3 +213,5 @@ Move on when you can explain the denominator, reproduce the paired comparison,
 reject the unchanged claim, and name a specific blind spot for all four smoke checks.
 Use `docs/experiment-report-template.md` to write your experiment card before the
 next controlled comparison, and retain the machine-readable report locally.
+
+[← E02 — Data quality](/llm-engineering-course-pages/data-quality) · [E04 — Profiling & budgets →](/llm-engineering-course-pages/profiling) · [Glossary](/llm-engineering-course-pages/glossary)

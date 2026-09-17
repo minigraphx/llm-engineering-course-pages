@@ -7,7 +7,7 @@ sidebar:
 <span id="f04-neuron-und-gradient-descent" />
 
 
-[← F03](/llm-engineering-course-pages/de/foundations-03-probability) · [Kursstart](/llm-engineering-course-pages/de/) · [→ F05](/llm-engineering-course-pages/de/foundations-05-mlp-autograd)
+[← F03 — Wahrscheinlichkeit & Loss](/llm-engineering-course-pages/de/foundations-03-probability) · [F05 — MLP, Backprop & Autograd →](/llm-engineering-course-pages/de/foundations-05-mlp-autograd) · [Glossar](/llm-engineering-course-pages/de/glossary)
 
 ## Lernziel [#lernziel]
 
@@ -76,4 +76,4 @@ die fehlerhafte Gleichung und sage die Reparatur voraus.
 
 Weiter mit [F05 — MLP, Backpropagation und Autograd](/llm-engineering-course-pages/de/foundations-05-mlp-autograd).
 
-[← F03](/llm-engineering-course-pages/de/foundations-03-probability) · [→ F05](/llm-engineering-course-pages/de/foundations-05-mlp-autograd)
+[← F03 — Wahrscheinlichkeit & Loss](/llm-engineering-course-pages/de/foundations-03-probability) · [F05 — MLP, Backprop & Autograd →](/llm-engineering-course-pages/de/foundations-05-mlp-autograd) · [Glossar](/llm-engineering-course-pages/de/glossary)

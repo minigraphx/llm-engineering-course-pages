@@ -1,14 +1,55 @@
 ---
-title: "M4 — Continued Pretraining ohne Verlust der Baseline"
+title: "C04 — Continued Pretraining ohne Verlust der Baseline"
 sidebar:
-  label: "M4 — Continued Pretraining"
+  label: "C04 — Continued Pretraining"
 ---
 
-<span id="m4-continued-pretraining-ohne-verlust-der-baseline" />
+<span id="c04-continued-pretraining-ohne-verlust-der-baseline" />
 
+
+[← C03 — Geschützte Evaluation](/llm-engineering-course-pages/de/company-evaluation) · [A01 — SFT & LoRA →](/llm-engineering-course-pages/de/sft-lora) · [Glossar](/llm-engineering-course-pages/de/glossary)
+
+Voraussetzungen: [C02](/llm-engineering-course-pages/de/company-data), [E01](/llm-engineering-course-pages/de/pretraining). Eine Sitzung.
+Der Code steht in `src/llm_course/continued_pretraining.py`; lies
+`document_batches`, `adaptation_decision` und `run_continued_pretraining` neben dieser Seite.
+
+## Was DAPT ändert und was nicht [#was-dapt-andert-und-was-nicht]
 
 Continued Pretraining (DAPT) setzt das Sprachmodellziel auf freigegebenem
 Fachtext fort. Es lernt Wortschatz und Stil, aber keinen JSON-Antwortvertrag.
+`document_batches` kodiert jedes Dokument mit einem Byte-Tokenizer ohne Merges
+(Vokabular 260, also nichts an Holdout-Text angepasst) und schneidet es in Fenster
+von 48 Next-Byte-Zielen, die nie eine Dokumentgrenze überschreiten. Das Modell ist
+T05s `MiniGPT` mit einer Schicht, Breite 32 und vier Köpfen: 30.816 Parameter,
+die 123.264 Bytes Float32-Speicher, die der Bericht als `parameter_bytes` führt.
+
+Das Beispiel trennt ganze Dokumente, bevor ein Fenster geschnitten wird: jeder
+vierte `tiny_lm`-Satz ist allgemeine Kontrolle (12 Training, 4 Holdout), jeder
+vierte `company_documents()`-Eintrag mit anderem Versatz ist Fach-Holdout
+(9 Training, 3 Holdout: `access-secret-v1`, `escalation-v1` und
+`support-format-v1`). Instruktions- und Goldfälle werden nie gelesen.
+`run_continued_pretraining` normalisiert beide Trainingskorpora gegen beide
+Holdouts und wirft bei jeder Überschneidung `ValueError`.
+
+## Die Entscheidungsschwelle nachrechnen [#die-entscheidungsschwelle-nachrechnen]
+
+`adaptation_decision` liest vier NLLs und zwei vorregistrierte Schwellen: der
+Gewinn `= domain_before − domain_after` muss `minimum_gain = 0,1` Nats erreichen,
+die Regression `= general_after − general_before` darf `maximum_regression = 0,15`
+nicht überschreiten. Beide Tore müssen passieren; eine niedrigere Domain-NLL kann
+Vergessen nicht verdecken. Für Seed 7 fällt das Fach-Holdout von 3,7068 auf
+3,2961, Gewinn `0,4107`; die allgemeine Kontrolle steigt von 2,5574 auf 2,6662,
+Regression `0,1087`. Beide Tore passieren, die Entscheidung lautet
+`keep_for_further_review` mit dem Scope `raw-text validation gates only; no instruction or production-quality claim`. C01s
+`choose_strategy` wendet dieselben zwei Schwellen an, wenn es diese Evidenz erhält.
+
+| Seed | Domain-NLL vorher → nachher | Gewinn | Allgemeine NLL vorher → nachher | Regression |
+| --- | --- | ---: | --- | ---: |
+| 7 | 3,7068 → 3,2961 | 0,4107 | 2,5574 → 2,6662 | 0,1087 |
+| 19 | 3,6247 → 3,2551 | 0,3696 | 2,4640 → 2,5500 | 0,0860 |
+| 43 | 3,5880 → 3,2296 | 0,3584 | 2,5191 → 2,5515 | 0,0323 |
+
+## Ausführen, fortsetzen, zurückrollen [#ausfuhren-fortsetzen-zuruckrollen]
 
 Der Lauf nutzt den Firmensnapshot, Byte-Fallback-Tokenisierung, getrennte
 Fach-Holdouts und zwei allgemeine Kontrollen. Ein unveränderliches Basismodell,
@@ -23,11 +64,41 @@ allgemeine Kontroll-NLL aber um 0,032–0,109 Nats. Deshalb bleibt der Kandidat 
 Prüfung. Exakte Fortsetzung und Rollback sind Engineering-Nachweise, kein
 Qualitätsbeweis.
 
-### Aufgabe [#aufgabe]
+Jeder Seed schreibt `artifacts/continued-pretraining/<seed>/report.json` nach 80
+Basisschritten und 40 Adaptionsschritten bei Lernrate 0,002, 2.940
+Adaptionstokens. Die Fortsetzungsprüfung trainiert eine zweite Kopie 20 Schritte,
+speichert `interrupted.pt`, lädt sie in einen frischen Trainer und beendet die
+restlichen 20: `parameter_max_difference` ist `0.0` und `optimizer_exact` ist
+`true` für jeden Seed. Die Rollback-Prüfung lädt `general-reference.pt` neu und
+vergleicht Logits auf einem Holdout-Batch: `logits_exact` ist `true`. Weil die
+Entscheidung „behalten" lautet, zeigt `selected_checkpoint` auf
+`adapted-model.pt`; bei `rollback` zeigte es auf die Referenz. Ein Budget von 60
+Sekunden pro Seed stoppt an einer Optimizer-Grenze und speichert `budget-stop.pt`.
+
+## Vorhersagen → Nachvollziehen → Bauen → Beschädigen → Messen → Erklären [#vorhersagen-nachvollziehen-bauen-beschadigen-messen-erklaren]
+
+1. **Vorhersagen:** Welche Kombination rollt `adaptation_decision` zurück: Gewinn 0,05 mit Regression 0,02 oder Gewinn 0,5 mit Regression 0,2? Beide? Notieren.
+2. **Nachvollziehen:** Führe den Befehl aus und lies `decision`, `resume` und `rollback` für Seed 7 in `artifacts/continued-pretraining/7/report.json`.
+3. **Bauen:** Rufe `adaptation_decision(3.7068, 3.2961, 2.5574, 2.6662)` auf und reproduziere die Seed-7-Zeile; übergib dann `maximum_regression=0.1` und lies `reasons`.
+4. **Beschädigen:** Hänge in einer Kopie des Beispiels ein `domain_eval`-Dokument an `domain_train` und beobachte den `ValueError`, bevor ein Schritt läuft.
+5. **Messen:** Führe `--seeds 7 --adapt-steps 80` aus, notiere Gewinn und Regression neben der 40-Schritt-Zeile und benenne das Tor, das sich bewegt.
+6. **Erklären:** Warum befördert ein bestandenes Tor den Checkpoint trotzdem nicht? Nenne die Evaluation, die als Nächstes laufen muss.
+
+### Eigenständige Aufgabe [#eigenstandige-aufgabe]
 
 Warum werden Domaingewinn und allgemeine Regression getrennt berichtet? Was macht
 den Versuch ungültig: einen allgemeinen Testsatz in den Trainingstext aufnehmen
 oder nur den Lernraten-Seed ändern?
+
+<details>
+<summary>Hinweis</summary>
+
+Sieh nach, was `run_continued_pretraining` vor dem Training prüft und was der
+Bericht pro Seed festhält. Eine Änderung fängt der Code; die andere fängt nur
+die Person, die das Protokoll führt.
+
+
+</details>
 
 <details>
 <summary>Referenzantwort</summary>
@@ -40,3 +111,5 @@ ein geänderter Seed ist ein neuer, zu dokumentierender Lauf.
 
 Checkpoint: Lege eine Freigabeschwelle fest, benenne das Rollback-Artefakt und
 begründe die anschließende Instruktions-Evaluation.
+
+[← C03 — Geschützte Evaluation](/llm-engineering-course-pages/de/company-evaluation) · [A01 — SFT & LoRA →](/llm-engineering-course-pages/de/sft-lora) · [Glossar](/llm-engineering-course-pages/de/glossary)

@@ -1,11 +1,13 @@
 ---
-title: "M2-Kernprüfung: programmieren, Fehler finden, erklären"
+title: "T06 — Kernprüfung: programmieren, Fehler finden, erklären"
 sidebar:
-  label: "M2 — Kerngate"
+  label: "T06 — Kerngate"
 ---
 
-<span id="m2-kernprufung-programmieren-fehler-finden-erklaren" />
+<span id="t06-kernprufung-programmieren-fehler-finden-erklaren" />
 
+
+[← T05 — Mini-GPT](/llm-engineering-course-pages/de/mini-gpt) · [I01 — Decoding, Sampling & KV-Cache →](/llm-engineering-course-pages/de/inference-decoding) · [Glossar](/llm-engineering-course-pages/de/glossary)
 
 Bearbeite zuerst [Decoder](/llm-engineering-course-pages/de/mini-gpt), [Datenpipeline](/llm-engineering-course-pages/de/data-pipeline) und
 [Attention](/llm-engineering-course-pages/de/attention). Plane 60–90 Minuten. Zeige eine eigene Umsetzung;
@@ -89,7 +91,7 @@ Gib eine kurze mündliche oder schriftliche Erklärung mit eigenen Zahlen:
   Positionsmischung und begründe, weshalb die Ziele genau einmal verschoben werden.
 - Warum müssen reproduzierbare Blöcke unterschiedliche Anfangsgewichte haben?
   Warum nutzt Sampling vorübergehend `eval()`? Warum reichen gespeicherte Gewichte
-  nicht zum exakten Fortsetzen von AdamW? Nenne zusätzliche Informationen für M3.
+  nicht zum exakten Fortsetzen von AdamW? Nenne zusätzliche Informationen für E01.
 - Führe die drei Seeds der Lektion aus. Berichte jede gepaarte Differenz der
   Validierungs-NLL „ohne Norm minus mit Norm“, Mittelwert und Stichproben-
   Standardabweichung. Warum beweisen zwei Validierungsdokumente und drei Seeds
@@ -165,3 +167,5 @@ Standardabweichung 0.686760. Das beschreibt den kleinen festen Validierungsversu
 keinen Sicherheits-, Fakten- oder allgemeinen Sprachbenchmark.
 
 </details>
+
+[← T05 — Mini-GPT](/llm-engineering-course-pages/de/mini-gpt) · [I01 — Decoding, Sampling & KV-Cache →](/llm-engineering-course-pages/de/inference-decoding) · [Glossar](/llm-engineering-course-pages/de/glossary)

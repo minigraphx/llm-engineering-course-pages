@@ -7,7 +7,7 @@ sidebar:
 <span id="t02-byte-level-bpe-tokenizer-from-scratch" />
 
 
-[← T01 Bigram baseline](/llm-engineering-course-pages/bigram-baseline) · [Course home](/llm-engineering-course-pages/)
+[← T01 — Bigram baseline](/llm-engineering-course-pages/bigram-baseline) · [T03 — Data pipeline & embeddings →](/llm-engineering-course-pages/data-pipeline) · [Glossary](/llm-engineering-course-pages/glossary)
 
 ## Learning outcome [#learning-outcome]
 
@@ -187,4 +187,4 @@ Next, the tokenizer enters a streaming data pipeline with manifests,
 contamination checks, deterministic shuffling, padding masks, and token batches
 for training.
 
-[← T01 Bigram baseline](/llm-engineering-course-pages/bigram-baseline) · [Course home](/llm-engineering-course-pages/)
+[← T01 — Bigram baseline](/llm-engineering-course-pages/bigram-baseline) · [T03 — Data pipeline & embeddings →](/llm-engineering-course-pages/data-pipeline) · [Glossary](/llm-engineering-course-pages/glossary)

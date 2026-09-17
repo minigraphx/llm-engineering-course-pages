@@ -1,11 +1,13 @@
 ---
-title: "Evaluation: Aussagen mit überprüfbarer Evidenz"
+title: "E03 — Evaluation: Aussagen mit überprüfbarer Evidenz"
 sidebar:
   label: "E03 — Evaluation"
 ---
 
-<span id="evaluation-aussagen-mit-uberprufbarer-evidenz" />
+<span id="e03-evaluation-aussagen-mit-uberprufbarer-evidenz" />
 
+
+[← E02 — Datenqualität](/llm-engineering-course-pages/de/data-quality) · [E04 — Profiling & Budgets →](/llm-engineering-course-pages/de/profiling) · [Glossar](/llm-engineering-course-pages/de/glossary)
 
 Voraussetzungen: die Einheiten [Decoder](/llm-engineering-course-pages/de/mini-gpt) und [Training](/llm-engineering-course-pages/de/pretraining).
 Du solltest Logits, verschobene Zielwerte und einen Optimierungsschritt erklären
@@ -212,3 +214,5 @@ Du bist bereit für die nächste Einheit, wenn du den Nenner erklären, den gepa
 Vergleich reproduzieren, die unveränderte Kontrolle zurückweisen und für jede
 Smoke-Prüfung einen blinden Fleck nennen kannst. Nutze
 `docs/experiment-report-template.md` vor dem nächsten kontrollierten Vergleich.
+
+[← E02 — Datenqualität](/llm-engineering-course-pages/de/data-quality) · [E04 — Profiling & Budgets →](/llm-engineering-course-pages/de/profiling) · [Glossar](/llm-engineering-course-pages/de/glossary)

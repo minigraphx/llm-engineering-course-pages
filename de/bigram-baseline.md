@@ -7,7 +7,7 @@ sidebar:
 <span id="t01-bigramm-sprachmodell-als-baseline" />
 
 
-[← F06-Checkpoint](/llm-engineering-course-pages/de/foundations-06-pytorch-checkpoint) · [Kursstart](/llm-engineering-course-pages/de/)
+[← F06 — PyTorch & Checkpoint](/llm-engineering-course-pages/de/foundations-06-pytorch-checkpoint) · [T02 — Byte-Level-BPE →](/llm-engineering-course-pages/de/bpe-tokenizer) · [Glossar](/llm-engineering-course-pages/de/glossary)
 
 ## Lernziel [#lernziel]
 
@@ -168,4 +168,4 @@ Das Zeichen-Vokabular ist fest und kann keine nützlichen Subwörter darstellen.
 Weiter mit dem [Byte-Level-BPE-Tokenizer](/llm-engineering-course-pages/de/bpe-tokenizer): Dort misst du, wie
 Vokabular und Sequenzlänge dasselbe Modellierungsproblem verändern.
 
-[← F06-Checkpoint](/llm-engineering-course-pages/de/foundations-06-pytorch-checkpoint) · [→ BPE-Tokenizer](/llm-engineering-course-pages/de/bpe-tokenizer)
+[← F06 — PyTorch & Checkpoint](/llm-engineering-course-pages/de/foundations-06-pytorch-checkpoint) · [T02 — Byte-Level-BPE →](/llm-engineering-course-pages/de/bpe-tokenizer) · [Glossar](/llm-engineering-course-pages/de/glossary)

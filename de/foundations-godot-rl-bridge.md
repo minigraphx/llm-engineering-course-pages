@@ -7,7 +7,7 @@ sidebar:
 <span id="b01-godot-rl-brucke-fur-neural-foundations" />
 
 
-[← Diagnose](/llm-engineering-course-pages/de/diagnostic) · [Kursstart](/llm-engineering-course-pages/de/) · [→ Gemeinsamer Checkpoint](/llm-engineering-course-pages/de/foundations-06-pytorch-checkpoint)
+[← Diagnose & Lernpfad](/llm-engineering-course-pages/de/diagnostic) · [F01 — Python & NumPy →](/llm-engineering-course-pages/de/foundations-01-python-numpy) · [Glossar](/llm-engineering-course-pages/de/glossary)
 
 ## Zweck [#zweck]
 
@@ -50,4 +50,4 @@ Likelihood-Training sind neu.
 Absolviere den gemeinsamen [F06-Checkpoint](/llm-engineering-course-pages/de/foundations-06-pytorch-checkpoint).
 Er ist für beide Einstiegspfade identisch.
 
-[← Diagnose](/llm-engineering-course-pages/de/diagnostic) · [→ Gemeinsamer Checkpoint](/llm-engineering-course-pages/de/foundations-06-pytorch-checkpoint)
+[← Diagnose & Lernpfad](/llm-engineering-course-pages/de/diagnostic) · [F01 — Python & NumPy →](/llm-engineering-course-pages/de/foundations-01-python-numpy) · [Glossar](/llm-engineering-course-pages/de/glossary)

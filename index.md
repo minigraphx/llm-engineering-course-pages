@@ -25,18 +25,23 @@ Both paths start with [Unit 0](/llm-engineering-course-pages/unit-00), continue 
 [diagnostic and learning-path check](/llm-engineering-course-pages/diagnostic), and converge before text
 tokenization. Every skipped foundation keeps a re-entry link.
 
-The standalone foundations track is now executable: Python/NumPy, tensor
-shapes, probability and cross-entropy, a trainable neuron, MLP/backpropagation,
-a tiny autograd engine, and a PyTorch checkpoint. Godot-RL graduates can take
-the [compact bridge](/llm-engineering-course-pages/foundations-godot-rl-bridge) and prove only the missing
-LLM-specific concepts. Both paths now continue into the executable
-[bigram language-model baseline](/llm-engineering-course-pages/bigram-baseline), the from-scratch
-[byte-level BPE tokenizer](/llm-engineering-course-pages/bpe-tokenizer), the versioned
-[data pipeline and embedding path](/llm-engineering-course-pages/data-pipeline), and
-[self-attention from first principles](/llm-engineering-course-pages/attention). Continue with the
-[Mini-GPT decoder](/llm-engineering-course-pages/mini-gpt) and its [core gate](/llm-engineering-course-pages/mini-gpt-gate), then
-[reproducible training](/llm-engineering-course-pages/pretraining), [data quality](/llm-engineering-course-pages/data-quality),
-[evaluation](/llm-engineering-course-pages/evaluation) and [profiling](/llm-engineering-course-pages/profiling).
+The standalone foundations track [F01–F06](/llm-engineering-course-pages/foundations-01-python-numpy)
+covers Python/NumPy, tensor shapes, probability and cross-entropy, a trainable
+neuron, MLP/backpropagation, a tiny autograd engine and a PyTorch checkpoint.
+Godot-RL graduates take the [B01 bridge](/llm-engineering-course-pages/foundations-godot-rl-bridge) and
+prove only the missing LLM-specific concepts. Both paths continue through the
+core: the [T01 bigram baseline](/llm-engineering-course-pages/bigram-baseline), [T02 byte-level BPE](/llm-engineering-course-pages/bpe-tokenizer),
+the [T03 data pipeline and embeddings](/llm-engineering-course-pages/data-pipeline), [T04 self-attention](/llm-engineering-course-pages/attention),
+the [T05 Mini-GPT decoder](/llm-engineering-course-pages/mini-gpt) and its [T06 core gate](/llm-engineering-course-pages/mini-gpt-gate),
+[I01 decoding, sampling and the KV cache](/llm-engineering-course-pages/inference-decoding), then
+[E01 reproducible training](/llm-engineering-course-pages/pretraining), [E02 data quality](/llm-engineering-course-pages/data-quality),
+[E03 evaluation](/llm-engineering-course-pages/evaluation) and [E04 profiling](/llm-engineering-course-pages/profiling). The company
+track [C01–C04](/llm-engineering-course-pages/company-strategy) turns a requirement into a model decision,
+auditable data, protected evaluation and continued pretraining; the adaptation
+track [A01–A04](/llm-engineering-course-pages/sft-lora) covers SFT/LoRA, the adaptation comparison, DPO and
+the RLHF bridge; the [capstone](/llm-engineering-course-pages/company-capstone) ties them into a reversible
+company-model decision. The [Applied: RAG track](/llm-engineering-course-pages/rag-build) (R01–R02) is a
+standalone entry that needs only Python and one LLM call.
 
 Every required outcome has a CPU route. Run the
 [hardware and cost preflight](/llm-engineering-course-pages/hardware) before choosing a larger profile.
@@ -55,14 +60,15 @@ Every required outcome has a CPU route. Run the
 <aside className="course-note" aria-label="Development status">
 <strong>Development status</strong>
 
-Unit 0 now has an executable Tiny-LM vertical slice and is ready for its
-required five-learner pilot. The diagnostic, hardware gates, and neural-
-foundations track, reproducible bigram baseline, byte-level BPE lab,
-versioned data pipeline with embeddings, and self-attention lab are
-available. M2 adds the decoder, core gate and model card; M3 adds resumable
-CPU training, provenance audits, paired evaluation and measured profiling.
-Later company-model units and larger supplied datasets remain planned.
-The real five-learner pilot is still open; automated checks do not establish
-learner comprehension or issue a certificate.
+Every course unit from Unit 0 through the capstone is shipped and executable
+on CPU: the foundations F01–F06 with the B01 bridge, the core T01–T06 and
+I01, the engineering units E01–E04, the company units C01–C04, the
+adaptation units A01–A04 and the capstone, plus the Applied: RAG track
+R01–R02. German localisation is complete except R01/R02 (MIN-129). Still
+open: the supplied larger data packs (M1A), the interpretability extension
+(M2A), the quantization/batching/serving units (M6), the human sign-off on
+the sealed company gold set and synthetic sample (MIN-95/96/100), and the
+real five-learner pilot. Automated checks do not establish learner
+comprehension or issue a certificate.
 
 </aside>

@@ -9,7 +9,7 @@ sidebar:
 <span id="c01-vom-firmenproblem-zur-modellentscheidung" />
 
 
-[← Evaluation](/llm-engineering-course-pages/de/evaluation) · [Firmendaten →](/llm-engineering-course-pages/de/company-data)
+[← E04 — Profiling & Budgets](/llm-engineering-course-pages/de/profiling) · [C02 — Firmendaten →](/llm-engineering-course-pages/de/company-data) · [Glossar](/llm-engineering-course-pages/de/glossary)
 
 Du kannst inzwischen ein Modell trainieren. Diese Einheit prüft, ob Training der
 richtige nächste Schritt ist. Voraussetzungen: Baseline und Änderung vergleichen,
@@ -45,11 +45,13 @@ Zugriffskontrolle. Authentifizierung und Berechtigungen gehören in Anwendungsco
 
 | Beobachtete Lücke | Erste Maßnahme | Begründung |
 | --- | --- | --- |
-| Häufig wechselnde Fakten | Retrieval und Tools | Die erlaubte aktuelle Version bei jeder Anfrage abrufen. |
-| Fachsprache wird schlecht vorhergesagt | Continued Pretraining prüfen | Ihre Verteilung lernen und allgemeine Regression messen. |
-| Antwortformat oder Ablauf fehlt | SFT, gegebenenfalls mit LoRA | Richtige Antworten vorgeben und deren Tokens trainieren. |
-| Mehrere Antworten sind zulässig, eine bevorzugt | DPO | Relative Präferenzen aus Antwortpaaren lernen. |
+| Häufig wechselnde Fakten | [Retrieval und Tools](/llm-engineering-course-pages/de/rag-build) | Die erlaubte aktuelle Version bei jeder Anfrage abrufen. |
+| Fachsprache wird schlecht vorhergesagt | [Continued Pretraining](/llm-engineering-course-pages/de/continued-pretraining) prüfen | Ihre Verteilung lernen und allgemeine Regression messen. |
+| Antwortformat oder Ablauf fehlt | [SFT, gegebenenfalls mit LoRA](/llm-engineering-course-pages/de/sft-lora) | Richtige Antworten vorgeben und deren Tokens trainieren. |
+| Mehrere Antworten sind zulässig, eine bevorzugt | [DPO](/llm-engineering-course-pages/de/dpo) | Relative Präferenzen aus Antwortpaaren lernen. |
 | Baseline erfüllt Anforderungen bereits | Kein Training | Das einfachere akzeptierte System behalten. |
+
+Der [Track „Angewandt: RAG“](/llm-engineering-course-pages/de/rag-build) baut und misst genau die erste Option, Retrieval.
 
 **SFT** beschreibt Lernziel und Daten. **LoRA** beschreibt, welche Parameter sich
 ändern; die Begriffe sind keine konkurrierenden Aufgaben. **QLoRA** ergänzt eine
@@ -138,5 +140,7 @@ ergänzt keine fehlenden Fakten.
 eine Anforderung, eine gemessene Baselinelücke und einen reproduzierbaren Test
 zurückführen. Weiter mit [Firmendaten](/llm-engineering-course-pages/de/company-data) und
 [geschützter Evaluation](/llm-engineering-course-pages/de/company-evaluation).
+
+[← E04 — Profiling & Budgets](/llm-engineering-course-pages/de/profiling) · [C02 — Firmendaten →](/llm-engineering-course-pages/de/company-data) · [Glossar](/llm-engineering-course-pages/de/glossary)
 
 </CourseContent>

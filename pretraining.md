@@ -1,13 +1,13 @@
 ---
-title: "T05 — Reproducible pretraining"
+title: "E01 — Reproducible pretraining"
 sidebar:
   label: "E01 — Reproducible training"
 ---
 
-<span id="t05-reproducible-pretraining" />
+<span id="e01-reproducible-pretraining" />
 
 
-[← Mini-GPT](/llm-engineering-course-pages/mini-gpt) · [Course home](/llm-engineering-course-pages/)
+[← I01 — Decoding, sampling & KV cache](/llm-engineering-course-pages/inference-decoding) · [E02 — Data quality →](/llm-engineering-course-pages/data-quality) · [Glossary](/llm-engineering-course-pages/glossary)
 
 ## Goal and prerequisites [#goal-and-prerequisites]
 
@@ -212,3 +212,5 @@ Move on when you can derive the weights without code, explain clipping's positio
 produce exact CPU replay, identify the deliberate failure, and state why falling
 training loss says nothing yet about held-out quality. That question belongs in
 the evaluation lab.
+
+[← I01 — Decoding, sampling & KV cache](/llm-engineering-course-pages/inference-decoding) · [E02 — Data quality →](/llm-engineering-course-pages/data-quality) · [Glossary](/llm-engineering-course-pages/glossary)

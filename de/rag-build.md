@@ -1,0 +1,23 @@
+---
+title: "R01 — Vom Dokument zur Antwort: RAG selbst gebaut"
+sidebar:
+  label: "R01 — Vom Dokument zur Antwort"
+---
+
+<span id="r01-vom-dokument-zur-antwort-rag-selbst-gebaut" />
+
+
+[← Lernleitfaden](/llm-engineering-course-pages/de/learning-guide) · [R02 — Damit es nicht lügt →](/llm-engineering-course-pages/de/rag-quality) · [Glossar](/llm-engineering-course-pages/de/glossary)
+
+Diese Lektion liegt derzeit nur auf Englisch vor: [R01 — From document to answer](/llm-engineering-course-pages/de/rag-build).
+Die deutsche Fassung folgt (Linear MIN-129). Alle Befehle und Artefakte im Ordner `rag/`
+sind sprachunabhängig.
+
+## Inhalt [#inhalt]
+
+Warum RAG statt weiterem Training, Korpus vorbereiten (Bereinigung, Chunking, Metadaten),
+Embeddings, Vektorspeicher und Top-k, Prompt-Zusammenbau mit Quellenzwang, erster Durchlauf.
+
+Weiter: [R02 — Damit es nicht lügt](/llm-engineering-course-pages/de/rag-quality).
+
+[← Lernleitfaden](/llm-engineering-course-pages/de/learning-guide) · [R02 — Damit es nicht lügt →](/llm-engineering-course-pages/de/rag-quality) · [Glossar](/llm-engineering-course-pages/de/glossary)

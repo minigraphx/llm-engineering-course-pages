@@ -1,0 +1,11 @@
+{
+  "contentType": "doc",
+  "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/de/rag-quality.json",
+  "lastModified": null,
+  "locale": "de",
+  "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de/rag-quality.md",
+  "route": "/de/rag-quality",
+  "title": "R02 — Damit es nicht lügt: Qualität, Guardrails, Betrieb",
+  "url": "https://minigraphx.github.io/llm-engineering-course-pages/de/rag-quality",
+  "markdown": "---\ntitle: \"R02 — Damit es nicht lügt: Qualität, Guardrails, Betrieb\"\nsidebar:\n  label: \"R02 — Damit es nicht lügt\"\n---\n\n<span id=\"r02-damit-es-nicht-lugt-qualitat-guardrails-betrieb\" />\n\n\n[← R01 — Vom Dokument zur Antwort](/llm-engineering-course-pages/de/rag-build) · [Kursstart →](/llm-engineering-course-pages/de/) · [Glossar](/llm-engineering-course-pages/de/glossary)\n\nDiese Lektion liegt derzeit nur auf Englisch vor: [R02 — So it does not lie](/llm-engineering-course-pages/de/rag-quality).\nDie deutsche Fassung folgt (Linear MIN-129). Alle Befehle und Artefakte im Ordner `rag/`\nsind sprachunabhängig.\n\n## Inhalt [#inhalt]\n\nEvaluations-Set vor jedem Tuning, Recall@k und MRR von Hand, Belegtheit der Antwort und\nLLM-as-Judge, die vier Guardrails (Ähnlichkeitsschwelle, Zitatpflicht, Prompt-Injection,\nsauberes „Ich weiß es nicht“), Betrieb (Request-Log, Latenz, Kosten, Feedback), Deployment\nmit uvicorn und Docker, Vorher/Nachher-Tabelle.\n\nZurück: [R01 — Vom Dokument zur Antwort](/llm-engineering-course-pages/de/rag-build).\n\n[← R01 — Vom Dokument zur Antwort](/llm-engineering-course-pages/de/rag-build) · [Kursstart →](/llm-engineering-course-pages/de/) · [Glossar](/llm-engineering-course-pages/de/glossary)\n"
+}

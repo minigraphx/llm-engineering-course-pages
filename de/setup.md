@@ -79,7 +79,7 @@ Der erste vollständige Testlauf oder Byte-Pair-Encoding-Vergleich (BPE) kann
 einmalig Internet benötigen: Das vorhandene Tokenizer-Labor lädt die öffentliche
 Codierungstabelle `cl100k_base` und speichert sie lokal zwischen. Die Installation
 der Python-Pakete lädt diese Tabelle noch nicht vorab. Die verpflichtenden
-M2/M3-Modell-, Trainings-, Evaluations- und Profiling-Experimente verwenden lokal
+T05/T06- und E01–E04-Modell-, Trainings-, Evaluations- und Profiling-Experimente verwenden lokal
 erzeugte Daten und laufen nach der Installation offline.
 
 ### Shell-Konventionen für alle Lektionen [#shell-conventions]

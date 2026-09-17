@@ -1,13 +1,15 @@
 ---
-title: "M2 core gate: code, diagnose, explain"
+title: "T06 — Core gate: code, diagnose, explain"
 sidebar:
-  label: "M2 — Core gate"
+  label: "T06 — Core gate"
 ---
 
 <CourseContent>
 
-<span id="m2-core-gate-code-diagnose-explain" />
+<span id="t06-core-gate-code-diagnose-explain" />
 
+
+[← T05 — Mini-GPT](/llm-engineering-course-pages/mini-gpt) · [I01 — Decoding, sampling & KV cache →](/llm-engineering-course-pages/inference-decoding) · [Glossary](/llm-engineering-course-pages/glossary)
 
 Take this after [the decoder lesson](/llm-engineering-course-pages/mini-gpt), [the data pipeline](/llm-engineering-course-pages/data-pipeline)
 and [attention](/llm-engineering-course-pages/attention). Allow 60–90 minutes. The goal is to demonstrate an
@@ -90,7 +92,7 @@ Give a short written or spoken explanation with your own numbers:
   mixing from position mixing, and explain why labels are shifted only once.
 - Explain why reproducible initialization must produce different blocks, why
   sampling temporarily uses `eval()`, and why saving only weights cannot resume
-  AdamW training exactly. Name the information M3 must also save.
+  AdamW training exactly. Name the information E01 must also save.
 - Run the three-seed command from the lesson. Report each paired no-norm minus norm
   validation NLL difference, its mean and sample standard deviation. Explain why
   two validation documents and three seeds cannot establish general superiority.
@@ -164,5 +166,7 @@ This result describes the fixed toy validation probe. It is not a safety,
 factuality or broad language benchmark.
 
 </details>
+
+[← T05 — Mini-GPT](/llm-engineering-course-pages/mini-gpt) · [I01 — Decoding, sampling & KV cache →](/llm-engineering-course-pages/inference-decoding) · [Glossary](/llm-engineering-course-pages/glossary)
 
 </CourseContent>

@@ -1,11 +1,13 @@
 ---
-title: "M2: assemble a tiny decoder"
+title: "T05 — Mini-GPT: assemble a tiny decoder"
 sidebar:
-  label: "M2 — Mini-GPT"
+  label: "T05 — Mini-GPT"
 ---
 
-<span id="m2-assemble-a-tiny-decoder" />
+<span id="t05-mini-gpt-assemble-a-tiny-decoder" />
 
+
+[← T04 — Self-attention](/llm-engineering-course-pages/attention) · [T06 — Core gate →](/llm-engineering-course-pages/mini-gpt-gate) · [Glossary](/llm-engineering-course-pages/glossary)
 
 **Outcome:** build a trainable next-token model and explain every operation from
 integer IDs to a probability distribution. Allow 90–120 minutes, then take the
@@ -144,8 +146,8 @@ A local seed makes repeated sampling reproducible and preserves the model's prio
 train/eval state. When context exceeds the block size, only the latest window is
 read and its learned positions restart at zero; the returned prefix is retained.
 Prompts are unpadded, and generation always produces the requested number of
-new tokens, without an EOS stop rule or KV cache. Checkpoints store architecture
-and weights; optimizer/RNG resume belongs to M3.
+new tokens, without an EOS stop rule or KV cache ([I01](/llm-engineering-course-pages/inference-decoding)). Checkpoints store architecture
+and weights; optimizer/RNG resume belongs to E01.
 
 ## Controlled break and next step [#controlled-break-and-next-step]
 
@@ -156,3 +158,5 @@ Do not commit generated corpora or checkpoints. Move to the [core gate](/llm-eng
 when you can trace every shape, distinguish the attention mask from loss masking,
 and explain why tiny-batch overfitting is a debugging check rather than held-out
 quality evidence.
+
+[← T04 — Self-attention](/llm-engineering-course-pages/attention) · [T06 — Core gate →](/llm-engineering-course-pages/mini-gpt-gate) · [Glossary](/llm-engineering-course-pages/glossary)

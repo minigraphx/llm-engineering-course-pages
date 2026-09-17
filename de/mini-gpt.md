@@ -1,11 +1,13 @@
 ---
-title: "M2: einen kleinen Decoder zusammensetzen"
+title: "T05 — Mini-GPT: einen kleinen Decoder zusammensetzen"
 sidebar:
-  label: "M2 — Mini-GPT"
+  label: "T05 — Mini-GPT"
 ---
 
-<span id="m2-einen-kleinen-decoder-zusammensetzen" />
+<span id="t05-mini-gpt-einen-kleinen-decoder-zusammensetzen" />
 
+
+[← T04 — Self-Attention](/llm-engineering-course-pages/de/attention) · [T06 — Kerngate →](/llm-engineering-course-pages/de/mini-gpt-gate) · [Glossar](/llm-engineering-course-pages/de/glossary)
 
 **Lernziel:** ein trainierbares Modell für das nächste Token bauen und jede
 Operation von IDs bis zu Wahrscheinlichkeiten erklären. Plane 90–120 Minuten,
@@ -149,8 +151,8 @@ bei Temperatur 2 zu `[0,1]`; die grössere Wahrscheinlichkeit sinkt von 0.881 au
 Trainings-/Auswertungsmodus. Bei zu langem Kontext wird nur das letzte Fenster
 gelesen, mit Positionsindizes wieder ab null. Der zurückgegebene Präfix bleibt
 erhalten. Prompts sind ungepaddet. Es werden genau die angeforderten Tokens erzeugt,
-ohne EOS-Stoppregel und ohne KV-Cache. Checkpoints enthalten Architektur und
-Gewichte; Fortsetzen inklusive Optimierer/Zufallszustand gehört zu M3.
+ohne EOS-Stoppregel und ohne KV-Cache ([I01](/llm-engineering-course-pages/de/inference-decoding)). Checkpoints enthalten Architektur und
+Gewichte; Fortsetzen inklusive Optimierer/Zufallszustand gehört zu E01.
 
 ## Absichtlich kaputtmachen und weitergehen [#absichtlich-kaputtmachen-und-weitergehen]
 
@@ -161,3 +163,5 @@ die verschobenen Ziele wieder her. Generierte Korpora und Checkpoints nicht
 committen. Gehe zur [Kernprüfung](/llm-engineering-course-pages/de/mini-gpt-gate), sobald du jede Form verfolgen,
 Attention-Maske und Loss-Maske unterscheiden und Tiny-Batch-Überanpassung als
 Fehlersuche statt als Qualitätsbeleg erklären kannst.
+
+[← T04 — Self-Attention](/llm-engineering-course-pages/de/attention) · [T06 — Kerngate →](/llm-engineering-course-pages/de/mini-gpt-gate) · [Glossar](/llm-engineering-course-pages/de/glossary)

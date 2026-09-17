@@ -7,7 +7,7 @@ sidebar:
 <span id="t04-self-attention-als-zahlenexperiment" />
 
 
-[← T03 Datenpipeline](/llm-engineering-course-pages/de/data-pipeline) · [Kursstart](/llm-engineering-course-pages/de/)
+[← T03 — Datenpipeline & Embeddings](/llm-engineering-course-pages/de/data-pipeline) · [T05 — Mini-GPT →](/llm-engineering-course-pages/de/mini-gpt) · [Glossar](/llm-engineering-course-pages/de/glossary)
 
 ## Lernziel [#lernziel]
 
@@ -207,6 +207,4 @@ Eine Attention-Schicht mischt Information über Positionen hinweg, kann sie aber
 kaum transformieren. Als Nächstes ergänzt du Residualpfade, Normierung und ein
 Feed-Forward-Netz zu einem vollständigen Decoder-Block und einem Mini-GPT.
 
-[← T03 Datenpipeline](/llm-engineering-course-pages/de/data-pipeline) · [Kursstart](/llm-engineering-course-pages/de/)
-
-[→ Mini-GPT-Decoder](/llm-engineering-course-pages/de/mini-gpt) · [Lernleitfaden](/llm-engineering-course-pages/de/learning-guide)
+[← T03 — Datenpipeline & Embeddings](/llm-engineering-course-pages/de/data-pipeline) · [T05 — Mini-GPT →](/llm-engineering-course-pages/de/mini-gpt) · [Glossar](/llm-engineering-course-pages/de/glossary)

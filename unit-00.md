@@ -7,7 +7,7 @@ sidebar:
 <span id="unit-0-first-tiny-lm-run" />
 
 
-[← Setup](/llm-engineering-course-pages/setup) · [Course home](/llm-engineering-course-pages/) · [Troubleshooting](/llm-engineering-course-pages/unit-00-troubleshooting)
+[← Learning guide](/llm-engineering-course-pages/learning-guide) · [Unit 0 troubleshooting →](/llm-engineering-course-pages/unit-00-troubleshooting) · [Glossary](/llm-engineering-course-pages/glossary)
 
 ## Learning outcome [#learning-outcome]
 
@@ -144,4 +144,4 @@ Continue with the [diagnostic and learning-path check](/llm-engineering-course-p
 determines which foundations you can safely skip and preserves a re-entry link
 for every shortcut.
 
-[← Setup](/llm-engineering-course-pages/setup) · [Troubleshooting](/llm-engineering-course-pages/unit-00-troubleshooting) · [→ Diagnostic](/llm-engineering-course-pages/diagnostic)
+[← Learning guide](/llm-engineering-course-pages/learning-guide) · [Unit 0 troubleshooting →](/llm-engineering-course-pages/unit-00-troubleshooting) · [Glossary](/llm-engineering-course-pages/glossary)

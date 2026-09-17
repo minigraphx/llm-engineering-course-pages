@@ -1,11 +1,13 @@
 ---
-title: "Profiling: vom Modell zum Ressourcenbudget"
+title: "E04 — Profiling: vom Modell zum Ressourcenbudget"
 sidebar:
   label: "E04 — Profiling & Budgets"
 ---
 
-<span id="profiling-vom-modell-zum-ressourcenbudget" />
+<span id="e04-profiling-vom-modell-zum-ressourcenbudget" />
 
+
+[← E03 — Evaluation](/llm-engineering-course-pages/de/evaluation) · [C01 — Firmenstrategie →](/llm-engineering-course-pages/de/company-strategy) · [Glossar](/llm-engineering-course-pages/de/glossary)
 
 Voraussetzungen: [Decoder](/llm-engineering-course-pages/de/mini-gpt), [Training](/llm-engineering-course-pages/de/pretraining) und
 [Evaluation](/llm-engineering-course-pages/de/evaluation). Plane etwa 45 Minuten ein. Eine CPU genügt.
@@ -247,3 +249,5 @@ den tatsächlichen Prozess-Spitzenspeicher und prüfe Qualität bei gewähltem K
 Die Einheit ist abgeschlossen, wenn du 3.600 Parameter herleiten, die FLOP-Abweichung
 erklären, Allokationsereignisse von Spitzenspeicher unterscheiden und eine
 Budgetentscheidung mit ihren Grenzen formulieren kannst.
+
+[← E03 — Evaluation](/llm-engineering-course-pages/de/evaluation) · [C01 — Firmenstrategie →](/llm-engineering-course-pages/de/company-strategy) · [Glossar](/llm-engineering-course-pages/de/glossary)

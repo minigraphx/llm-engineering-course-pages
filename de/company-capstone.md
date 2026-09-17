@@ -7,6 +7,15 @@ sidebar:
 <span id="capstone-von-der-anforderung-zum-reversiblen-firmenmodell" />
 
 
+[← A04 — RLHF-Brücke](/llm-engineering-course-pages/de/rlhf-bridge) · [Kursstart →](/llm-engineering-course-pages/de/) · [Glossar](/llm-engineering-course-pages/de/glossary)
+
+Voraussetzungen: [C01](/llm-engineering-course-pages/de/company-strategy), [A02](/llm-engineering-course-pages/de/adaptation-comparison), [C04](/llm-engineering-course-pages/de/continued-pretraining).
+Zwei Sitzungen: eine für das Neuerzeugen und Sammeln der Evidenz, eine für das
+Protokoll. Du nutzt `src/llm_course/company_strategy.py` (`Requirements`,
+`score_candidates`, `total_cost`) und jedes Modul von C02 bis A04; nichts Neues wird trainiert.
+
+## Rahmen und die sieben Schritte [#rahmen-und-die-sieben-schritte]
+
 Verwende nur versionierten Code, Manifeste und Baseline-Berichte. Keine echten
 Kundendaten verwenden und nicht auf den versiegelten Goldfällen tunen.
 
@@ -18,9 +27,104 @@ Kundendaten verwenden und nicht auf den versiegelten Goldfällen tunen.
 6. Die versiegelte Prüfung mit einem Menschen durchführen und Korrekturen notieren.
 7. Monitoring, Rollback-Checkpoint und Verantwortliche für Alarme festlegen.
 
+## Tore vor der Rangfolge [#tore-vor-der-rangfolge]
+
+`score_candidates(candidates, requirements)` prüft jedes Muss-Tor, bevor es
+sortiert: lokale Verarbeitung, geprüfte Lizenz, `quality >= min_quality`,
+`latency_ms` und `memory_gib` innerhalb ihrer Budgets. Nicht zulässige
+Kandidaten behalten ihre `reasons`-Liste und sortieren ans Ende; zulässige
+sortieren nach Qualität, dann Latenz, dann Speicher. Rechne C01s hypothetisches
+Paar mit `Requirements(need="format")` nach: ein Online-Kandidat mit Qualität
+0,95 und ein lokaler mit 0,80. Die Online-Zeile liefert `eligible: false` mit dem
+einzigen Grund `offline processing required`, und die lokale Zeile steht vorn,
+obwohl ihre Qualität niedriger ist. Ein Mittelwert beider Zahlen hätte das
+falsche System gewählt.
+
+Gib derselben Funktion nun die gemessenen Kandidaten des Kurses mit der exakten
+Entwicklungsgenauigkeit als `quality`: `keyword_router` 0/8, Full SFT 0/8 und
+LoRA mit Rang 4 0/8. Jede Zeile scheitert am Standardtor 0,7 mit dem Grund
+`quality gate failed`, die Liste der zulässigen Kandidaten ist leer, und die
+transparente Baseline bleibt im Einsatz. Das ist das festgehaltene Ergebnis in
+`docs/company-model-decision.md`; das Capstone verlangt, es aus den Berichten
+neu aufzubauen, nicht, es zu übertreffen.
+
+## Evidenzinventar [#evidenzinventar]
+
+Jeder Schritt hat ein versioniertes Artefakt und eine Zahl, die du auf CPU neu erzeugen kannst.
+
+| Schritt | Befehl oder Artefakt | Was reproduziert werden muss |
+| --- | --- | --- |
+| 2 | `build_snapshot()` aus C02 | 12 freigegebene Dokumente, SHA-256 `d220da8e…acc8288` |
+| 2 | `contamination_report(instruction_records("train"))` | keine Prompt- und keine Antwortüberschneidung mit den 8 versiegelten Goldfällen (`d0164978…2aacc6`) |
+| 3 | C03s `score_predictions` auf beiden Baselines | `keyword_router` Routingrate 1,0, exakt 0,0, 0 kritische Fehler; `always_escalate` Routingrate 0,25 |
+| 4 | `examples/run_continued_pretraining.py --seeds 7 19 43` | Domaingewinn 0,359–0,411, allgemeine Regression 0,032–0,109, `keep_for_further_review` |
+| 4 | `examples/run_sft_lora.py --steps 120`, `docs/baselines/sft-lora-v1.md` | Full SFT Train/Dev-NLL 0,488/3,816, LoRA 3,768/4,469, 0/8 richtig bei beiden |
+| 4 | `examples/run_open_model_lora.py --download --device cpu`, `docs/model-cards/company-adapter-v1.md` | 230.400 von 134.745.408 trainierbaren Parametern, Antwort-NLL 4,246→3,124, JSON weiterhin unzuverlässig |
+| 4 | `examples/compare_dpo_reference.py`, `examples/run_alignment.py --dpo-steps 80 --ppo-steps 60` | TRL-Differenz 0,0; naive PPO-Hackrate 0,108824 gegenüber kontrolliert 0,041577 |
+| 5 | `examples/run_company_strategy.py` | primär `sft_lora` für `need="format"`, vier verworfene Alternativen, TCO 359 Einheiten |
+| 6 | `docs/reviews/company-gold-v1.md` | Prüfer, Datum und Entscheidung stehen auf **pending**, bis ein Mensch sie ausfüllt |
+| 7 | `general-reference.pt` aus C04, die MiniGPT-Basis vor DAPT | `logits_exact: true` nach dem Neuladen: Der DAPT-Kandidat rollt auf diesen Checkpoint zurück |
+| 7 | die SmolLM2-Basis in Revision `12fd25f7…`, ohne Adapter neu geladen (`docs/model-cards/company-adapter-v1.md`) | ein verworfener Adapter rollt durch ein Neuladen der gepinnten Basis zurück, kein Neutraining |
+
+Die Latenz ist die eine Spalte, die der Kurs für diese Kandidaten nicht gemessen
+hat. Dein Protokoll enthält sie mit Gerät, Threadzahl und Eingabelänge oder hält
+fest, dass das Latenztor nicht geprüft wurde.
+
+## Das Entscheidungsprotokoll [#das-entscheidungsprotokoll]
+
 Die Abgabe verknüpft jede Aussage mit Befehl, Hash, Bericht oder Prüfzeile und
 nennt zwei verworfene Alternativen. Das Modell schlägt nur eine Route vor;
-Zugriff, Secrets und Exporte erzwingt der Anwendungscode.
+Zugriff, Secrets und Exporte erzwingt der Anwendungscode. Nenne zu jeder
+Alternative die Evidenz, die die Entscheidung ändern würde, und folge der Form
+von `docs/company-model-decision.md`: Rahmen, Entscheidung, Gründe, verworfene
+Alternativen und die Evidenz, die sie ändert. Schritt 6 ist der einzige, den ein
+Mensch ausführen muss: Kopiere die Prüftabelle, trage Prüfer, Datum,
+Entscheidung und Korrekturen selbst ein, und wenn sich eine Goldantwort ändert,
+berechne das Siegel neu und lasse jede Baseline neu laufen, bevor du eines von
+beiden zitierst.
 
 Exit-Kriterium: Eine andere lernende Person kann die CPU-Rezepte aus einem frischen
 Checkout ausführen, jede Metrik erklären und den Rollback-Schritt benennen.
+
+## Vorhersagen → Nachvollziehen → Bauen → Beschädigen → Messen → Erklären [#vorhersagen-nachvollziehen-bauen-beschadigen-messen-erklaren]
+
+1. **Vorhersagen:** Schreibe vor dem Bewerten auf, welcher der vier Kandidaten (`keyword_router`, Full SFT, LoRA mit Rang 4, der SmolLM2-Adapter) das Qualitätstor 0,7 bestünde; prüfe dann die Berichte.
+2. **Nachvollziehen:** Verfolge einen Entwicklungsfall, `dev-escalate-02`, von C03s Rubrik über die `keyword_router`-Vorhersage bis zu seiner Zeile in `case_results`.
+3. **Bauen:** Rufe `score_candidates` mit den gemessenen Kandidaten und `Requirements(need="format")` auf; gib jede `reasons`-Liste aus.
+4. **Beschädigen:** Setze `min_quality=0.0`: Jede Zeile wird zulässig, obwohl `score_candidates` `critical_failure_count` nie liest; das Sicherheitstor gehört von dir ins Protokoll.
+5. **Messen:** Stoppe `baseline_predictions(cases, "keyword_router")` und einen Modellkandidaten auf den acht Entwicklungsprompts; notiere Millisekunden, Gerät und Threads.
+6. **Erklären:** Nenne für jede verworfene Alternative das Artefakt, das sie bräuchte, um die Entscheidung zu ändern.
+
+### Eigenständige Aufgabe [#eigenstandige-aufgabe]
+
+Schreibe den `score_candidates`-Aufruf für dieselben vier Kandidaten,
+`keyword_router`, Full SFT, LoRA mit Rang 4 und den SmolLM2-Adapter, mit der
+exakten Entwicklungsgenauigkeit als Qualität, der von dir gemessenen Latenz und
+dem Speicherumfang, den jeder Bericht deklariert. Entscheide mit
+`Requirements(need="format")` und nenne dann das eine neue Artefakt, das einen
+Kandidaten zulässig machen würde.
+
+<details>
+<summary>Hinweis</summary>
+
+`quality` ist ein Anteil in `[0, 1]`; nutze richtige Fälle durch acht.
+Speicherwerte müssen ihren Umfang nennen, Parameterbytes oder Prozessspitze,
+und ein Kandidat ohne gemessene Latenz kann das Latenztor nicht bestehen.
+
+
+</details>
+
+<details>
+<summary>Referenzantwort</summary>
+
+Router, Full SFT und LoRA scheitern mit 0/8 an `quality gate failed`, Latenz
+und Speicher entscheiden also nie; die Qualität des SmolLM2-Adapters stammt
+aus deinem eigenen Lauf, seine Modellkarte hält unzuverlässiges JSON und
+keine Freigabe fest. Das Artefakt, das die Entscheidung ändert, ist ein
+Entwicklungswert auf oder über dem Tor aus einem eingefrorenen Evaluator mit
+null kritischen Fehlern, gefolgt von der versiegelten menschlichen Prüfung.
+
+
+</details>
+
+[← A04 — RLHF-Brücke](/llm-engineering-course-pages/de/rlhf-bridge) · [Kursstart →](/llm-engineering-course-pages/de/) · [Glossar](/llm-engineering-course-pages/de/glossary)

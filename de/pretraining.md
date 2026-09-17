@@ -1,13 +1,13 @@
 ---
-title: "T05 — Reproduzierbares Vortraining"
+title: "E01 — Reproduzierbares Vortraining"
 sidebar:
   label: "E01 — Reproduzierbares Training"
 ---
 
-<span id="t05-reproduzierbares-vortraining" />
+<span id="e01-reproduzierbares-vortraining" />
 
 
-[← Mini-GPT](/llm-engineering-course-pages/de/mini-gpt) · [Kursübersicht](/llm-engineering-course-pages/de/)
+[← I01 — Decoding, Sampling & KV-Cache](/llm-engineering-course-pages/de/inference-decoding) · [E02 — Datenqualität →](/llm-engineering-course-pages/de/data-quality) · [Glossar](/llm-engineering-course-pages/de/glossary)
 
 ## Ziel und Voraussetzungen [#ziel-und-voraussetzungen]
 
@@ -220,3 +220,5 @@ Gehe weiter, wenn du die Gewichte ohne Code herleitest, die Position von Clippin
 erklärst, CPU-Neustart exakt reproduzierst und den absichtlichen Fehler erkennst.
 Erkläre außerdem, warum sinkender Trainings-Loss noch nichts über zurückgehaltene
 Daten aussagt. Darum geht es im Evaluationslabor.
+
+[← I01 — Decoding, Sampling & KV-Cache](/llm-engineering-course-pages/de/inference-decoding) · [E02 — Datenqualität →](/llm-engineering-course-pages/de/data-quality) · [Glossar](/llm-engineering-course-pages/de/glossary)

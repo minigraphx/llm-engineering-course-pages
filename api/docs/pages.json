@@ -1,5 +1,5 @@
 {
-  "count": 70,
+  "count": 76,
   "generator": "blume@1.6.4",
   "pages": [
     {
@@ -19,7 +19,7 @@
       "locale": "en",
       "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/adaptation-comparison.md",
       "route": "/adaptation-comparison",
-      "title": "Choose an adaptation with evidence",
+      "title": "A02 — Choose an adaptation with evidence",
       "url": "https://minigraphx.github.io/llm-engineering-course-pages/adaptation-comparison"
     },
     {
@@ -69,7 +69,7 @@
       "locale": "en",
       "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/company-data.md",
       "route": "/company-data",
-      "title": "M4 — Auditable company data",
+      "title": "C02 — Auditable company data",
       "url": "https://minigraphx.github.io/llm-engineering-course-pages/company-data"
     },
     {
@@ -79,7 +79,7 @@
       "locale": "en",
       "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/company-evaluation.md",
       "route": "/company-evaluation",
-      "title": "M4 — Protected evaluation",
+      "title": "C03 — Protected evaluation",
       "url": "https://minigraphx.github.io/llm-engineering-course-pages/company-evaluation"
     },
     {
@@ -99,7 +99,7 @@
       "locale": "en",
       "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/continued-pretraining.md",
       "route": "/continued-pretraining",
-      "title": "M4 — Continued pretraining without losing the baseline",
+      "title": "C04 — Continued pretraining without losing the baseline",
       "url": "https://minigraphx.github.io/llm-engineering-course-pages/continued-pretraining"
     },
     {
@@ -149,7 +149,7 @@
       "locale": "de",
       "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de/adaptation-comparison.md",
       "route": "/de/adaptation-comparison",
-      "title": "Anpassung anhand von Evidenz wählen",
+      "title": "A02 — Anpassung anhand von Evidenz wählen",
       "url": "https://minigraphx.github.io/llm-engineering-course-pages/de/adaptation-comparison"
     },
     {
@@ -199,7 +199,7 @@
       "locale": "de",
       "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de/company-data.md",
       "route": "/de/company-data",
-      "title": "M4 — Prüffähige Firmendaten",
+      "title": "C02 — Prüffähige Firmendaten",
       "url": "https://minigraphx.github.io/llm-engineering-course-pages/de/company-data"
     },
     {
@@ -209,7 +209,7 @@
       "locale": "de",
       "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de/company-evaluation.md",
       "route": "/de/company-evaluation",
-      "title": "M4 — Geschützte Evaluation",
+      "title": "C03 — Geschützte Evaluation",
       "url": "https://minigraphx.github.io/llm-engineering-course-pages/de/company-evaluation"
     },
     {
@@ -229,7 +229,7 @@
       "locale": "de",
       "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de/continued-pretraining.md",
       "route": "/de/continued-pretraining",
-      "title": "M4 — Continued Pretraining ohne Verlust der Baseline",
+      "title": "C04 — Continued Pretraining ohne Verlust der Baseline",
       "url": "https://minigraphx.github.io/llm-engineering-course-pages/de/continued-pretraining"
     },
     {
@@ -279,7 +279,7 @@
       "locale": "de",
       "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de/dpo.md",
       "route": "/de/dpo",
-      "title": "M5 — DPO und die kleine RLHF-Brücke",
+      "title": "A03 — DPO und die kleine RLHF-Brücke",
       "url": "https://minigraphx.github.io/llm-engineering-course-pages/de/dpo"
     },
     {
@@ -289,7 +289,7 @@
       "locale": "de",
       "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de/evaluation.md",
       "route": "/de/evaluation",
-      "title": "Evaluation: Aussagen mit überprüfbarer Evidenz",
+      "title": "E03 — Evaluation: Aussagen mit überprüfbarer Evidenz",
       "url": "https://minigraphx.github.io/llm-engineering-course-pages/de/evaluation"
     },
     {
@@ -384,6 +384,16 @@
     },
     {
       "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/de/inference-decoding.json",
+      "lastModified": null,
+      "locale": "de",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de/inference-decoding.md",
+      "route": "/de/inference-decoding",
+      "title": "I01 — Decoding, Sampling und der KV-Cache",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/de/inference-decoding"
+    },
+    {
+      "contentType": "doc",
       "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/de/learning-guide.json",
       "lastModified": null,
       "locale": "de",
@@ -399,7 +409,7 @@
       "locale": "de",
       "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de/mini-gpt.md",
       "route": "/de/mini-gpt",
-      "title": "M2: einen kleinen Decoder zusammensetzen",
+      "title": "T05 — Mini-GPT: einen kleinen Decoder zusammensetzen",
       "url": "https://minigraphx.github.io/llm-engineering-course-pages/de/mini-gpt"
     },
     {
@@ -409,7 +419,7 @@
       "locale": "de",
       "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de/mini-gpt-gate.md",
       "route": "/de/mini-gpt-gate",
-      "title": "M2-Kernprüfung: programmieren, Fehler finden, erklären",
+      "title": "T06 — Kernprüfung: programmieren, Fehler finden, erklären",
       "url": "https://minigraphx.github.io/llm-engineering-course-pages/de/mini-gpt-gate"
     },
     {
@@ -419,7 +429,7 @@
       "locale": "de",
       "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de/pretraining.md",
       "route": "/de/pretraining",
-      "title": "T05 — Reproduzierbares Vortraining",
+      "title": "E01 — Reproduzierbares Vortraining",
       "url": "https://minigraphx.github.io/llm-engineering-course-pages/de/pretraining"
     },
     {
@@ -429,8 +439,28 @@
       "locale": "de",
       "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de/profiling.md",
       "route": "/de/profiling",
-      "title": "Profiling: vom Modell zum Ressourcenbudget",
+      "title": "E04 — Profiling: vom Modell zum Ressourcenbudget",
       "url": "https://minigraphx.github.io/llm-engineering-course-pages/de/profiling"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/de/rag-build.json",
+      "lastModified": null,
+      "locale": "de",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de/rag-build.md",
+      "route": "/de/rag-build",
+      "title": "R01 — Vom Dokument zur Antwort: RAG selbst gebaut",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/de/rag-build"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/de/rag-quality.json",
+      "lastModified": null,
+      "locale": "de",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de/rag-quality.md",
+      "route": "/de/rag-quality",
+      "title": "R02 — Damit es nicht lügt: Qualität, Guardrails, Betrieb",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/de/rag-quality"
     },
     {
       "contentType": "doc",
@@ -439,7 +469,7 @@
       "locale": "de",
       "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de/rlhf-bridge.md",
       "route": "/de/rlhf-bridge",
-      "title": "M5 — RLHF-Brücke: Fehler sichtbar machen",
+      "title": "A04 — RLHF-Brücke: Fehler sichtbar machen",
       "url": "https://minigraphx.github.io/llm-engineering-course-pages/de/rlhf-bridge"
     },
     {
@@ -459,7 +489,7 @@
       "locale": "de",
       "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/de/sft-lora.md",
       "route": "/de/sft-lora",
-      "title": "SFT und LoRA: Antworten lernen, Basismodell erhalten",
+      "title": "A01 — SFT und LoRA: Antworten lernen, Basismodell erhalten",
       "url": "https://minigraphx.github.io/llm-engineering-course-pages/de/sft-lora"
     },
     {
@@ -499,7 +529,7 @@
       "locale": "en",
       "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/dpo.md",
       "route": "/dpo",
-      "title": "M5 — DPO and the small RLHF bridge",
+      "title": "A03 — DPO and the small RLHF bridge",
       "url": "https://minigraphx.github.io/llm-engineering-course-pages/dpo"
     },
     {
@@ -509,7 +539,7 @@
       "locale": "en",
       "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/evaluation.md",
       "route": "/evaluation",
-      "title": "Evaluation: make a claim the evidence can support",
+      "title": "E03 — Evaluation: make a claim the evidence can support",
       "url": "https://minigraphx.github.io/llm-engineering-course-pages/evaluation"
     },
     {
@@ -604,6 +634,16 @@
     },
     {
       "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/inference-decoding.json",
+      "lastModified": null,
+      "locale": "en",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/inference-decoding.md",
+      "route": "/inference-decoding",
+      "title": "I01 — Decoding, sampling and the KV cache",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/inference-decoding"
+    },
+    {
+      "contentType": "doc",
       "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/learning-guide.json",
       "lastModified": null,
       "locale": "en",
@@ -619,7 +659,7 @@
       "locale": "en",
       "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/mini-gpt.md",
       "route": "/mini-gpt",
-      "title": "M2: assemble a tiny decoder",
+      "title": "T05 — Mini-GPT: assemble a tiny decoder",
       "url": "https://minigraphx.github.io/llm-engineering-course-pages/mini-gpt"
     },
     {
@@ -629,7 +669,7 @@
       "locale": "en",
       "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/mini-gpt-gate.md",
       "route": "/mini-gpt-gate",
-      "title": "M2 core gate: code, diagnose, explain",
+      "title": "T06 — Core gate: code, diagnose, explain",
       "url": "https://minigraphx.github.io/llm-engineering-course-pages/mini-gpt-gate"
     },
     {
@@ -639,7 +679,7 @@
       "locale": "en",
       "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/pretraining.md",
       "route": "/pretraining",
-      "title": "T05 — Reproducible pretraining",
+      "title": "E01 — Reproducible pretraining",
       "url": "https://minigraphx.github.io/llm-engineering-course-pages/pretraining"
     },
     {
@@ -649,8 +689,28 @@
       "locale": "en",
       "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/profiling.md",
       "route": "/profiling",
-      "title": "Profiling: connect the model to a resource budget",
+      "title": "E04 — Profiling: connect the model to a resource budget",
       "url": "https://minigraphx.github.io/llm-engineering-course-pages/profiling"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/rag-build.json",
+      "lastModified": null,
+      "locale": "en",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/rag-build.md",
+      "route": "/rag-build",
+      "title": "R01 — From document to answer: build RAG yourself",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/rag-build"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://minigraphx.github.io/llm-engineering-course-pages/api/docs/pages/rag-quality.json",
+      "lastModified": null,
+      "locale": "en",
+      "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/rag-quality.md",
+      "route": "/rag-quality",
+      "title": "R02 — So it does not lie: quality, guardrails, operations",
+      "url": "https://minigraphx.github.io/llm-engineering-course-pages/rag-quality"
     },
     {
       "contentType": "doc",
@@ -659,7 +719,7 @@
       "locale": "en",
       "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/rlhf-bridge.md",
       "route": "/rlhf-bridge",
-      "title": "M5 — RLHF bridge: inspect the failure mode",
+      "title": "A04 — RLHF bridge: inspect the failure mode",
       "url": "https://minigraphx.github.io/llm-engineering-course-pages/rlhf-bridge"
     },
     {
@@ -679,7 +739,7 @@
       "locale": "en",
       "markdownUrl": "https://minigraphx.github.io/llm-engineering-course-pages/sft-lora.md",
       "route": "/sft-lora",
-      "title": "SFT and LoRA: teach a response, preserve a base",
+      "title": "A01 — SFT and LoRA: teach a response, preserve a base",
       "url": "https://minigraphx.github.io/llm-engineering-course-pages/sft-lora"
     },
     {

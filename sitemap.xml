@@ -36,11 +36,14 @@
   <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/de/foundations-godot-rl-bridge</loc></url>
   <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/de/glossary</loc></url>
   <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/de/hardware</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/de/inference-decoding</loc></url>
   <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/de/learning-guide</loc></url>
   <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/de/mini-gpt-gate</loc></url>
   <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/de/mini-gpt</loc></url>
   <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/de/pretraining</loc></url>
   <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/de/profiling</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/de/rag-build</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/de/rag-quality</loc></url>
   <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/de/rlhf-bridge</loc></url>
   <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/de/setup</loc></url>
   <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/de/sft-lora</loc></url>
@@ -59,11 +62,14 @@
   <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/foundations-godot-rl-bridge</loc></url>
   <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/glossary</loc></url>
   <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/hardware</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/inference-decoding</loc></url>
   <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/learning-guide</loc></url>
   <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/mini-gpt-gate</loc></url>
   <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/mini-gpt</loc></url>
   <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/pretraining</loc></url>
   <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/profiling</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/rag-build</loc></url>
+  <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/rag-quality</loc></url>
   <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/rlhf-bridge</loc></url>
   <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/setup</loc></url>
   <url><loc>https://minigraphx.github.io/llm-engineering-course-pages/sft-lora</loc></url>

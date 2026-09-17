@@ -21,7 +21,7 @@ The complete course must be possible without learners providing their own data.
 
 The sizes above belong to M1A and are not yet supplied. Current offline fixtures
 are the 596-byte Unit-0 corpus, the multilingual BPE generator and the synthetic
-data-quality inventory. M2/M3 use these tiny course examples; no download or
+data-quality inventory. T05/T06 and E01–E04 use these tiny course examples; no download or
 learner-owned dataset is required for their training path. The optional productive
 BPE comparison downloads its public `tiktoken` table on first use.
 

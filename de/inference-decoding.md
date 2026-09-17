@@ -1,0 +1,254 @@
+---
+title: "I01 — Decoding, Sampling und der KV-Cache"
+sidebar:
+  label: "I01 — Decoding, Sampling & KV-Cache"
+---
+
+<span id="i01-decoding-sampling-und-der-kv-cache" />
+
+
+[← T06 — Kerngate](/llm-engineering-course-pages/de/mini-gpt-gate) · [E01 — Reproduzierbares Training →](/llm-engineering-course-pages/de/pretraining) · [Glossar](/llm-engineering-course-pages/de/glossary)
+
+Voraussetzungen: [T05](/llm-engineering-course-pages/de/mini-gpt), [T06](/llm-engineering-course-pages/de/mini-gpt-gate). Plane eine Sitzung.
+`MiniGPT.generate` aus T05 zieht eine feste Zahl von Tokens bei einer Temperatur
+und sonst nichts. Jede Generierungsschleife trifft drei weitere Entscheidungen:
+wie aus einer Zeile Logits ein Token wird, wann die Schleife endet und was sie
+zwischen zwei Schritten behält. Der Code steht in `src/llm_course/decoding.py`;
+lies `sample_next`, `decode` und `step_logits` neben dieser Seite. Hier wird nichts
+trainiert. Das Modell wird gelesen, nie verändert, und jede Funktion gibt einen
+neuen Wert zurück, statt ihre Eingabe zu bearbeiten.
+
+## Von Logits zu einem Token [#von-logits-zu-einem-token]
+
+Nimm fünf Logits `[2.0, 1.0, 0.5, 0.0, -1.0]`. Softmax teilt jede Exponentialzahl
+durch ihre Summe. Bei Temperatur $T = 1$ sind die Exponentialzahlen 7,3891,
+2,7183, 1,6487, 1,0000 und 0,3679, die Summe ist 13,1239, und daraus folgen die
+Wahrscheinlichkeiten. Bei $T = 0{,}5$ werden die Logits zuerst durch 0,5 geteilt,
+das gibt `[4, 2, 1, 0, -2]`, Exponentialzahlen 54,5982, 7,3891, 2,7183, 1,0000,
+0,1353 und Summe 65,8408:
+
+| Logit | $T = 1$ | $T = 0{,}5$ |
+| --- | --- | --- |
+| 2,0 | 0,5630 | 0,8292 |
+| 1,0 | 0,2071 | 0,1122 |
+| 0,5 | 0,1256 | 0,0413 |
+| 0,0 | 0,0762 | 0,0152 |
+| -1,0 | 0,0280 | 0,0021 |
+
+Die Temperatur ändert nie die Reihenfolge der Tokens, sondern ihre Verhältnisse.
+Der erste Eintrag schlägt den zweiten um $e^{1} = 2{,}718$ bei $T = 1$ und um
+$e^{2} = 7{,}389$ bei $T = 0{,}5$. Geht $T$ gegen null, geht der erste Eintrag
+gegen 1, deshalb überspringt `sample_next(logits, temperature=0)` die Division und
+gibt das Argmax zurück: das ist Greedy Decoding, und
+`distribution(logits, temperature=0)` liefert den passenden One-hot-Vektor. Für
+$T > 0$ zieht `distribution` zuerst den größten Logit ab, damit auch eine
+Temperatur von 0,01 in float64 darstellbar bleibt, dann zieht `sample_next` mit
+`torch.multinomial` einen Index. Der Zug nimmt einen optionalen `torch.Generator`;
+derselbe Seed und dieselben Logits geben dasselbe Token, und genau das bedeutet
+„seed 1“ in der Laborausgabe unten. `tests/test_decoding.py` prüft beide Spalten
+der Tabelle auf 0,001 genau.
+
+## Sampling, das beim Thema bleibt [#sampling-das-beim-thema-bleibt]
+
+Sampling bei $T = 1$ gibt dem fünften Token 2,8 % der Züge. Über hundert Tokens
+summiert sich dieser Schwanz, und ein unwahrscheinliches Token zieht jedes spätere
+mit sich. Zwei Masken schneiden ihn ab. Top-k behält die $k$ größten Einträge und
+normiert neu: bei $k = 2$ halten die ersten beiden Einträge 0,5630 + 0,2071 =
+0,7701 der Masse, also werden sie zu 0,5630 / 0,7701 = 0,7311 und 0,2689. Top-p
+(Nucleus) sortiert die Wahrscheinlichkeiten und behält das kürzeste Präfix, dessen
+kumulierte Masse $p$ erreicht: die laufenden Summen sind 0,5630, 0,7701, 0,8958,
+0,9720, also behält $p = 0{,}9$ vier Einträge und verwirft den fünften. Durch
+0,9720 neu normiert sind sie 0,5792, 0,2131, 0,1292 und 0,0784. Beide Masken gibt
+es, weil sie verschieden versagen: Top-k behält zwei Tokens, ob das Modell sicher
+oder ahnungslos ist; Top-p behält ein Token, wenn der erste Eintrag schon 0,9
+hält, und viele, wenn die Verteilung flach ist. `distribution` wendet zuerst Top-k
+und dann Top-p an, und die kumulierten Massen, gegen die Top-p vergleicht, sind
+die des vollständigen Softmax; die einzige Neunormierung kommt zum Schluss.
+
+Jetzt das echte Modell. `examples/run_mini_gpt.py` schreibt nie einen Checkpoint,
+nur `report.json`; das Labor trainiert `artifacts/mini-gpt/model.pt` beim ersten
+Lauf selbst — nach T05s Rezept, Seed 7, 120 Schritte, etwa eine Sekunde auf der
+CPU — und verwendet diesen Checkpoint bei jedem weiteren Lauf wieder:
+
+```bash
+python examples/run_decoding_lab.py
+```
+
+Der Prompt `'the small model '` wird mit `<bos>` zu 17 Tokens, was 7 der 24
+Kontextpositionen für die Generierung lässt. Die gedruckten Top-5 nach dem Prompt:
+
+```text
+  T = 0.0
+         'f'  1.0000
+         ' '  0.0000
+         '!'  0.0000
+         ','  0.0000
+         '-'  0.0000
+  T = 0.7
+         'f'  0.3076
+         'p'  0.3031
+         'r'  0.2944
+         'l'  0.0911
+         'o'  0.0008
+  T = 1.2
+         'f'  0.2677
+         'p'  0.2654
+         'r'  0.2609
+         'l'  0.1317
+         'o'  0.0082
+```
+
+Drei Zeichen liegen innerhalb von 0,014 beieinander, und die Temperatur bewegt nur
+den Abstand zu `'l'` und `'o'`. Die drei Fortsetzungen bei $T = 0{,}7$ mit den
+Seeds 1, 2 und 3 sind `follows`, `reveals` und `predict`, eine pro Spitzenreiter.
+Bei $T = 1$ gibt der vollständige Softmax `'f'` 0,2858, `'p'` 0,2829, `'r'` 0,2771,
+`'l'` 0,1219 und `'o'` 0,0044; die laufende Summe ist 0,8458 nach drei Einträgen
+und 0,9677 nach vier, also behält Top-p = 0,9 vier von 36 Tokens und druckt `'f'`
+als 0,2858 / 0,9677 = 0,2953. Top-k = 5 behält auch `'o'` und druckt es mit 0,0045.
+
+## Wann aufhören [#wann-aufhoren]
+
+`decode(model, prompt_ids, max_new_tokens=..., eos_id=...)` hängt pro Schritt ein
+Token an und hört auf, sobald es `eos_id` angehängt hat; der zurückgegebene Tensor
+endet also mit dem EOS-Token, wenn die Stoppregel gegriffen hat. Das Labor übergibt
+`CHARACTER_ENCODER.eos_id`, und trotzdem melden alle drei Stichproben
+`7 new tokens, length limit`: dieser Checkpoint gibt nie `<eos>` aus. Jedes
+Trainingsdokument ist 30 bis 40 Zeichen lang, länger als das 25-Token-Fenster, mit
+dem T05 trainiert, also wurde `<eos>` aus jedem Trainingsziel abgeschnitten, und
+das Modell hat es nie als Antwort gesehen. Die Regel ist verdrahtet und greift nie;
+die Testsuite belegt sie, indem sie nacheinander jedes Token der Greedy-Fortsetzung
+als EOS-ID wählt. Die zweite Grenze ist `max_new_tokens`. Die dritte ist der
+Kontext: `decode` lehnt `prompt + max_new_tokens > block_size` mit einem
+`ValueError` ab, während `MiniGPT.generate` auf die letzten `block_size` Tokens
+zuschneidet und die gelernten Positionen wieder bei null beginnt. Ein rollendes
+Fenster generiert weiter, vergisst aber stillschweigend den Prompt.
+
+Der Standardgenerator von [R01](/llm-engineering-course-pages/de/rag-build), ein Modell mit 4 Milliarden
+Parametern, trifft dieselben Entscheidungen. `TransformersGenerator.generate` in
+`src/llm_course/rag/generate.py` ruft
+`model.generate(**inputs, max_new_tokens=max_tokens, do_sample=False)` mit
+`max_tokens=300` auf und rendert die Chat-Vorlage mit `enable_thinking=False`.
+`do_sample=False` ist Greedy Decoding, in den Begriffen dieser Lektion Temperatur
+0, also gibt derselbe Prompt bei jedem Lauf dieselbe Antwort, und erst das lässt
+R02 Raten messen. Die Generierung endet am End-of-turn-Token des Modells oder nach
+300 neuen Tokens, je nachdem, was zuerst eintritt; Regel 4 des Systemprompts,
+„höchstens fünf Sätze“, beendet sie meist lange vor 300. Streaming ist nichts
+anderes als diese Schleife mit der Ausgabe im Schleifenkörper: jeder Schritt
+liefert ein Token, und ein Server kann es senden, bevor der nächste Schritt beginnt.
+
+## Warum jeder Schritt alles neu berechnet [#warum-jeder-schritt-alles-neu-berechnet]
+
+`decode` holt seine Logits aus `model(ids[None])[0, -1]`: der vollständige
+Vorwärtslauf über alle $t$ Tokens, von dem es die letzte Zeile behält und den Rest
+verwirft. Zähle die Arbeit bei Präfixlänge $t$ und Breite $D = 32$. Jeder Block
+projiziert $t$ Positionen auf Queries, Keys und Values, $3tD^2$
+Multiplikations-Additionen, bildet pro Head eine $t \times t$-Score-Matrix und
+lässt das FFN über $t$ Positionen laufen, $8tD^2$ mehr. Schritt $t + 1$ macht das
+alles für die ersten $t$ Positionen noch einmal, obwohl die kausale Maske
+garantiert, dass sich ihre Hidden States, Keys und Values nicht geändert haben:
+Position $i$ liest nie eine Position nach $i$. Pro Schritt kosten die Projektionen
+$O(t)$ und die Scores $O(t^2)$; über $T$ erzeugte Tokens summiert sind das $O(T^2)$
+und $O(T^3)$. Mit Cache kosten die Projektionen $O(1)$ pro Schritt, $O(T)$
+insgesamt, und nur die Scores behalten $O(t)$ pro Schritt, $O(T^2)$ insgesamt:
+$O(T^2)$ gegen $O(T)$ für den Term, der bei dieser Breite dominiert. Bei Präfix 96
+kosten die drei Projektionen eines Blocks
+$3 \cdot 96 \cdot 1024 = 294{.}912$ Multiplikations-Additionen für einen Schritt,
+der nur die 3.072 des neuesten Tokens braucht.
+
+## Der KV-Cache [#der-kv-cache]
+
+Der Cache behält, was die Maske unveränderlich macht. `KVCache` hält pro Block die
+Keys und Values jedes bisher eingespeisten Tokens, jeweils
+`[heads, length, head_dim]`, hier `[4, t, 8]`. Das sind 64 Floats pro Token und
+Block, 128 für beide Blöcke, 512 Bytes in float32; der volle 24-Token-Kontext sind
+3.072 Floats, ein Zehntel der 28.288 Parameter des Modells. Queries, Hidden States
+und FFN-Ausgaben werden nicht gespeichert: jede wird einmal gebraucht.
+`step_logits(model, cache, token_id, position)` bettet ein Token und seine Position
+ein und lässt dann pro Block `norm_attention`, die q/k/v-Projektionen des Blocks
+auf diesem einen Token, `cache.append(index, key, value)` und
+`scaled_dot_product_attention(query, cache.keys[index], cache.values[index])`
+laufen: eine Query gegen $t$ Keys, ohne Maske, weil nur die Vergangenheit
+gespeichert ist. Ausgabeprojektion, Residuum, `norm_ffn`, `ffn` und zweites
+Residuum folgen wie in `DecoderBlock.forward`; `final_norm` und `lm_head` geben die
+Logits. `append` gibt einen neuen `KVCache` zurück und lässt die Tensoren der
+anderen Blöcke geteilt, sodass ein Aufrufer, der den alten Cache behält, ihn
+weiterhin hat. `prefill` speist den Prompt Token für Token ein, `decode_cached`
+füllt mit `prompt_ids[:-1]` vor und ruft dann pro erzeugtem Token einmal
+`step_logits`. Dropout wird übersprungen; beide Decoder verlangen `model.eval()`.
+
+Zwei Wege durch verschiedenen Code müssen dieselben Logits geben. Das Labor druckt
+`same ids under seed 1: True` und
+`max |cached - full| logit difference over 24 positions: 2.92e-06`; der Test
+verlangt in jedem von 20 Schritten eine Differenz unter $10^{-4}$. Sie ist nicht exakt null, weil ein gebündeltes
+$t \times t$-Matrixprodukt und ein $1 \times t$-Produkt in float32 in anderer
+Reihenfolge summieren. Die Zeittabelle misst eine zufällig initialisierte Kopie der
+T05-Architektur mit `block_size=128`, weil `measure_decode` Präfixe bis 96 Tokens
+plus 8 erzeugte misst und die Werte der Gewichte die Kosten nicht ändern. Bester
+von drei Läufen, Prefill nicht gemessen, Millisekunden pro erzeugtem Token auf
+einer Laptop-CPU:
+
+| Präfix | ohne Cache ms | mit Cache ms | Beschleunigung |
+| --- | --- | --- | --- |
+| 8 | 0,617 | 0,191 | 3,23x |
+| 32 | 0,657 | 0,208 | 3,16x |
+| 64 | 0,711 | 0,208 | 3,42x |
+| 96 | 0,911 | 0,197 | 4,63x |
+
+Die Spalte ohne Cache wächst um etwa das 1,5-Fache, während das Präfix um das
+12-Fache wächst, und die Spalte mit Cache bleibt flach. Die Beschleunigung bei
+Präfix 96 beträgt etwa 4,6x, nicht die rund 96x, die ein reines Zählen der neu
+berechneten Positionen vorhersagen würde, weil bei Breite 32 jeder Schritt vom
+festen Overhead einiger Dutzend kleiner Tensoroperationen dominiert wird und der
+Schritt mit Cache genauso viele Operationen ausführt. Deine Zahlen werden
+abweichen; die Form der beiden Spalten nicht.
+
+## Vorhersagen → Nachvollziehen → Bauen → Beschädigen → Messen → Erklären [#vorhersagen-nachvollziehen-bauen-beschadigen-messen-erklaren]
+
+1. **Vorhersagen:** Wie viele der 36 Tokens behält Top-p = 0,9 nach dem kürzeren Prompt `'the '`: mehr oder weniger als die vier nach `'the small model '`? Schreib die Zahl auf, bevor du startest.
+2. **Nachvollziehen:** Führe das Labor aus, dann `python examples/run_decoding_lab.py --prompt "the "`, und vergleiche die Zeile `tokens kept` mit deiner Vorhersage.
+3. **Bauen:** Implementiere Top-p nach der Beschreibung im zweiten Abschnitt und vergleiche mit `distribution(logits, temperature=1.0, top_p=0.9)` auf den fünf Logits.
+4. **Beschädigen:** Lass in einer Kopie von `_cached_block` `block.norm_attention` weg und wiederhole die Cache-Prüfung. Aus 2.92e-06 wird eine Differenz von mehreren Einheiten; der Gleichheitstest ist die einzige Sicherung.
+5. **Messen:** Rufe `measure_decode` auf dem Zeitmessmodell mit `block_size=128` (der T05-Checkpoint hat `block_size=24` und löst einen `ValueError` aus) mit `max_new_tokens=16` und mit `torch.set_num_threads(1)` auf. Welche Spalte bewegt sich?
+6. **Erklären:** Warum dekodiert R01 greedy? Zwei Sätze über reproduzierbare Antworten und darüber, was R02 mit Sampling nicht messen könnte.
+
+### Eigenständige Aufgabe [#eigenstandige-aufgabe]
+
+Schreibe `penalised(logits, seen_ids, penalty)` in `artifacts/mini-gpt/penalty.py`,
+ohne `decoding.py` zu bearbeiten: teile für jede ID in `seen_ids` einen positiven
+Logit durch `penalty` und multipliziere einen negativen damit, die Regel aus
+[CTRL](https://arxiv.org/abs/1909.05858). Übergib das Ergebnis an `sample_next`.
+Berichte die Top-5 bei $T = 1$ für den Laborprompt mit Penalty 1,0 und 1,5, dann
+die Greedy-Fortsetzung mit Penalty 1,5 und 5.
+
+<details>
+<summary>Hinweis</summary>
+
+`seen_ids` ist `set(ids.tolist())` und enthält den Prompt. `'l'` kommt in
+`small` und `model` vor, wird also bestraft; `'f'`, `'p'` und `'r'` nicht. Ein
+negativer Logit, durch die Penalty geteilt, würde steigen; deshalb multipliziert
+die Regel ihn stattdessen.
+
+
+</details>
+
+<details>
+<summary>Referenzantwort</summary>
+
+Mit Penalty 1,5 fällt der Logit von `'l'` von 4,005 auf 2,670 und seine
+Wahrscheinlichkeit von 0,1219 auf 0,0354; `'f'` steigt von 0,2858 auf 0,3151.
+Die Greedy-Fortsetzung bleibt `follows`, weil `'f'` nie bestraft wurde und die
+bestraften Buchstaben in späteren Schritten ihren Vorsprung behalten. Bei
+Penalty 5 wird daraus `frnicts`: auf einem Zeichenvokabular bestraft die Regel
+bereits benutzte Buchstaben, also die Rechtschreibung, nicht Wiederholung. Auf
+einem Wort- oder BPE-Vokabular hemmt dieselbe Regel eine wiederholte Phrase,
+wofür sie entworfen wurde.
+
+
+</details>
+
+Checkpoint: rechne beide Temperaturspalten und beide Masken von Hand; nenne, welche
+Stoppregel eine Stichprobe beendet hat; nenne, was der Cache pro Block speichert
+und warum die Maske das gültig macht; lies die Zeittabelle, ohne mehr zu behaupten,
+als sie gemessen hat.
+
+[← T06 — Kerngate](/llm-engineering-course-pages/de/mini-gpt-gate) · [E01 — Reproduzierbares Training →](/llm-engineering-course-pages/de/pretraining) · [Glossar](/llm-engineering-course-pages/de/glossary)

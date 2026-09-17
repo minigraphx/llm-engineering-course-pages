@@ -1,11 +1,13 @@
 ---
-title: "M4 — Auditable company data"
+title: "C02 — Auditable company data"
 sidebar:
-  label: "M4 — Company data"
+  label: "C02 — Company data"
 ---
 
-<span id="m4-auditable-company-data" />
+<span id="c02-auditable-company-data" />
 
+
+[← C01 — Company strategy](/llm-engineering-course-pages/company-strategy) · [C03 — Protected evaluation →](/llm-engineering-course-pages/company-evaluation) · [Glossary](/llm-engineering-course-pages/glossary)
 
 Prerequisites: [C01 strategy](/llm-engineering-course-pages/company-strategy) and [data quality](/llm-engineering-course-pages/data-quality).
 Nordlicht Workspace is fictional, so every learner can inspect the complete source
@@ -54,6 +56,16 @@ the result. Why must a deleted source be excluded even when its wording looks
 useful?
 
 <details>
+<summary>Hint</summary>
+
+Read the audit row the filter writes for each rejected candidate: the
+decision names the rule that fired. Then check what `build_snapshot()`
+already did with the deleted price before any instruction was generated.
+
+
+</details>
+
+<details>
 <summary>Reference answer</summary>
 
 The secret row is excluded by the secret-marker filter and the repeated prompt
@@ -66,3 +78,5 @@ source, so retaining it would break provenance and policy review.
 Checkpoint: explain the difference between a source snapshot, a training record,
 a development case and a protected gold case. Continue with
 [company evaluation](/llm-engineering-course-pages/company-evaluation).
+
+[← C01 — Company strategy](/llm-engineering-course-pages/company-strategy) · [C03 — Protected evaluation →](/llm-engineering-course-pages/company-evaluation) · [Glossary](/llm-engineering-course-pages/glossary)

@@ -1,11 +1,13 @@
 ---
-title: "Profiling: connect the model to a resource budget"
+title: "E04 — Profiling: connect the model to a resource budget"
 sidebar:
   label: "E04 — Profiling & budgets"
 ---
 
-<span id="profiling-connect-the-model-to-a-resource-budget" />
+<span id="e04-profiling-connect-the-model-to-a-resource-budget" />
 
+
+[← E03 — Evaluation](/llm-engineering-course-pages/evaluation) · [C01 — Company strategy →](/llm-engineering-course-pages/company-strategy) · [Glossary](/llm-engineering-course-pages/glossary)
 
 Prerequisites: the [decoder](/llm-engineering-course-pages/mini-gpt), [training](/llm-engineering-course-pages/pretraining), and
 [evaluation](/llm-engineering-course-pages/evaluation) labs. Allow about 45 minutes. You need only a CPU.
@@ -235,3 +237,5 @@ the selected context before treating it as a deployable configuration.
 
 Move on when you can derive 3,600 parameters, explain the FLOP deviation, distinguish
 allocation events from peak memory, and state a budget choice with its limitations.
+
+[← E03 — Evaluation](/llm-engineering-course-pages/evaluation) · [C01 — Company strategy →](/llm-engineering-course-pages/company-strategy) · [Glossary](/llm-engineering-course-pages/glossary)

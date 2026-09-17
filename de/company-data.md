@@ -1,11 +1,13 @@
 ---
-title: "M4 — Prüffähige Firmendaten"
+title: "C02 — Prüffähige Firmendaten"
 sidebar:
-  label: "M4 — Firmendaten"
+  label: "C02 — Firmendaten"
 ---
 
-<span id="m4-pruffahige-firmendaten" />
+<span id="c02-pruffahige-firmendaten" />
 
+
+[← C01 — Firmenstrategie](/llm-engineering-course-pages/de/company-strategy) · [C03 — Geschützte Evaluation →](/llm-engineering-course-pages/de/company-evaluation) · [Glossar](/llm-engineering-course-pages/de/glossary)
 
 Voraussetzungen: [C01 Strategie](/llm-engineering-course-pages/de/company-strategy) und [Datenqualität](/llm-engineering-course-pages/de/data-quality).
 Nordlicht Workspace ist erfunden; die gesamte Quellenliste kann ohne Kundendaten
@@ -43,6 +45,17 @@ doppelten Prompt. Sage die beiden Audit-Entscheidungen voraus. Warum muss eine
 gelöschte Quelle auch dann ausgeschlossen werden, wenn ihr Text nützlich wirkt?
 
 <details>
+<summary>Hinweis</summary>
+
+Lies die Audit-Zeile, die der Filter für jeden abgelehnten Kandidaten
+schreibt: Die Entscheidung nennt die Regel, die gegriffen hat. Prüfe dann,
+was `build_snapshot()` mit dem gelöschten Preis bereits getan hat, bevor
+eine Instruktion erzeugt wurde.
+
+
+</details>
+
+<details>
 <summary>Referenzantwort</summary>
 
 Der Secret-Marker wird ausgeschlossen, der zweite Prompt als Duplikat. Eine
@@ -55,3 +68,5 @@ Richtlinienprüfung.
 Checkpoint: Erkläre den Unterschied zwischen Quellensnapshot, Trainingszeile,
 Entwicklungsfall und geschütztem Goldfall. Weiter mit
 [Firmen-Evaluation](/llm-engineering-course-pages/de/company-evaluation).
+
+[← C01 — Firmenstrategie](/llm-engineering-course-pages/de/company-strategy) · [C03 — Geschützte Evaluation →](/llm-engineering-course-pages/de/company-evaluation) · [Glossar](/llm-engineering-course-pages/de/glossary)

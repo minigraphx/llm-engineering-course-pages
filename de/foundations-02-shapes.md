@@ -7,7 +7,7 @@ sidebar:
 <span id="f02-tensoren-und-shapes" />
 
 
-[← F01](/llm-engineering-course-pages/de/foundations-01-python-numpy) · [Kursstart](/llm-engineering-course-pages/de/) · [→ F03](/llm-engineering-course-pages/de/foundations-03-probability)
+[← F01 — Python & NumPy](/llm-engineering-course-pages/de/foundations-01-python-numpy) · [F03 — Wahrscheinlichkeit & Loss →](/llm-engineering-course-pages/de/foundations-03-probability) · [Glossar](/llm-engineering-course-pages/de/glossary)
 
 ## Lernziel [#lernziel]
 
@@ -89,4 +89,4 @@ Dimensionen nicht mehr übereinstimmen.
 
 Weiter mit [F03 — Wahrscheinlichkeit und Loss](/llm-engineering-course-pages/de/foundations-03-probability).
 
-[← F01](/llm-engineering-course-pages/de/foundations-01-python-numpy) · [→ F03](/llm-engineering-course-pages/de/foundations-03-probability)
+[← F01 — Python & NumPy](/llm-engineering-course-pages/de/foundations-01-python-numpy) · [F03 — Wahrscheinlichkeit & Loss →](/llm-engineering-course-pages/de/foundations-03-probability) · [Glossar](/llm-engineering-course-pages/de/glossary)

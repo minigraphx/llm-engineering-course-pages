@@ -7,7 +7,7 @@ sidebar:
 <span id="f05-mlp-backpropagation-und-kleines-autograd" />
 
 
-[← F04](/llm-engineering-course-pages/de/foundations-04-neuron) · [Kursstart](/llm-engineering-course-pages/de/) · [→ F06](/llm-engineering-course-pages/de/foundations-06-pytorch-checkpoint)
+[← F04 — Neuron & Gradient Descent](/llm-engineering-course-pages/de/foundations-04-neuron) · [F06 — PyTorch & Checkpoint →](/llm-engineering-course-pages/de/foundations-06-pytorch-checkpoint) · [Glossar](/llm-engineering-course-pages/de/glossary)
 
 ## Lernziel [#lernziel]
 
@@ -100,4 +100,4 @@ beobachte den Fehlschlag.
 Übersetze die Mechanismen in Framework-Code in
 [F06 — PyTorch und Checkpoint](/llm-engineering-course-pages/de/foundations-06-pytorch-checkpoint).
 
-[← F04](/llm-engineering-course-pages/de/foundations-04-neuron) · [→ F06](/llm-engineering-course-pages/de/foundations-06-pytorch-checkpoint)
+[← F04 — Neuron & Gradient Descent](/llm-engineering-course-pages/de/foundations-04-neuron) · [F06 — PyTorch & Checkpoint →](/llm-engineering-course-pages/de/foundations-06-pytorch-checkpoint) · [Glossar](/llm-engineering-course-pages/de/glossary)

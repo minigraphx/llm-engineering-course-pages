@@ -1,11 +1,13 @@
 ---
-title: "Choose an adaptation with evidence"
+title: "A02 — Choose an adaptation with evidence"
 sidebar:
-  label: "M5 — Adaptation comparison"
+  label: "A02 — Adaptation comparison"
 ---
 
-<span id="choose-an-adaptation-with-evidence" />
+<span id="a02-choose-an-adaptation-with-evidence" />
 
+
+[← A01 — SFT & LoRA](/llm-engineering-course-pages/sft-lora) · [A03 — DPO →](/llm-engineering-course-pages/dpo) · [Glossary](/llm-engineering-course-pages/glossary)
 
 Prerequisites: company requirements, held-out evaluation and [SFT/LoRA](/llm-engineering-course-pages/sft-lora).
 Nordlicht Workspace is fictional. Its narrow support workflow needs routing,
@@ -104,3 +106,5 @@ gold improvement from a lower training loss.
 Checkpoint: explain when retrieval, continued pretraining and SFT solve different
 problems; read a fair paired scorecard; distinguish storage savings from peak
 memory; reject a promising adapter when a required gate fails.
+
+[← A01 — SFT & LoRA](/llm-engineering-course-pages/sft-lora) · [A03 — DPO →](/llm-engineering-course-pages/dpo) · [Glossary](/llm-engineering-course-pages/glossary)
