@@ -1,0 +1,300 @@
+---
+title: "AG01 — The agent loop, by hand"
+sidebar:
+  label: "AG01 — The agent loop, by hand"
+---
+
+<span id="ag01-the-agent-loop-by-hand" />
+
+
+[← Learning guide](/learning-guide) · [AG02 — Native tool use →](/agent-native) · [Glossary](/glossary)
+
+Prerequisites: [Setup](/setup), [Unit 0](/unit-00) with its report saved
+(the first command below regenerates it in seconds if you did not keep it), and a
+local model. The default preset, `qwen`, downloads `Qwen/Qwen3-4B-Instruct-2507`,
+about 8 GB in bfloat16, on first use. The smaller `qwen-small` preset
+(`Qwen/Qwen3-1.7B`, about 3.4 GB) runs the protocol on 16 GB machines but, as
+measured below, invents the course reference instead of searching for it — this
+lesson uses it on purpose, once, in Break. `ANTHROPIC_API_KEY` enables the
+optional `anthropic` preset; nothing required depends on it. Allow one session of
+60–90 minutes.
+
+## What "agent" means here [#what-agent-means-here]
+
+An agent is a model, a few tools, and a loop that *you* wrote. Nothing else. The
+loop asks the model what to do, runs the tool the model asked for, hands the
+result back, and asks again — until the model answers instead of asking.
+
+Why a loop at all? One model call cannot both look something up and use what it
+found. Reading your report and checking what the course says about it are two
+actions with a dependency between them; the second needs the first's output.
+
+In this unit the model does not get a special tool-calling API. It gets one rule
+in its system prompt: reply with **either** one line
+
+```
+CALL <tool_name>({"parameter": value})
+```
+
+**or** a final answer. You parse that line yourself. When a tool has run, its
+output goes back to the model as an ordinary message:
+
+```
+RESULT <tool_name>:
+<output>
+```
+
+The system prompt also shows the model one concrete example `CALL` line, and it
+tells the model plainly that it cannot see your files or the course text and must
+never state a number or quote a section it has not read from a `RESULT`. You will
+watch a model break that rule anyway.
+
+The model never knows a tool ran. It only ever sees text. Hold on to that — it
+explains most of what you will observe.
+
+The two tools:
+
+- `read_report(path)` — reads one of *your own* JSON reports under `artifacts/`;
+- `search_course(query, k)` — finds the course sections that mention the most of
+  your query's words. It skips this page on purpose: otherwise the agent would
+  find the answer in the page that asks the question, which [E02](/data-quality) calls
+  contamination.
+
+The reference question needs both, in that order — first the numbers from your
+report, then the section heading, which only the search can produce:
+
+> My Unit 0 report is at unit0/report.json. After the boost, did the corpus loss
+> go up or down, and by how much? Then find the Unit 0 section that says whether
+> that is expected and give its exact heading.
+
+## Predict [#predict]
+
+Below is the transcript a well-behaved model produces on that question. Read it
+**before** running anything and write down three things: how many steps it takes,
+which tool it calls first, and what the final answer will quote.
+
+```
+CALL read_report({"path": "unit0/report.json"})
+CALL search_course({"query": "boost one logit corpus loss worse transition"})
+It went up, from 1.695 to 1.890 (+0.194): baseline.corpus_loss to
+controlled_change.corpus_loss in your report. The section is "30–42 min ·
+Build one controlled change" in unit-00: the boost changes exactly one cell
+in the [V,V] matrix, so it can help one transition while harming the overall
+corpus loss. The rise is the expected effect, not a mistake.
+```
+
+Now predict one more thing: if the report said the loss went **down**, would the
+scripted transcript notice?
+
+## Trace [#trace]
+
+Save your Unit 0 report where the tool can find it, then replay the transcript:
+
+```
+mkdir -p artifacts/unit0 && python examples/run_unit0.py > artifacts/unit0/report.json
+python examples/run_agent.py --preset scripted
+```
+
+The `scripted` preset does not run a model. It replays exactly the three replies
+above, so the shape of a run is visible with nothing downloaded. Open
+`artifacts/agent/run.json` and find:
+
+- `history` — seven messages: `system`, your question, the first `CALL`, the
+  `RESULT read_report:` message, the second `CALL`, its `RESULT`, the answer.
+  Count the roles. There is no "tool" role anywhere;
+- `steps[0].call` — the parsed tool call: a name and a JSON object;
+- `steps[0].result` — the beginning of your report, exactly as the model saw it;
+- `steps[1].result` — the sections `search_course` returned. The first one should
+  be `unit-00 · 30–42 min · Build one controlled change`;
+- `stopped` — `answer`.
+
+Check your first prediction. Then answer the extra one: the scripted transcript
+quotes `1.695` and `1.890` whatever your report says, because it is a script. Only a
+real model reads the `RESULT`.
+
+## Build [#build]
+
+Run the real thing. The 4B Qwen takes a few seconds per step on Apple Silicon and
+noticeably longer on CPU:
+
+```
+python examples/run_agent.py --preset qwen
+```
+
+Read the printed answer, then the report. Compare `steps[0].result` with the
+numbers in the answer: did the model quote *your* loss values? Compare
+`steps[1].result` with the heading the answer quotes.
+
+<details>
+<summary>The model answered without calling search_course</summary>
+
+With the default preset this is rare — the measurement below shows it searched
+in 5 of 5 runs — but it happens. Ask again, or ask a question that cannot be
+answered from the report: *"Which unit explains why boosting one logit changes
+the corpus loss?"* The loop only runs what it is told; a model that skips a
+tool is not a bug in your loop.
+
+
+</details>
+
+**Independent exercise.** Write a third tool. In `artifacts/my-work/agent_tools.py`:
+
+```python
+from pathlib import Path
+
+from llm_course.agent import Tool
+
+
+def list_reports(artifact_root: Path) -> Tool:
+    def run(arguments: dict) -> str:
+        paths = sorted(p.relative_to(artifact_root) for p in artifact_root.rglob("*.json"))
+        return "\n".join(str(p) for p in paths) or "No reports found."
+
+    return Tool("list_reports", "List every JSON report under the artifact directory.", (), run)
+```
+
+Register it next to the two defaults and ask a question that needs it — *"Which
+reports do I have, and what did Unit 0 measure?"* — using `run_agent` directly.
+Save this as `artifacts/my-work/run_list_reports.py`, next to `agent_tools.py`,
+and run `python artifacts/my-work/run_list_reports.py` from the repository root;
+the `sys.path` line makes the sibling import work wherever it is run from:
+
+```python
+from pathlib import Path
+import sys
+
+sys.path.insert(0, str(Path(__file__).parent))
+
+from llm_course.agent import run_agent, write_report
+from llm_course.agent.presets import default_tools, make_model
+
+from agent_tools import list_reports
+
+tools = (*default_tools(Path("content"), Path("artifacts")), list_reports(Path("artifacts")))
+run = run_agent("Which reports do I have, and what did Unit 0 measure?",
+                tools=tools, model=make_model("qwen"))
+write_report(run, Path("artifacts/agent/list-reports.json"))
+print(run.answer)
+```
+
+Keep the report. The gate asks for it.
+
+## Break [#break]
+
+Five deliberate failures. Keep each report as evidence.
+
+**A tool that lies.** Copy your report and change `controlled_change.corpus_loss`
+to `1.2`:
+
+```
+python - <<'PY'
+import json, pathlib
+p = pathlib.Path("artifacts/unit0/report.json")
+d = json.loads(p.read_text()); d["controlled_change"]["corpus_loss"] = 1.2
+pathlib.Path("artifacts/unit0/lying.json").write_text(json.dumps(d, indent=2))
+PY
+python examples/run_agent.py --preset qwen \
+    --question "My Unit 0 report is at unit0/lying.json. After the boost, did the corpus loss go up or down?" \
+    --report artifacts/agent/lying.json
+```
+
+The model believes the tool. It has no way not to: the `RESULT` is just text,
+and nothing in the loop checks it. Write down what the answer said.
+
+**The budget.** `python examples/run_agent.py --preset qwen --max-steps 1 --report artifacts/agent/budget.json`. Read
+`stopped`: `budget`, and `answer`: `null`. The loop did not fail — it stopped,
+which is what a budget is for.
+
+**A question the tools cannot answer.** Ask *"What is the capital of France?"*
+with `--report artifacts/agent/offtopic.json`. Read the steps. Did the model
+invent a tool name? If so, find the `RESULT … ERROR: unknown tool` message and
+the reply after it. That message is the loop's only defence against invention,
+and it is a *repair* chance, not a refusal.
+
+**Truncation.** Rerun the reference question with the tool output cut short:
+
+```
+python examples/run_agent.py --preset qwen --max-output-chars 500 --report artifacts/agent/truncated.json
+```
+
+The report is cut before `controlled_change`. Read what the answer does with half
+a report.
+
+**A model that makes up a source.** Run the reference question on the smaller
+model:
+
+```
+python examples/run_agent.py --preset qwen-small --report artifacts/agent/bluff.json
+```
+
+Read the section heading the answer gives. Then check it yourself:
+
+```
+python - <<'PY'
+from pathlib import Path
+from llm_course.agent import search_course
+print(search_course(Path("content")).run({"query": "Corpus Loss Analysis", "k": 3}))
+PY
+```
+
+Read the three headings that come back: none of them is "Corpus Loss Analysis".
+The heading does not exist; the words in it do, which is exactly why a search on
+an invented title still returns *something* — and why checking the heading, not
+the hit count, is the test. In the reference measurement the 1.7B
+followed every rule of the protocol, read the report correctly, quoted the right
+numbers, and invented the source: `"Unit 0: Corpus Loss Analysis"`, in all five
+runs. The rule in the system prompt did not stop it; nothing in the loop *can*
+stop it, because the loop only sees text. That is why the default preset is the
+larger model, and why a guardrails unit (G01, coming later) exists at all.
+(Measured 2026-09-21; your run may differ, and that difference is worth writing
+down too.)
+
+## Measure [#measure]
+
+Run the reference question five times and read the table:
+
+```
+python examples/run_agent.py --preset qwen --repeat 5 --report artifacts/agent/measure/run.json
+```
+
+`protocol_ok` is `yes` when every step parsed on the first try. Reference
+measurement, Apple Silicon (MPS), 2026-09-21:
+
+| preset | protocol_ok (of 5) | stopped=answer (of 5) | read_report called (of 5) | search_course called (of 5) | median steps | median latency (s, total) | total cost (USD) |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `qwen-small` | 5 | 5 | 5 | 0 | 1 | 4.6 | 0.0000 |
+| `qwen` | 5 | 5 | 5 | 5 | 2 | 13.5 | 0.0000 |
+
+The 1.7B followed the protocol and read the report in 5 of 5 runs, but called
+`search_course` in 0 of 5 and invented a heading instead. That is why the default
+is the 4B.
+
+If `ANTHROPIC_API_KEY` is set, run the same five with `--preset anthropic` and add
+the row. Your numbers will differ from the reference; the table is there so you
+can say *by how much*.
+
+## Explain [#explain]
+
+Complete in your lab notes:
+
+1. The loop stops because …
+2. After a tool runs, the model sees …
+3. The wrong loss value reached the answer because …
+4. A small model can follow this protocol because …
+5. `max_steps` protects against …, but not against …
+
+## Completion gate [#completion-gate]
+
+You pass AG01 with: the reference run (`run.json`) whose trace uses both tools;
+the five Break reports and one sentence each on what happened; the five-run
+table; your `list_reports` tool and the report of a question it answered. An
+explanation in your own words counts; the words on this page do not.
+
+## What's next [#whats-next]
+
+AG02 puts the same agent on a native tool-use API and asks what the API did for
+you. AG03 connects it to the course's MCP server, then has you build your own.
+Both are *(coming soon)*. The [Applied: RAG track](/rag-build) shows what
+`search_course` becomes with real retrieval behind it.
+
+[← Learning guide](/learning-guide) · [AG02 — Native tool use →](/agent-native) · [Glossary](/glossary)

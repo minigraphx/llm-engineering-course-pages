@@ -35,7 +35,11 @@ Anführungszeichen ist ein String; `print(...)` gibt seine Argumente aus.
 `#` beginnt einen Kommentar. Fehler nennen Datei und Zeile: Behebe den ersten
 relevanten Fehler, bevor du weitergehst.
 
-### Listen, Positionen, Ausschnitte und Schleifen [#listen-positionen-ausschnitte-und-schleifen]
+### Listen, Positionen und Ausschnitte [#listen-positionen-und-ausschnitte]
+
+Eine Idee nach der anderen. Jeder Block unten bittet dich, eine Sache
+vorherzusagen, bevor du ihn ausführst; der Kommentar in jeder Zeile ist die
+Antwort, also decke ihn zuerst ab.
 
 ```python
 tokens = ["a", "b", "c", "d"]
@@ -43,41 +47,92 @@ print(tokens[0])       # a: Python zählt Positionen ab null
 print(tokens[1:3])     # ['b', 'c']: Start inklusive, Ende exklusiv
 print(tokens[:-1])     # ['a', 'b', 'c']: letztes Element weglassen
 print(tokens[1:])      # ['b', 'c', 'd']: erstes Element weglassen
+```
+
+Eckige Klammern erzeugen eine Liste oder wählen daraus aus. Eine einzelne Zahl
+wählt eine Position. Ein Doppelpunkt wählt einen Ausschnitt (**Slice**): Der
+Start ist enthalten, das Ende nicht, und `-1` zählt vom Ende. Eine leere Seite
+heißt „vom Anfang“ oder „bis zum Ende“. Sage die vier ausgegebenen Zeilen
+voraus, dann führe die Datei aus.
+
+### Für jedes Element wiederholen [#fur-jedes-element-wiederholen]
+
+```python
 for token in tokens:
     print(token)
 ```
 
-Eckige Klammern erzeugen Listen oder wählen Elemente aus. Ein Doppelpunkt wählt
-einen Ausschnitt (**Slice**); `-1` zählt vom Ende. Eingerückte Zeilen gehören zur
-Schleife. `for` wiederholt einmal pro Element. `zip(left, right)` besucht
-zusammengehörige Elemente; `list(...)` sammelt sie. Eine **Funktion** benennt eine
-wiederverwendbare Berechnung:
+`for` wiederholt die eingerückten Zeilen einmal pro Element; `token` hält dabei
+das aktuelle. Sage voraus, wie viele Zeilen erscheinen, dann prüfe.
+
+### Zwei Listen paaren [#zwei-listen-paaren]
+
+`zip` geht zwei Listen nebeneinander durch und gibt dir je ein Element aus
+beiden:
+
+```python
+list(zip(["a", "b", "c"], ["b", "c", "d"]))   # [('a', 'b'), ('b', 'c'), ('c', 'd')]
+```
+
+`list(...)` sammelt die Paare, damit du sie ausgeben kannst. Jedes Paar steht in
+runden Klammern: ein **Tupel**, eine feste Folge, die sich nicht ändert. Lege
+jetzt die zwei Ausschnitte von oben nebeneinander und zippe *sie*:
+
+```python
+left = tokens[:-1]    # ['a', 'b', 'c']
+right = tokens[1:]    # ['b', 'c', 'd']
+print(list(zip(left, right)))
+```
+
+Sage die Paare vorher. Jedes Paar ist ein Zeichen und das Zeichen, das darauf
+folgt — genau das, was ein Bigramm-Modell zählt. Du hast gerade die Idee hinter
+T01 in zwei Zeilen geschrieben.
+
+
+
+### Interaktiv · Ausschnitte und Paare
+
+**Interaktiver Ausschnitt-Visualizer.** `tokens = ["a", "b", "c", "d"]`: `tokens[1:3]` → ['b', 'c']; `tokens[:-1]` → ['a', 'b', 'c']; `tokens[1:]` → ['b', 'c', 'd']. Ein Ausschnitt `[start:stop]` enthält den Start und lässt das Ende weg; `-1` zählt vom Ende. `zip(tokens[:-1], tokens[1:])` ergibt [('a', 'b'), ('b', 'c'), ('c', 'd')] — jedes Zeichen mit seinem Nachfolger. Im Browser tippst du einen eigenen Ausschnitt und siehst, welche Positionen aufleuchten.
+
+### Einer Berechnung einen Namen geben [#einer-berechnung-einen-namen-geben]
+
+Eine **Funktion** gibt einer Berechnung einen Namen, damit du sie wiederverwenden
+kannst:
 
 ```python
 def next_item_pairs(sequence):
     if len(sequence) < 2:
         return []
     return list(zip(sequence[:-1], sequence[1:]))
+```
 
+`def` definiert die Funktion, `sequence` ist ihre Eingabe. `return` gibt ein
+Ergebnis zurück. `if` führt seinen eingerückten Zweig nur aus, wenn die Bedingung
+wahr ist; `<` vergleicht Zahlen. Sage voraus, was `next_item_pairs(["a"])`
+zurückgibt und warum das `if` für diesen Fall nötig ist.
+
+### Prüfen [#prufen]
+
+```python
 assert next_item_pairs(["a", "b", "c"]) == [("a", "b"), ("b", "c")]
 assert next_item_pairs([]) == []
 assert next_item_pairs(["a"]) == []
 ```
 
-`def` definiert die Funktion, `sequence` ist ihre Eingabe, `return` gibt das
-Ergebnis zurück. `if` führt einen Zweig bei wahrer Bedingung aus; `<` vergleicht
-Zahlen. `==` prüft Gleichheit und ist keine Zuweisung. `assert` stoppt mit einem
-`AssertionError`, wenn die Bedingung falsch ist. Paare in runden Klammern sind
-**Tupel**, also feste Folgen. Ändere ein erwartetes Paar und prüfe, dass die
-Assertion den Fehler findet.
+`==` prüft Gleichheit und ist keine Zuweisung. `assert` stoppt mit einem
+`AssertionError`, wenn seine Bedingung falsch ist, und tut nichts, wenn sie wahr
+ist. Ändere ein erwartetes Paar und prüfe, dass die Assertion den Fehler wirklich
+findet — sage voraus, welche Zeile zuerst scheitert.
 
-Speichere deine Variante in `artifacts/my-work/test_pairs.py`. Setze Assertions
-in eine Funktion namens `test_pairs`. Starte
+Speichere deine Variante in `artifacts/my-work/test_pairs.py`. Setze die
+Assertions in eine Funktion namens `test_pairs`. Starte
 `python -m pytest artifacts/my-work/test_pairs.py`. Grün heißt, dass diese
-Assertions bestehen, und beweist nichts über ungeprüfte Eingaben. Typannotationen
-wie `sequence: list[str]` erklären erwartete Typen für Menschen und Werkzeuge;
-Python erzwingt sie nicht automatisch. Ein Docstring ist eine Erklärung in
-dreifachen Anführungszeichen direkt innerhalb einer Funktion.
+Assertions bestehen; es beweist nichts über ungeprüfte Eingaben.
+
+Zwei Dinge, die du im Kurscode sehen wirst, aber noch nicht brauchst:
+Typannotationen wie `sequence: list[str]` beschreiben den erwarteten Typ für
+Menschen und Werkzeuge, und Python erzwingt sie nicht; ein Docstring ist eine
+Erklärung in dreifachen Anführungszeichen direkt innerhalb einer Funktion.
 
 ### NumPy-Begriffe vor der nächsten Aufgabe [#numpy-begriffe-vor-der-nachsten-aufgabe]
 

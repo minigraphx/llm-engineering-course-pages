@@ -18,11 +18,33 @@ prompt, inspect token IDs, probabilities, shapes, and loss, change one logit,
 and explain the measured effect. No prior ML knowledge, learner data, cloud, or
 accelerator is required.
 
+You need to be able to type commands in a terminal. Everything else — including
+every technical word on this page — is defined where it first appears. Each new
+term is also a forward reference: [F03](/foundations-03-probability) and
+[T01](/bigram-baseline) build the same ideas properly later. Here you only
+need them well enough to predict, measure, and explain one change.
+
 ## 0–10 min · Predict and check setup [#010-min-predict-and-check-setup]
 
-The model sees one character and predicts the next. Before running it, predict
-the continuation of `the ` and whether making `m` more likely after a space will
-change the generated text.
+Before predicting anything, you need something to predict from. This is the
+whole model in three sentences:
+
+1. It has read a small amount of text and remembers, for every character, which
+   characters tended to follow it.
+2. To write, it looks at the character it just produced and picks the character
+   that followed it most often.
+3. It feeds that character back in as the new input, and repeats.
+
+That is all. There is nothing else in this model.
+
+Now write down two predictions. You will check both against measurements before
+the hour is out.
+
+1. Starting from the prompt `the `, what will the model write?
+2. If you force `m` to be the most likely character after a space, will the
+   written text change?
+
+Then check your setup:
 
 ```
 python examples/diagnose_unit0.py
@@ -38,6 +60,18 @@ generation. If it fails, use the [troubleshooting guide](/unit-00-troubleshootin
 python examples/run_unit0.py
 ```
 
+<aside className="course-note" aria-label="What you should see">
+<strong>What you should see</strong>
+
+The generated text will look repetitive — something close to
+`the te te te te`. That is the correct result, not a broken run. A model
+that only remembers *one* character of context cannot do better, and seeing
+exactly how it fails is the point of this unit. The whole rest of the course
+is about giving a model more to work with.
+
+
+</aside>
+
 The first run materializes two ignored local artifacts under `artifacts/unit0/`:
 
 - a deterministic 596-byte synthetic corpus dedicated to CC0-1.0;
@@ -46,22 +80,42 @@ The first run materializes two ignored local artifacts under `artifacts/unit0/`:
 Their hashes and provenance are written to `manifest.json`. They are generated
 locally because datasets and checkpoints must not be committed to Git.
 
-Find these report fields:
+The command prints a JSON report. Read a dotted name as a path into it:
+`baseline.corpus_loss` means the `corpus_loss` field inside `baseline`. Find
+these fields:
 
-- `backend` — cpu, mps, or cuda;
-- `prompt_token_ids` — the concrete character IDs;
-- `baseline.top_next_tokens` — the five next-character probabilities;
-- `baseline.corpus_loss` — mean next-character cross-entropy;
-- `baseline.generation` — greedy continuation from the prepared checkpoint.
+- `backend` — which processor ran it: cpu, mps, or cuda;
+- `prompt_token_ids` — your prompt with each character replaced by its number;
+- `baseline.top_next_tokens` — the five characters the model considers most
+  likely next, with a probability for each;
+- `baseline.corpus_loss` — one number for how surprised the model was by the
+  text it learned from; lower is better;
+- `baseline.generation` — what the model actually wrote.
+
+Compare `baseline.generation` with your first prediction now.
 
 ## 20–30 min · Trace the model [#2030-min-trace-the-model]
 
-The vocabulary has `V=33` characters. The checkpoint contains a transition
-matrix with shape `[V,V]`. A current token ID selects one row of `V` logits;
-softmax turns that row into next-token probabilities. Greedy decoding chooses
-the largest probability and feeds that character back as the next input.
+The model knows 33 different characters. That set is called the **vocabulary**,
+and its size is written `V`, so `V=33`.
 
-For a four-character prompt, verify:
+For the character it just saw, the model holds one score for every character
+that could come next — 33 scores. Each score is called a **logit**: an
+unnormalised score, where bigger means more likely, but which is not yet a
+percentage. All of them together form a **transition matrix** with shape
+`[V,V]`: one row per current character, one column per possible next character,
+so 33 × 33 = 1089 numbers, and the current character selects exactly one row.
+
+Turning one row of 33 logits into 33 probabilities that add up to 1 is called
+**softmax**. Choosing the single highest one and feeding that character back in
+is called **greedy decoding** — the loop you predicted from in the first ten
+minutes.
+
+`corpus_loss` is the **cross-entropy**: for every character in the corpus it
+measures how much probability the model gave to the character that actually
+came next, then averages. A lower value means the model was less surprised.
+
+If you already program, verify the shapes yourself for a four-character prompt:
 
 ```
 from llm_course import run_vertical_slice
@@ -72,19 +126,26 @@ assert len(report["baseline"]["top_next_tokens"]) == 5
 assert 0.0 <= report["baseline"]["target_probability"] <= 1.0
 ```
 
-The loss compares every corpus character with the character that actually
-followed it. A lower value means the model assigned more probability to the
-observed next characters.
+If you do not program yet, do not skip this step — read the three `assert`
+lines as three claims and check them by hand in the JSON report you already
+have: the four-character prompt produced four token IDs, the model listed five
+candidates, and the target probability is between 0 and 1. You will write this
+code yourself in [F01](/foundations-01-python-numpy).
 
 ## 30–42 min · Build one controlled change [#3042-min-build-one-controlled-change]
 
 The reference run adds `4.0` to one transition logit: after the prompt's final
-space, make `m` more likely. Compare `baseline` with `controlled_change` and
-locate:
+space, make `m` more likely. Because the change is made to a logit and not to a
+probability, `+4.0` does not mean "four more percent" — softmax decides how much
+of the probability actually moves, and it takes it from the other candidates.
+
+Compare `baseline` with `controlled_change` and locate:
 
 - the target probability before and after;
 - whether the generated continuation changed;
 - whether the corpus loss improved or worsened.
+
+This is where you check your second prediction.
 
 Now use your own prompt and target character:
 
@@ -110,8 +171,10 @@ empty prompt and read the boundary error instead of removing the validation.
 
 ## 50–55 min · Measure reproducibility [#5055-min-measure-reproducibility]
 
-Greedy decoding is backend-independent for this model. Seeded sampling is also
-performed on CPU so the same seed follows the same path:
+Greedy decoding always takes the highest score, so it gives the same answer on
+any backend. Sampling picks randomly among the candidates instead, so it needs a
+seed — a fixed starting point for the randomness — to repeat itself. Sampling
+here is performed on CPU so the same seed follows the same path:
 
 ```
 python examples/run_unit0.py --prompt "the " --sample --seed 11
@@ -125,7 +188,8 @@ Run it twice and compare the generations. Accelerator users may also run
 Complete these sentences in your lab notes:
 
 1. The prompt becomes token IDs by ...
-2. The current token selects logits with shape ...
+2. The current character selects one row of scores, and that row has ... numbers
+   in it, because ...
 3. Softmax is needed because ...
 4. The controlled change moved probability from ... to ...
 5. The generation changed/did not change because ...
@@ -134,8 +198,10 @@ Complete these sentences in your lab notes:
 ## Completion gate [#completion-gate]
 
 You pass Unit 0 when the diagnostic is ready, your own prompt generates text,
-you identify tokens/probabilities/loss, and your prediction and explanation
-match the measured intervention. Keep the JSON report as evidence.
+you can point to the token IDs, the probabilities and the loss in your own
+report, and your prediction and explanation match the measured intervention.
+Explaining it in your own words counts; reusing the words on this page does not.
+Keep the JSON report as evidence.
 
 Course release acceptance additionally requires the documented
 [five-learner pilot](/sources/unit-00-pilot).

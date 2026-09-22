@@ -1,5 +1,5 @@
 {
-  "count": 76,
+  "count": 82,
   "generator": "blume@1.6.4",
   "pages": [
     {
@@ -21,6 +21,26 @@
       "route": "/adaptation-comparison",
       "title": "A02 — Choose an adaptation with evidence",
       "url": "https://llm.onlinekurs.training/adaptation-comparison"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://llm.onlinekurs.training/api/docs/pages/agent-loop.json",
+      "lastModified": null,
+      "locale": "en",
+      "markdownUrl": "https://llm.onlinekurs.training/agent-loop.md",
+      "route": "/agent-loop",
+      "title": "AG01 — The agent loop, by hand",
+      "url": "https://llm.onlinekurs.training/agent-loop"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://llm.onlinekurs.training/api/docs/pages/agent-native.json",
+      "lastModified": null,
+      "locale": "en",
+      "markdownUrl": "https://llm.onlinekurs.training/agent-native.md",
+      "route": "/agent-native",
+      "title": "AG02 — Native tool use",
+      "url": "https://llm.onlinekurs.training/agent-native"
     },
     {
       "contentType": "doc",
@@ -51,6 +71,16 @@
       "route": "/bpe-tokenizer",
       "title": "T02 — Byte-level BPE tokenizer from scratch",
       "url": "https://llm.onlinekurs.training/bpe-tokenizer"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://llm.onlinekurs.training/api/docs/pages/changelog.json",
+      "lastModified": null,
+      "locale": "en",
+      "markdownUrl": "https://llm.onlinekurs.training/changelog.md",
+      "route": "/changelog",
+      "title": "What's new",
+      "url": "https://llm.onlinekurs.training/changelog"
     },
     {
       "contentType": "doc",
@@ -154,6 +184,26 @@
     },
     {
       "contentType": "doc",
+      "json": "https://llm.onlinekurs.training/api/docs/pages/de/agent-loop.json",
+      "lastModified": null,
+      "locale": "de",
+      "markdownUrl": "https://llm.onlinekurs.training/de/agent-loop.md",
+      "route": "/de/agent-loop",
+      "title": "AG01 — Die Agentenschleife, von Hand",
+      "url": "https://llm.onlinekurs.training/de/agent-loop"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://llm.onlinekurs.training/api/docs/pages/de/agent-native.json",
+      "lastModified": null,
+      "locale": "de",
+      "markdownUrl": "https://llm.onlinekurs.training/de/agent-native.md",
+      "route": "/de/agent-native",
+      "title": "AG02 — Native Tool-Use",
+      "url": "https://llm.onlinekurs.training/de/agent-native"
+    },
+    {
+      "contentType": "doc",
       "json": "https://llm.onlinekurs.training/api/docs/pages/de/attention.json",
       "lastModified": null,
       "locale": "de",
@@ -181,6 +231,16 @@
       "route": "/de/bpe-tokenizer",
       "title": "T02 — Byte-Level-BPE-Tokenizer von Grund auf",
       "url": "https://llm.onlinekurs.training/de/bpe-tokenizer"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://llm.onlinekurs.training/api/docs/pages/de/changelog.json",
+      "lastModified": null,
+      "locale": "de",
+      "markdownUrl": "https://llm.onlinekurs.training/de/changelog.md",
+      "route": "/de/changelog",
+      "title": "Neu im Kurs",
+      "url": "https://llm.onlinekurs.training/de/changelog"
     },
     {
       "contentType": "doc",

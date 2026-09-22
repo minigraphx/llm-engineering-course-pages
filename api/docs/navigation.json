@@ -27,26 +27,6 @@
       "children": [
         {
           "kind": "page",
-          "label": "R01 — From document to answer",
-          "pageId": "filesystem:(applied-rag)/rag-build.mdx",
-          "route": "/rag-build"
-        },
-        {
-          "kind": "page",
-          "label": "R02 — So it does not lie",
-          "pageId": "filesystem:(applied-rag)/rag-quality.mdx",
-          "route": "/rag-quality"
-        }
-      ],
-      "display": "flat",
-      "kind": "group",
-      "label": "Applied: RAG",
-      "path": "/"
-    },
-    {
-      "children": [
-        {
-          "kind": "page",
           "label": "Unit 0 — First Tiny-LM Run",
           "pageId": "filesystem:(course)/unit-00.mdx",
           "route": "/unit-00"
@@ -233,6 +213,52 @@
     },
     {
       "children": [
+        {
+          "kind": "page",
+          "label": "R01 — From document to answer",
+          "pageId": "filesystem:(applied-rag)/rag-build.mdx",
+          "route": "/rag-build"
+        },
+        {
+          "kind": "page",
+          "label": "R02 — So it does not lie",
+          "pageId": "filesystem:(applied-rag)/rag-quality.mdx",
+          "route": "/rag-quality"
+        }
+      ],
+      "display": "flat",
+      "kind": "group",
+      "label": "Applied: RAG",
+      "path": "/"
+    },
+    {
+      "children": [
+        {
+          "kind": "page",
+          "label": "AG01 — The agent loop, by hand",
+          "pageId": "filesystem:(applied-agents)/agent-loop.mdx",
+          "route": "/agent-loop"
+        },
+        {
+          "kind": "page",
+          "label": "AG02 — Native tool use",
+          "pageId": "filesystem:(applied-agents)/agent-native.mdx",
+          "route": "/agent-native"
+        }
+      ],
+      "display": "flat",
+      "kind": "group",
+      "label": "Applied: Agents",
+      "path": "/"
+    },
+    {
+      "children": [
+        {
+          "kind": "page",
+          "label": "What's new",
+          "pageId": "filesystem:(reference)/changelog.mdx",
+          "route": "/changelog"
+        },
         {
           "kind": "page",
           "label": "Glossary",

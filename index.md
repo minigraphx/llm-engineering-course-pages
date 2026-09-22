@@ -14,6 +14,54 @@ Start with [setup](/setup) and the [learning guide](/learning-guide).
 The guide names prerequisites and checkpoints; the [glossary](/glossary)
 explains unfamiliar terms. No prior machine learning is required.
 
+Last updated 2026-09-22 — see [What's new](/changelog).
+
+## What you will be able to do [#what-you-will-be-able-to-do]
+
+Every skill below is proved by a unit you can run on a CPU, not by a reading list.
+
+- **Explain how text becomes a prediction** — byte-level tokenization, embeddings,
+  self-attention and a decoder, built by hand in [T02](/bpe-tokenizer),
+  [T03](/data-pipeline), [T04](/attention) and [T05](/mini-gpt).
+- **Train a small GPT and resume it** — a training loop you can interrupt and
+  reproduce, in [T05](/mini-gpt), [T06](/mini-gpt-gate) and [E01](/pretraining).
+- **Control how a model generates text** — temperature, top-k/top-p, stop rules and
+  the KV cache, in [I01](/inference-decoding).
+- **Tell a real improvement from noise** — held-out evaluation across seeds, with
+  uncertainty and contamination checks, in [E02](/data-quality) and
+  [E03](/evaluation).
+- **Fit the work to a budget** — parameter counts, memory and time estimated before
+  you spend them, in [E04](/profiling) and the [hardware preflight](/hardware).
+- **Adapt a model instead of retraining it** — SFT, LoRA, DPO and continued
+  pretraining, compared on evidence, in [A01–A04](/sft-lora) and
+  [C04](/continued-pretraining).
+- **Build a retrieval system over your own documents** — chunking, sentence
+  embeddings, a vector store and answers that cite their sources, in
+  [R01](/rag-build).
+- **Keep a system honest** — refusing when the answer is not in the sources,
+  enforcing citations, detecting prompt injection and measuring the refusal rate,
+  in [R02](/rag-quality).
+- **Build an agent loop with nothing hidden** — a plain-text tool protocol you
+  parse yourself, a step budget, and a trace that shows what the model actually
+  saw, in [AG01](/agent-loop).
+- **Put the same agent on a native tool-use API and say what the API took over** — schemas, structured calls, call ids — and what it did not, measured on the same question three ways, in [AG02](/agent-native).
+- **Decide whether to train at all** — turn a requirement into a measured baseline
+  gap and a reversible decision record, in [C01](/company-strategy) and the
+  [capstone](/company-capstone).
+
+The Applied track continues beyond retrieval. These units are planned and not
+written yet:
+
+- **Your own MCP server** *(coming soon)* — connect the agent to the course's MCP server, then build and serve one yourself.
+- **Prompt engineering** *(coming soon)* — score prompt variants against an
+  evaluation set instead of trusting patterns.
+- **Guardrails as a unit of their own** *(coming soon)* — input and output checks
+  for any LLM system, not only for retrieval.
+- **Conversational AI** *(coming soon)* — multi-turn answers, memory and the
+  context budget.
+- **Vector databases** *(coming soon)* — exact search against approximate, and
+  the point at which you switch.
+
 ## Two entry paths [#two-entry-paths]
 
 - **Standalone path:** includes Python, mathematics, neural-network, and
@@ -54,7 +102,9 @@ Every required outcome has a CPU route. Run the
 - a small GPT-style model with training and evaluation;
 - instruction and preference fine-tuning;
 - a synthetic-data pipeline with quality gates;
-- an optimized local inference service;
+- a retrieval system over the course material, with its own evaluation set,
+  guardrails and a served API;
+- an agent loop with two tools over your own reports and the course text;
 - a reproducible company-model capstone.
 
 <aside className="course-note" aria-label="Development status">
@@ -64,11 +114,16 @@ Every course unit from Unit 0 through the capstone is shipped and executable
 on CPU: the foundations F01–F06 with the B01 bridge, the core T01–T06 and
 I01, the engineering units E01–E04, the company units C01–C04, the
 adaptation units A01–A04 and the capstone, plus the Applied: RAG track
-R01–R02. German localisation is complete except R01/R02 (MIN-129). Still
-open: the supplied larger data packs (M1A), the interpretability extension
-(M2A), the quantization/batching/serving units (M6), the human sign-off on
-the sealed company gold set and synthetic sample (MIN-95/96/100), and the
-real five-learner pilot. Automated checks do not establish learner
+R01–R02 and the Applied: Agents units AG01 and AG02. German localisation is complete
+except R01/R02 (MIN-129). Still open: the supplied larger data packs (M1A),
+the interpretability extension (M2A), the quantization/batching/serving
+units (M6), the human sign-off on the sealed company gold set and
+synthetic sample (MIN-95/96/100), and the real five-learner pilot. The
+Applied track is planned to grow beyond retrieval into
+building your own MCP server, prompt engineering, guardrails as a
+unit of their own, multi-turn
+conversational systems and vector databases (MIN-148); those units are
+marked "(coming soon)" above and are not written yet. Automated checks do not establish learner
 comprehension or issue a certificate.
 
 </aside>

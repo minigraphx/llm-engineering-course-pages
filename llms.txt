@@ -8,11 +8,6 @@
 - [Setup — from a fresh computer to the first run](https://llm.onlinekurs.training/setup)
 - [Your route through the course](https://llm.onlinekurs.training/learning-guide)
 
-## Applied: RAG
-
-- [R01 — From document to answer: build RAG yourself](https://llm.onlinekurs.training/rag-build)
-- [R02 — So it does not lie: quality, guardrails, operations](https://llm.onlinekurs.training/rag-quality)
-
 ## Course
 
 - [Unit 0 — First Tiny-LM Run](https://llm.onlinekurs.training/unit-00)
@@ -46,8 +41,19 @@
 - [A04 — RLHF bridge: inspect the failure mode](https://llm.onlinekurs.training/rlhf-bridge)
 - [Capstone — From requirement to a reversible company model](https://llm.onlinekurs.training/company-capstone)
 
+## Applied: RAG
+
+- [R01 — From document to answer: build RAG yourself](https://llm.onlinekurs.training/rag-build)
+- [R02 — So it does not lie: quality, guardrails, operations](https://llm.onlinekurs.training/rag-quality)
+
+## Applied: Agents
+
+- [AG01 — The agent loop, by hand](https://llm.onlinekurs.training/agent-loop)
+- [AG02 — Native tool use](https://llm.onlinekurs.training/agent-native)
+
 ## Reference
 
+- [What's new](https://llm.onlinekurs.training/changelog)
 - [Glossary](https://llm.onlinekurs.training/glossary)
 - [Hardware, time, and cloud safety](https://llm.onlinekurs.training/hardware)
 - [Course data policy](https://llm.onlinekurs.training/data-policy)
@@ -59,11 +65,6 @@
 - [LLM-Engineering-Kurs](https://llm.onlinekurs.training/de)
 - [Einrichtung — vom frischen Computer zum ersten Lauf](https://llm.onlinekurs.training/de/setup)
 - [Dein Weg durch den Kurs](https://llm.onlinekurs.training/de/learning-guide)
-
-### Angewandt: RAG
-
-- [R01 — Vom Dokument zur Antwort: RAG selbst gebaut](https://llm.onlinekurs.training/de/rag-build)
-- [R02 — Damit es nicht lügt: Qualität, Guardrails, Betrieb](https://llm.onlinekurs.training/de/rag-quality)
 
 ### Kurs
 
@@ -98,8 +99,19 @@
 - [A04 — RLHF-Brücke: Fehler sichtbar machen](https://llm.onlinekurs.training/de/rlhf-bridge)
 - [Capstone — Von der Anforderung zum reversiblen Firmenmodell](https://llm.onlinekurs.training/de/company-capstone)
 
+### Angewandt: RAG
+
+- [R01 — Vom Dokument zur Antwort: RAG selbst gebaut](https://llm.onlinekurs.training/de/rag-build)
+- [R02 — Damit es nicht lügt: Qualität, Guardrails, Betrieb](https://llm.onlinekurs.training/de/rag-quality)
+
+### Angewandt: Agenten
+
+- [AG01 — Die Agentenschleife, von Hand](https://llm.onlinekurs.training/de/agent-loop)
+- [AG02 — Native Tool-Use](https://llm.onlinekurs.training/de/agent-native)
+
 ### Referenz
 
+- [Neu im Kurs](https://llm.onlinekurs.training/de/changelog)
 - [Glossar](https://llm.onlinekurs.training/de/glossary)
 - [Hardware, Zeit und Cloud-Sicherheit](https://llm.onlinekurs.training/de/hardware)
 - [Datenrichtlinie des Kurses](https://llm.onlinekurs.training/de/data-policy)

@@ -1,6 +1,8 @@
 {
-  "source_commit": "ff0aaaf8381cbc37b8206b88450b5495aa66c4cb",
-  "ci_run": 35263523916,
+  "source_commit": "4c36a71c843e652e2f2e6c5a6c9e88ea31067dba",
+  "ci_run": 35724282031,
   "artifact": "blume-pages-static",
-  "site": "https://llm.onlinekurs.training/"
+  "site": "https://llm.onlinekurs.training/",
+  "deployed_at": "2026-09-22T12:22:25Z",
+  "previous_source_commit": "ff0aaaf8381cbc37b8206b88450b5495aa66c4cb"
 }

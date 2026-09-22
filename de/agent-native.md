@@ -1,0 +1,263 @@
+---
+title: "AG02 — Native Tool-Use"
+sidebar:
+  label: "AG02 — Native Tool-Use"
+---
+
+<span id="ag02-native-tool-use" />
+
+
+[← AG01 — Die Agentenschleife, von Hand](/de/agent-loop) · [Kursstart →](/de/) · [Glossar](/de/glossary)
+
+Voraussetzungen: [AG01](/de/agent-loop) mit seinem Bericht unter
+`artifacts/unit0/report.json` und `ANTHROPIC_API_KEY` in deiner Shell — der
+verpflichtende Weg dieser Einheit ist gehostet, auf `claude-sonnet-5`. Die
+Referenzläufe unten kosten auf diesem Modell je etwa 2–3 Cent; ein vollständiger
+Durchgang dieser Seite inklusive „Messen“ kostet rund einen Dollar. Der CPU-Weg ist
+der lokale Qwen-Weg mit dem 4B, das du für AG01 heruntergeladen hast. Plane eine
+Sitzung von 60–90 Minuten.
+
+## Was sich ändert und was nicht [#was-sich-andert-und-was-nicht]
+
+In AG01 hast du dem Modell die Regeln in Prosa erklärt, eine `CALL`-Zeile selbst
+geparst und Ergebnisse als Text zurückgeschickt. Eine native Tool-Use-API ersetzt
+genau drei dieser Dinge: das **Schema** (ein JSON Schema pro Tool statt eines
+Satzes), das **Parsen** (die API liefert einen strukturierten `tool_use`-Block) und
+die **Call-ID** (jedes Ergebnis wird dem Aufruf zugeordnet, den es beantwortet).
+Alles andere bleibt deine Sache:
+
+| noch deine Sache | warum die API es nicht übernehmen kann |
+| --- | --- |
+| das Schrittbudget | die API weiß nicht, wann ein Lauf aufgeben sollte |
+| das Kürzen der Ausgabe | sie weiß nicht, wie groß ein Ergebnis sein darf |
+| die Pfadbegrenzung | sie weiß nicht, welche Dateien dem Lernenden gehören |
+| einem Ergebnis glauben | sie kann ein wahres Tool-Ergebnis nicht von einem lügenden unterscheiden |
+
+Die erste Zeile ist nicht hypothetisch. In der Referenzmessung unten endeten zwei
+der fünf Läufe mit dem Textprotokoll auf Claude nur, weil das Budget aufgebraucht
+war: fünf `search_course`-Aufrufe hintereinander mit umformulierten Anfragen und
+keine Antwort. Die API auf dem nativen Weg hätte das ebenso wenig bemerkt.
+
+Du lässt denselben Agenten auf dieselbe Frage auf drei Wegen laufen:
+
+| Weg | Schleife | Modell |
+| --- | --- | --- |
+| text / Claude | AG01s Schleife, gehostet | `claude-sonnet-5` |
+| native / Claude | die neue Schleife | `claude-sonnet-5` |
+| native / Qwen | die neue Schleife, lokal | `Qwen/Qwen3-4B-Instruct-2507` |
+
+Die zwei Schleifen sind `src/llm_course/agent/loop.py` und `native.py`. Vergleiche
+sie mit `diff`: Dieser Unterschied ist diese Einheit.
+
+## Vorhersagen [#vorhersagen]
+
+Lies noch einmal das Transkript aus AG01, dann dieses — das native Transkript für
+dieselbe Frage. Das Modell fordert **beide** Tools in einer Runde an:
+
+```
+assistant: [tool_use read_report {"path": "unit0/report.json"}]
+           [tool_use search_course {"query": "boost one logit corpus loss worse transition"}]
+user:      [tool_result …report…] [tool_result …section…]
+assistant: It went up, from 1.695 to 1.890 (+0.194) …
+```
+
+Notiere drei Vorhersagen: Welcher Weg erzeugt zuerst einen fehlerhaften Aufruf? Wie
+viele Nachrichten enthält jede Konversation, wenn der Lauf endet? Und welche
+Konversation könntest du unverändert an ein anderes Modell weitergeben?
+
+## Verfolgen [#verfolgen]
+
+```
+python examples/run_agent.py --protocol native --preset scripted
+```
+
+Öffne `artifacts/agent/run.json`. Im Vergleich mit dem Bericht aus AG01:
+
+- `messages` — vier Einträge, nicht sieben. Finde die Assistentennachricht, deren
+  `content` zwei `tool_use`-Blöcke mit je einer `id` enthält; dann die
+  Nutzernachricht, deren zwei `tool_result`-Blöcke diese IDs zurücktragen. Die API
+  besteht darauf, dass alle Ergebnisse einer Runde in **einer** Nachricht ankommen;
+  die Schleife lässt das Backend sie bauen.
+- `steps` — zwei Schritte mit demselben `index`: eine Runde, zwei Aufrufe. AG01s
+  Protokoll konnte das nicht ausdrücken.
+- Nirgends gibt es eine `CALL`-Zeile oder ein `RESULT`-Präfix. Du hast nichts
+  geparst.
+
+## Bauen [#bauen]
+
+Starte die drei Wege. Jeder schreibt seinen eigenen Bericht:
+
+```
+python examples/run_agent.py --protocol text   --preset anthropic --model sonnet --report artifacts/agent/text-claude.json
+python examples/run_agent.py --protocol native --preset anthropic --model sonnet --report artifacts/agent/native-claude.json
+python examples/run_agent.py --protocol native --preset qwen --report artifacts/agent/native-qwen.json
+```
+
+Lies die drei Antworten nebeneinander, dann die drei `messages`-Listen. Finde auf
+dem Qwen-Weg die Assistentennachricht: Sie ist reiner Text mit `<tool_call>`-Tags —
+Qwens Template-Format — und das Ergebnis ging als `tool`-Nachricht zurück. Stell
+dir den gerenderten Prompt vor: Qwens Template macht aus einer `tool`-Nachricht
+eine **Nutzerrunde, eingehüllt in `<tool_response>`**. AG01s „Ergebnisse gehen als
+Nutzernachricht zurück“ war keine Abkürzung; genau das macht das native Format
+darunter.
+
+**Eigenständige Übung.** Schreibe `list_reports` noch einmal, diesmal als Schema.
+Das `Tool`, das du für AG01 geschrieben hast, hat bereits typisierte `Parameter`;
+das Schema wird daraus abgeleitet:
+
+```python
+from pathlib import Path
+
+from llm_course.agent import Tool, input_schema
+
+def list_reports(artifact_root: Path) -> Tool:
+    def run(arguments: dict) -> str:
+        paths = sorted(p.relative_to(artifact_root) for p in artifact_root.rglob("*.json"))
+        return "\n".join(str(p) for p in paths) or "No reports found."
+
+    return Tool("list_reports", "List every JSON report under the artifact directory.", (), run)
+
+print(input_schema(list_reports(Path("artifacts"))))
+```
+
+Registriere es neben den zwei Standard-Tools mit `run_native_agent` (dieselbe Form
+wie das Runner-Snippet aus AG01, mit `backend=make_backend("anthropic")`) und frage
+*"Which reports do I have, and what did Unit 0 measure?"*. Bewahre den Bericht auf.
+
+## Brechen [#brechen]
+
+Vier absichtliche Fehler. Bewahre jeden Bericht auf.
+
+**Eine Konversation, die die API ablehnt.** Kopiere
+`artifacts/agent/native-claude.json`, lösche einen `tool_result`-Block aus der
+Nutzernachricht, die zwei davon enthält, und spiele die Konversation erneut ab (ein
+API-Aufruf, etwa ein Cent):
+
+```
+python - <<'PY'
+import json
+from pathlib import Path
+from llm_course.agent.presets import make_backend, default_tools
+report = json.loads(Path("artifacts/agent/native-claude.json").read_text())
+messages = report["messages"][:3]
+assert len(messages[2]["content"]) == 2, "no batched turn; pick the user message with two results"
+messages[2]["content"] = messages[2]["content"][:1]          # drop the second result
+backend = make_backend("anthropic")
+try:
+    backend.call("You are an assistant with tools.", tuple(messages), default_tools(Path("content"), Path("artifacts")))
+except Exception as error:
+    print(type(error).__name__, error)
+PY
+```
+
+Die API lehnt die Konversation ab: Ein `tool_use` ohne sein `tool_result` ist ein
+Fehler, keine Vermutung. AG01s Schleife hätte dieselbe Lücke stillschweigend
+akzeptiert.
+
+**Ein falscher Typ im Schema.** Deklariere in deiner `agent_tools.py` auf einer
+Kopie der Parameter von `search_course` `k` als `"string"` und stelle eine Frage,
+die `k` braucht. Lies den Aufruf, den das Modell macht, und was `search_course` für
+`"k": "3"` zurückgibt.
+
+**Das Budget bleibt deine Sache.**
+
+```
+python examples/run_agent.py --protocol native --preset anthropic --model sonnet --max-steps 1 --report artifacts/agent/native-budget.json
+```
+
+`stopped` ist `budget`. Die API hat nichts bemerkt. In 2 von 5 gemessenen Läufen mit
+dem Textprotokoll auf Claude war das Budget das Einzige, was den Lauf beendet hat —
+fünf umformulierte Suchen hintereinander und keine Antwort.
+
+**Qwens eigenes Format.** Starte den Qwen-Weg erneut in einen eigenen Bericht,
+damit der Bericht aus „Bauen“ erhalten bleibt:
+
+```
+python examples/run_agent.py --protocol native --preset qwen --report artifacts/agent/native-qwen-format.json
+```
+
+Lies jeden `<tool_call>`-Block in den `messages` dieses Berichts; erscheint in
+seinen `steps` ein `parse_error`, lies den Block, der ihn verursacht hat.
+Referenzmessung: 0 von 5 — Qwens Template-Format wurde jedes Mal geparst.
+
+## Messen [#messen]
+
+```
+python examples/run_agent.py --protocol text   --preset anthropic --model sonnet --repeat 5 --report artifacts/agent/measure-ag02/text-claude.json
+python examples/run_agent.py --protocol native --preset anthropic --model sonnet --repeat 5 --report artifacts/agent/measure-ag02/native-claude.json
+python examples/run_agent.py --protocol native --preset qwen --repeat 5 --report artifacts/agent/measure-ag02/native-qwen.json
+```
+
+Referenzmessung, Apple Silicon (MPS) für Qwen und die API für Claude, 2026-09-21
+(`claude-sonnet-5` mit adaptivem Thinking, Effort low). Die zwei AG01-Zeilen sind
+zum Vergleich von dieser Seite übernommen. In der Spalte „zwei Aufrufe in einer
+Runde“ bedeutet `–`, dass das Protokoll zwei Aufrufe in einer Runde nicht
+ausdrücken kann, und `0`, dass es das könnte und das Modell es nie getan hat:
+
+| Weg | protocol_ok (von 5) | beantwortet (von 5) | read_report (von 5) | search_course (von 5) | exakte Überschrift (von 5) | zwei Aufrufe in einer Runde (von 5) | Median Schritte | Median Latenz (s, gesamt) | Median Kosten (USD) |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| text / Claude sonnet-5 | 5 | 3 | 5 | 5 | 1 | – | 5 | 8.3 | 0.0257 |
+| native / Claude sonnet-5 | 5 | 5 | 5 | 5 | 3 | 5 | 4 | 9.6 | 0.0240 |
+| native / Qwen 4B | 5 | 5 | 5 | 5 | 5 | 0 | 2 | 13.6 | 0.0000 |
+| text / Qwen 4B (AG01, 2026-09-21) | 5 | 5 | 5 | 5 | 5 | – | 2 | 13.5 | 0.0000 |
+| text / Qwen 1.7B (AG01, 2026-09-21) | 5 | 5 | 5 | 0 | 0 | – | 1 | 4.6 | 0.0000 |
+
+Deine erste Vorhersage hat eine schlichte Antwort: **Kein Weg hat einen fehlerhaften
+Aufruf erzeugt.** `protocol_ok` ist auf allen dreien 5 von 5, und Qwens
+`<tool_call>`-JSON wurde jedes Mal geparst. Der interessante Fehler lag woanders.
+Mit dem Textprotokoll hat Claude nur 3 von 5 beantwortet: Die Läufe 1 und 3 liefen
+ins 6-Schritte-Budget und setzten dabei fünf `search_course`-Aufrufe hintereinander
+mit umformulierten Anfragen ab — "expected corpus loss increase after boost",
+"corpus loss expected to rise after controlled change", "why corpus loss got worse is
+this expected" —, weil kein Abschnitt von Einheit 0 wörtlich „expected“ enthält
+(`grep -i expected content/unit-00.md` ist leer), und das Modell nie entschieden hat,
+dass es genug Belege hat. Mit dem nativen Protokoll hat dasselbe Modell 5 von 5
+beantwortet und in 5 von 5 Läufen mit einer Assistentenrunde begonnen, die beide
+Tools aufruft (`messages[1].content` ist `thinking`, `tool_use`, `tool_use`).
+Dasselbe Modell, dieselbe Frage, andere Verdrahtung, anderes Verhalten: Das
+Protokoll hat verändert, was das Modell tut, nicht nur die Buchführung.
+
+Kosten und Tokens: Das Textprotokoll hat pro Lauf weniger Output-Tokens verbraucht
+(im Schnitt 236 gegenüber 527 — eine `CALL`-Zeile sind ein paar Tokens, eine native
+Runde trägt einen Thinking-Block und strukturierte `tool_use`-Blöcke), aber mehr
+Runden, die jede die wachsende Konversation erneut senden, sodass die Mediane nahe
+beieinander liegen: 0,0257 $ pro Lauf für text und 0,0240 $ für native. Die
+Fünf-Läufe-Messung beider gehosteter Wege zusammen hat 0,20 $ gekostet. Die
+Median-Latenz lag bei 8,3 s (text / Claude), 9,6 s (native / Claude) und 13,6 s (native /
+Qwen auf MPS).
+
+Zwei Dinge in der Tabelle sind Eigenschaften des Modells, nicht des Protokolls. Qwen
+4B hat nie zwei Aufrufe in einer Runde gebündelt (0 von 5), obwohl das Protokoll es
+erlaubt und das skriptgesteuerte Transkript es tut; Claude hat es in jedem Lauf
+getan. Und die Frage verlangt die *exakte* Überschrift, die `search_course` jedes
+Mal wörtlich geliefert hat — trotzdem hat Claude `30–42 min · Build one controlled
+change` nur in 1 von 5 Text-Läufen und 3 von 5 nativen Läufen exakt zitiert; die
+übrigen haben sie zu "Build one controlled change" umformuliert und die Zeitangabe
+weggelassen. Qwen 4B hat sie in 5 von 5 exakt zitiert, auf beiden Protokollen. Sein
+nativer Weg hat außerdem in allen fünf Läufen identische Token-Zahlen erzeugt (3391
+rein, 192 raus): Das lokale Backend ist hier deterministisch.
+
+## Erklären [#erklaren]
+
+Vervollständige in deinen Notizen:
+
+1. Die API garantiert jetzt … ; sie kann weiterhin nicht wissen …
+2. Alle Ergebnisse einer Runde reisen in einer Nachricht, weil …
+3. Qwens `tool`-Rolle unterscheidet sich von einer Nutzernachricht darin, dass … — und nicht darin, dass …
+4. Pro Lauf hat das Textprotokoll … Output-Tokens als das Schema verbraucht, aber etwa gleich viel gekostet, weil …
+5. Wenn ein Tool-Ergebnis auf dem nativen Weg löge, würde die Schleife …
+
+## Abschluss-Gate [#abschluss-gate]
+
+Du bestehst AG02 mit: den drei Referenzberichten; den vier Berichten aus „Brechen“
+mit je einem Satz; der Tabelle der fünf Läufe für alle drei Wege mit Kosten; deinem
+schemabasierten `list_reports` und dem Bericht einer Frage, die es beantwortet hat.
+Deine eigenen Worte zählen; die Worte dieser Seite zählen nicht.
+
+## Wie geht es weiter? [#wie-geht-es-weiter]
+
+AG03 verbindet diesen Agenten mit dem MCP-Server des Kurses und lässt dich dann
+einen eigenen bauen *(in Kürze)*. [G01](/de/) macht aus der Spalte „noch deine
+Sache“ eine eigene Schicht.
+
+[← AG01 — Die Agentenschleife, von Hand](/de/agent-loop) · [Kursstart →](/de/) · [Glossar](/de/glossary)

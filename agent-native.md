@@ -1,0 +1,251 @@
+---
+title: "AG02 — Native tool use"
+sidebar:
+  label: "AG02 — Native tool use"
+---
+
+<span id="ag02-native-tool-use" />
+
+
+[← AG01 — The agent loop, by hand](/agent-loop) · [Course home →](/) · [Glossary](/glossary)
+
+Prerequisites: [AG01](/agent-loop) with its report at `artifacts/unit0/report.json`,
+and `ANTHROPIC_API_KEY` in your shell — the required route of this unit is hosted, on
+`claude-sonnet-5`. The reference runs below cost about 2–3 cents each on that model;
+a full pass of this page including Measure is roughly one dollar. The CPU route is
+the local Qwen leg, which uses the 4B you downloaded for AG01. Allow one session of
+60–90 minutes.
+
+## What changes, and what does not [#what-changes-and-what-does-not]
+
+In AG01 you told the model the rules in prose, parsed one `CALL` line yourself, and
+sent results back as text. A native tool-use API replaces exactly three of those
+things: the **schema** (a JSON Schema per tool instead of a sentence), the **parse**
+(the API returns a structured `tool_use` block), and the **call id** (each result is
+matched to the call it answers). Everything else is still yours:
+
+| still yours | why the API cannot take it |
+| --- | --- |
+| the step budget | the API does not know when a run should give up |
+| output truncation | it does not know how large a result may be |
+| path containment | it does not know which files are the learner's |
+| believing a result | it cannot tell a true tool result from a lying one |
+
+The first row is not hypothetical. In the reference measurement below, two of the
+five text-protocol runs on Claude ended only because the budget ran out: five
+`search_course` calls in a row with rephrased queries, and no answer. The API on
+the native leg would not have noticed either.
+
+You will run the same agent on the same question three ways:
+
+| leg | loop | model |
+| --- | --- | --- |
+| text / Claude | AG01's loop, hosted | `claude-sonnet-5` |
+| native / Claude | the new loop | `claude-sonnet-5` |
+| native / Qwen | the new loop, local | `Qwen/Qwen3-4B-Instruct-2507` |
+
+The two loops are `src/llm_course/agent/loop.py` and `native.py`. Diff them: that
+difference is this unit.
+
+## Predict [#predict]
+
+Read AG01's transcript again, then this one — the native transcript for the same
+question. The model asks for **both** tools in one turn:
+
+```
+assistant: [tool_use read_report {"path": "unit0/report.json"}]
+           [tool_use search_course {"query": "boost one logit corpus loss worse transition"}]
+user:      [tool_result …report…] [tool_result …section…]
+assistant: It went up, from 1.695 to 1.890 (+0.194) …
+```
+
+Write down three predictions: which leg will produce a malformed call first; how
+many messages each history holds when the run ends; and which history you could
+hand to a different model unchanged.
+
+## Trace [#trace]
+
+```
+python examples/run_agent.py --protocol native --preset scripted
+```
+
+Open `artifacts/agent/run.json`. Compared with AG01's report:
+
+- `messages` — four entries, not seven. Find the assistant message whose `content`
+  holds two `tool_use` blocks, each with an `id`; then the user message whose two
+  `tool_result` blocks carry those ids back. The API insists that all results for
+  one turn arrive in **one** message; the loop asks the backend to build it.
+- `steps` — two steps with the same `index`: one turn, two calls. AG01's protocol
+  could not say that.
+- There is no `CALL` line and no `RESULT` prefix anywhere. Nothing was parsed by you.
+
+## Build [#build]
+
+Run the three legs. Each writes its own report:
+
+```
+python examples/run_agent.py --protocol text   --preset anthropic --model sonnet --report artifacts/agent/text-claude.json
+python examples/run_agent.py --protocol native --preset anthropic --model sonnet --report artifacts/agent/native-claude.json
+python examples/run_agent.py --protocol native --preset qwen --report artifacts/agent/native-qwen.json
+```
+
+Read the three answers side by side, then the three `messages` lists. On the Qwen
+leg, find the assistant message: it is plain text containing `<tool_call>` tags —
+Qwen's template format — and the result went back as a `tool` message. Open the
+rendered prompt in your head: Qwen's template turns a `tool` message into a **user
+turn wrapped in `<tool_response>`**. AG01's "results go back as a user message" was
+not a shortcut; it is what the native format does underneath.
+
+**Independent exercise.** Write `list_reports` again, this time as a schema. The
+`Tool` you wrote for AG01 already has typed `Parameter`s; the schema is derived:
+
+```python
+from pathlib import Path
+
+from llm_course.agent import Tool, input_schema
+
+def list_reports(artifact_root: Path) -> Tool:
+    def run(arguments: dict) -> str:
+        paths = sorted(p.relative_to(artifact_root) for p in artifact_root.rglob("*.json"))
+        return "\n".join(str(p) for p in paths) or "No reports found."
+
+    return Tool("list_reports", "List every JSON report under the artifact directory.", (), run)
+
+print(input_schema(list_reports(Path("artifacts"))))
+```
+
+Register it beside the two defaults with `run_native_agent` (the same shape as AG01's
+runner snippet, with `backend=make_backend("anthropic")`) and ask *"Which reports do
+I have, and what did Unit 0 measure?"*. Keep the report.
+
+## Break [#break]
+
+Four deliberate failures. Keep each report.
+
+**A history the API refuses.** Copy `artifacts/agent/native-claude.json`, delete one
+`tool_result` block from the user message that holds two, and replay the history
+(one API call, about a cent):
+
+```
+python - <<'PY'
+import json
+from pathlib import Path
+from llm_course.agent.presets import make_backend, default_tools
+report = json.loads(Path("artifacts/agent/native-claude.json").read_text())
+messages = report["messages"][:3]
+assert len(messages[2]["content"]) == 2, "no batched turn; pick the user message with two results"
+messages[2]["content"] = messages[2]["content"][:1]          # drop the second result
+backend = make_backend("anthropic")
+try:
+    backend.call("You are an assistant with tools.", tuple(messages), default_tools(Path("content"), Path("artifacts")))
+except Exception as error:
+    print(type(error).__name__, error)
+PY
+```
+
+The API rejects the conversation: a `tool_use` without its `tool_result` is an
+error, not a guess. AG01's loop would have accepted the same gap silently.
+
+**A wrong type in the schema.** In your `agent_tools.py`, declare `k` as `"string"`
+on a copy of `search_course`'s parameters and ask a question that needs `k`. Read the
+call the model makes and what `search_course` returns for `"k": "3"`.
+
+**The budget is still yours.**
+
+```
+python examples/run_agent.py --protocol native --preset anthropic --model sonnet --max-steps 1 --report artifacts/agent/native-budget.json
+```
+
+`stopped` is `budget`. The API never noticed. In 2 of 5 measured text-protocol runs
+on Claude the budget was the only thing that ended the run — five rephrased searches
+in a row and no answer.
+
+**Qwen's own format.** Rerun the Qwen leg into a report of its own, so the Build
+report stays intact:
+
+```
+python examples/run_agent.py --protocol native --preset qwen --report artifacts/agent/native-qwen-format.json
+```
+
+Read every `<tool_call>` block in that report's `messages`; if a `parse_error`
+appears in its `steps`, read the block that caused it. Reference measurement: 0 of
+5 — Qwen's template format parsed every time.
+
+## Measure [#measure]
+
+```
+python examples/run_agent.py --protocol text   --preset anthropic --model sonnet --repeat 5 --report artifacts/agent/measure-ag02/text-claude.json
+python examples/run_agent.py --protocol native --preset anthropic --model sonnet --repeat 5 --report artifacts/agent/measure-ag02/native-claude.json
+python examples/run_agent.py --protocol native --preset qwen --repeat 5 --report artifacts/agent/measure-ag02/native-qwen.json
+```
+
+Reference measurement, Apple Silicon (MPS) for Qwen and the API for Claude, 2026-09-21
+(`claude-sonnet-5` with adaptive thinking, effort low). The two AG01 rows are copied
+from that page for comparison. In the "two calls in one turn" column, `–` means the
+protocol cannot express two calls in one turn, and `0` means it could and the model
+never did:
+
+| leg | protocol_ok (of 5) | answered (of 5) | read_report (of 5) | search_course (of 5) | exact heading (of 5) | two calls in one turn (of 5) | median steps | median latency (s, total) | median cost (USD) |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| text / Claude sonnet-5 | 5 | 3 | 5 | 5 | 1 | – | 5 | 8.3 | 0.0257 |
+| native / Claude sonnet-5 | 5 | 5 | 5 | 5 | 3 | 5 | 4 | 9.6 | 0.0240 |
+| native / Qwen 4B | 5 | 5 | 5 | 5 | 5 | 0 | 2 | 13.6 | 0.0000 |
+| text / Qwen 4B (AG01, 2026-09-21) | 5 | 5 | 5 | 5 | 5 | – | 2 | 13.5 | 0.0000 |
+| text / Qwen 1.7B (AG01, 2026-09-21) | 5 | 5 | 5 | 0 | 0 | – | 1 | 4.6 | 0.0000 |
+
+Your first prediction has a plain answer: **no leg produced a malformed call**.
+`protocol_ok` is 5 of 5 on all three, and the Qwen `<tool_call>` JSON parsed every
+time. The interesting failure was elsewhere. On the text protocol Claude answered
+only 3 of 5: runs 1 and 3 hit the 6-step budget issuing five consecutive
+`search_course` calls with rephrased queries — "expected corpus loss increase after
+boost", "corpus loss expected to rise after controlled change", "why corpus loss got
+worse is this expected" — because no Unit 0 section literally says "expected"
+(`grep -i expected content/unit-00.md` is empty), and the model never decided it had
+enough evidence. On the native protocol the same model answered 5 of
+5, and in 5 of 5 runs it opened with one assistant turn calling both tools
+(`messages[1].content` is `thinking`, `tool_use`, `tool_use`). Same model, same
+question, different plumbing, different behaviour: the protocol changed what the
+model did, not just the bookkeeping.
+
+Cost and tokens: the text protocol used fewer output tokens per run (236 versus 527
+on average — a `CALL` line is a few tokens, a native turn carries a thinking block
+and structured `tool_use` blocks) but more turns, each resending the growing
+history, so the medians came out close: $0.0257 per run for text and $0.0240 for
+native. The five-run measurement of both hosted legs together cost $0.20. Median
+latency was 8.3 s (text / Claude), 9.6 s (native / Claude) and 13.6 s (native /
+Qwen on MPS).
+
+Two things the table shows are model traits, not protocol traits. Qwen 4B never
+batched two calls in one turn (0 of 5) although the protocol allows it and the
+scripted transcript does it; Claude did it in every run. And the question asks for
+the *exact* heading, which `search_course` returned verbatim every time, yet Claude
+quoted `30–42 min · Build one controlled change` exactly in only 1 of 5 text runs and
+3 of 5 native runs — the others paraphrased it as "Build one controlled change" and
+dropped the time badge. Qwen 4B quoted it exactly in 5 of 5, on both protocols. Its
+native leg also produced identical token counts in all five runs (3391 in, 192 out):
+the local backend is deterministic here.
+
+## Explain [#explain]
+
+Complete in your lab notes:
+
+1. The API now guarantees … ; it still cannot know …
+2. All results for one turn travel in one message because …
+3. Qwen's `tool` role differs from a user message in that … — and does not differ in that …
+4. Per run, the text protocol used … output tokens than the schema but cost about the same, because …
+5. If a tool result lied on the native leg, the loop would …
+
+## Completion gate [#completion-gate]
+
+You pass AG02 with: the three reference reports; the four Break reports with one
+sentence each; the five-run table for all three legs with cost; your schema-based
+`list_reports` and the report of a question it answered. Your own words count; the
+words on this page do not.
+
+## What's next [#whats-next]
+
+AG03 connects this agent to the course's MCP server and then has you build your own
+*(coming soon)*. [G01](/) will turn the "still yours" column into a layer of
+its own.
+
+[← AG01 — The agent loop, by hand](/agent-loop) · [Course home →](/) · [Glossary](/glossary)

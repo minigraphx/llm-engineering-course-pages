@@ -36,7 +36,10 @@ Expected output: `Hello tiny model`. `=` assigns a value to a name, quoted text
 is a string, and `print(...)` displays its arguments. `#` starts a comment.
 Errors name a file and line: fix the first relevant error before continuing.
 
-### Lists, positions, slices, and loops [#lists-positions-slices-and-loops]
+### Lists, positions, and slices [#lists-positions-and-slices]
+
+One idea at a time. Each block below asks you to predict one thing before you
+run it; the comment on each line is the answer, so cover it first.
 
 ```python
 tokens = ["a", "b", "c", "d"]
@@ -44,38 +47,88 @@ print(tokens[0])       # a: Python positions start at zero
 print(tokens[1:3])     # ['b', 'c']: start included, stop excluded
 print(tokens[:-1])     # ['a', 'b', 'c']: omit the final item
 print(tokens[1:])      # ['b', 'c', 'd']: omit the first item
+```
+
+Square brackets construct a list or select from it. A single number selects one
+position. A colon selects a **slice**: the start is included, the stop is
+excluded, and `-1` counts from the end. Leaving a side empty means "from the
+beginning" or "to the end". Predict the four printed lines, then run the file.
+
+### Repeating for each item [#repeating-for-each-item]
+
+```python
 for token in tokens:
     print(token)
 ```
 
-Square brackets construct a list or select elements. A colon selects a slice;
-`-1` counts from the end. Indented lines belong to the loop. `for` repeats once
-per item. `zip(left, right)` visits corresponding items together; `list(...)`
-collects them. A **function** names a reusable calculation:
+`for` repeats the indented lines once per item, with `token` holding the current
+one. Predict how many lines print, then check.
+
+### Pairing two lists [#pairing-two-lists]
+
+`zip` walks two lists side by side and hands you one item from each:
+
+```python
+list(zip(["a", "b", "c"], ["b", "c", "d"]))   # [('a', 'b'), ('b', 'c'), ('c', 'd')]
+```
+
+`list(...)` collects the pairs so you can print them. Each pair sits in
+parentheses: a **tuple**, a fixed sequence that does not change. Now line up the
+two slices from above and zip *them*:
+
+```python
+left = tokens[:-1]    # ['a', 'b', 'c']
+right = tokens[1:]    # ['b', 'c', 'd']
+print(list(zip(left, right)))
+```
+
+Predict the pairs before running. Each pair is a character and the character
+that follows it — which is exactly what a bigram model counts. You have just
+written the idea behind T01 in two lines.
+
+
+
+### Interactive · Slices and pairs
+
+<SliceDemo locale="en" />
+
+### Naming a calculation [#naming-a-calculation]
+
+A **function** gives a calculation a name so you can reuse it:
 
 ```python
 def next_item_pairs(sequence):
     if len(sequence) < 2:
         return []
     return list(zip(sequence[:-1], sequence[1:]))
+```
 
+`def` defines the function and `sequence` is its input. `return` hands a result
+back. `if` runs its indented branch only when the condition is true; `<`
+compares numbers. Predict what `next_item_pairs(["a"])` returns and why the `if`
+is needed for that case.
+
+### Checking it [#checking-it]
+
+```python
 assert next_item_pairs(["a", "b", "c"]) == [("a", "b"), ("b", "c")]
 assert next_item_pairs([]) == []
 assert next_item_pairs(["a"]) == []
 ```
 
-`def` defines the function, `sequence` is its input, and `return` gives a result
-back. `if` runs a branch when a condition is true; `<` compares numbers. `==`
-checks equality; it does not assign. `assert` stops with an `AssertionError`
-when the condition is false. Parenthesized pairs are **tuples**: fixed sequences.
-Change one expected pair to see that the assertion really catches a mistake.
+`==` checks equality; it does not assign. `assert` stops with an
+`AssertionError` when its condition is false, and does nothing when it is true.
+Change one expected pair to see that the assertion really catches a mistake —
+predict which line fails first.
 
-Save your own variation in `artifacts/my-work/test_pairs.py`; place assertions
-inside a function named `test_pairs`. Run
+Save your own variation in `artifacts/my-work/test_pairs.py`; place the
+assertions inside a function named `test_pairs`. Run
 `python -m pytest artifacts/my-work/test_pairs.py`. A green result means the
-assertions passed; it does not prove untested inputs work. Type hints such as
-`sequence: list[str]` describe expected types for readers/tools; Python does not
-automatically enforce them. A docstring is a triple-quoted explanation just
+assertions passed; it does not prove untested inputs work.
+
+Two things you will see in course code but do not need yet: type hints such as
+`sequence: list[str]` describe the expected type for readers and tools, and
+Python does not enforce them; a docstring is a triple-quoted explanation just
 inside a function.
 
 ### NumPy terms before the next exercise [#numpy-terms-before-the-next-exercise]

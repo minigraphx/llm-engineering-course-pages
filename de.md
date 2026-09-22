@@ -14,6 +14,57 @@ Beginne mit der [Einrichtung](/de/setup) und dem [Lernleitfaden](/de/learning-gu
 Er nennt Voraussetzungen und Checkpoints. Das [Glossar](/de/glossary) erklärt
 unbekannte Begriffe. Vorkenntnisse in Machine Learning sind nicht erforderlich.
 
+Zuletzt aktualisiert am 22.09.2026 — siehe [Neu im Kurs](/de/changelog).
+
+## Was du danach kannst [#was-du-danach-kannst]
+
+Jede Fähigkeit unten wird durch eine Einheit belegt, die du auf der CPU ausführen
+kannst — nicht durch eine Leseliste.
+
+- **Erklären, wie aus Text eine Vorhersage wird** — Byte-Level-Tokenisierung,
+  Embeddings, Self-Attention und ein Decoder, selbst gebaut in
+  [T02](/de/bpe-tokenizer), [T03](/de/data-pipeline), [T04](/de/attention) und
+  [T05](/de/mini-gpt).
+- **Ein kleines GPT trainieren und fortsetzen** — eine Trainingsschleife, die du
+  unterbrechen und reproduzieren kannst, in [T05](/de/mini-gpt),
+  [T06](/de/mini-gpt-gate) und [E01](/de/pretraining).
+- **Die Textgenerierung steuern** — Temperatur, Top-k/Top-p, Stoppregeln und der
+  KV-Cache, in [I01](/de/inference-decoding).
+- **Echte Verbesserung von Rauschen unterscheiden** — Held-out-Evaluation über
+  mehrere Seeds, mit Unsicherheit und Kontaminationsprüfung, in
+  [E02](/de/data-quality) und [E03](/de/evaluation).
+- **Im Budget arbeiten** — Parameterzahl, Speicher und Zeit abschätzen, bevor du
+  sie ausgibst, in [E04](/de/profiling) und den
+  [Hardware-Leitplanken](/de/hardware).
+- **Ein Modell anpassen statt neu trainieren** — SFT, LoRA, DPO und Continued
+  Pretraining, belegbar verglichen, in [A01–A04](/de/sft-lora) und
+  [C04](/de/continued-pretraining).
+- **Ein Retrieval-System über eigene Dokumente bauen** — Chunking, Satz-Embeddings,
+  ein Vector Store und Antworten mit Quellenangabe, in [R01](/de/rag-build).
+- **Ein System ehrlich halten** — ablehnen, wenn die Antwort nicht in den Quellen
+  steht, Zitate erzwingen, Prompt Injection erkennen und die Ablehnungsrate messen,
+  in [R02](/de/rag-quality).
+- **Eine Agentenschleife bauen, in der nichts versteckt ist** — ein Klartext-
+  Tool-Protokoll, das du selbst parst, ein Schrittbudget und ein Trace, der
+  zeigt, was das Modell tatsächlich gesehen hat, in [AG01](/de/agent-loop).
+- **Denselben Agenten auf eine native Tool-Use-API setzen und sagen, was die API übernommen hat** — Schemas, strukturierte Aufrufe, Aufruf-IDs — und was nicht, gemessen an derselben Frage auf drei Wegen, in [AG02](/de/agent-native).
+- **Entscheiden, ob überhaupt trainiert wird** — aus einer Anforderung eine
+  gemessene Baseline-Lücke und eine umkehrbare Entscheidung machen, in
+  [C01](/de/company-strategy) und im [Capstone](/de/company-capstone).
+
+Der Angewandt-Track geht über Retrieval hinaus. Diese Einheiten sind geplant und
+noch nicht geschrieben:
+
+- **Ein eigener MCP-Server** *(in Kürze)* — den Agenten mit dem MCP-Server des Kurses verbinden, dann selbst einen bauen und ausliefern.
+- **Prompt Engineering** *(in Kürze)* — Prompt-Varianten gegen ein Evaluationsset
+  messen, statt Mustern zu vertrauen.
+- **Guardrails als eigene Einheit** *(in Kürze)* — Eingangs- und Ausgangsprüfungen
+  für jedes LLM-System, nicht nur für Retrieval.
+- **Conversational AI** *(in Kürze)* — mehrstufige Antworten, Memory und das
+  Kontextbudget.
+- **Vector Databases** *(in Kürze)* — exakte gegen approximative Suche und der
+  Punkt, an dem du wechselst.
+
 ## Zwei Einstiegspfade [#zwei-einstiegspfade]
 
 - **Standalone:** Python, Mathematik, neuronale Netze und PyTorch sind enthalten.
@@ -51,7 +102,9 @@ Alle Pflichtziele haben einen CPU-Pfad. Prüfe vor größeren Experimenten die
 - ein kleines GPT-Modell mit Training und Evaluation;
 - Instruktions- und Präferenz-Finetuning;
 - eine synthetische Datenpipeline mit Qualitätsprüfungen;
-- einen optimierten lokalen Inferenzdienst;
+- ein Retrieval-System über das Kursmaterial, mit eigenem Evaluationsset,
+  Guardrails und einer ausgelieferten API;
+- eine Agentenschleife mit zwei Tools über deine eigenen Berichte und den Kurstext;
 - einen reproduzierbaren Firmenmodell-Capstone.
 
 <aside className="course-note" aria-label="Entwicklungsstand">
@@ -61,12 +114,17 @@ Alle Kurseinheiten von Einheit 0 bis zum Capstone sind ausgeliefert und auf
 CPU ausführbar: die Grundlagen F01–F06 mit der B01-Brücke, der Kern T01–T06
 und I01, die Engineering-Einheiten E01–E04, die Firmeneinheiten C01–C04, die
 Adaptationseinheiten A01–A04 und der Capstone sowie der Track „Angewandt:
-RAG“ R01–R02. Die deutsche Fassung ist vollständig bis auf R01/R02 (MIN-129).
+RAG“ R01–R02 sowie die Einheiten AG01 und AG02 aus „Angewandt: Agenten“. Die deutsche
+Fassung ist vollständig bis auf R01/R02 (MIN-129).
 Noch offen: die größeren bereitgestellten Datenpakete (M1A), die
 Interpretierbarkeitserweiterung (M2A), die Einheiten zu Quantisierung,
 Batching und Serving (M6), die menschliche Freigabe des versiegelten
 Gold-Sets und der synthetischen Stichprobe (MIN-95/96/100) und der echte
-Pilot mit fünf Lernenden. Automatische Prüfungen belegen weder das
+Pilot mit fünf Lernenden. Der Angewandt-Track soll über Retrieval hinaus
+wachsen: ein eigener MCP-Server, Prompt Engineering,
+Guardrails als eigene Einheit, mehrstufige
+Konversationssysteme und Vector Databases (MIN-148); diese Einheiten sind
+oben mit „(in Kürze)“ markiert und noch nicht geschrieben. Automatische Prüfungen belegen weder das
 Verständnis aller Lernenden noch die Ausstellung eines Zertifikats.
 
 </aside>
