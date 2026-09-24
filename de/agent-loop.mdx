@@ -97,11 +97,12 @@ skriptgesteuerte Transkript das bemerken?
 
 ## Verfolgen [#verfolgen]
 
-Speichere deinen Bericht aus Einheit 0 dort, wo das Tool ihn findet, und spiele
-das Transkript ab:
+Starte den Referenzlauf aus Einheit 0 noch einmal; er speichert seinen
+vollständigen Bericht unter `artifacts/unit0/report.json`, wo das Tool ihn findet.
+Spiele danach das Transkript ab:
 
 ```
-mkdir -p artifacts/unit0 && python examples/run_unit0.py > artifacts/unit0/report.json
+python examples/run_unit0.py
 python examples/run_agent.py --preset scripted
 ```
 
@@ -309,11 +310,12 @@ dieser Seite zählen nicht.
 
 ## Wie geht es weiter? [#wie-geht-es-weiter]
 
-AG02 setzt denselben Agenten auf eine native Tool-Use-API und fragt, was die API
-dir abgenommen hat. AG03 verbindet ihn mit dem MCP-Server des Kurses und lässt
-dich dann einen eigenen bauen. Beide *(in Kürze)*. Der
-[Track „Angewandt: RAG“](/de/rag-build) zeigt, was aus `search_course` mit echtem
-Retrieval dahinter wird.
+[AG02](/de/agent-native) setzt denselben Agenten auf eine native Tool-Use-API und
+fragt, was die API dir abgenommen hat. [AG03](/de/agent-injection) misst, was jede
+Abwehr gegen Prompt Injection tatsächlich bringt, mit demselben Agenten und R02s
+RAG-Pipeline. AG04 verbindet ihn mit dem MCP-Server des Kurses und lässt dich dann
+einen eigenen bauen *(in Kürze)*. Der [Track „Angewandt: RAG“](/de/rag-build) zeigt,
+was aus `search_course` mit echtem Retrieval dahinter wird.
 
 [← Lernleitfaden](/de/learning-guide) · [AG02 — Native Tool-Use →](/de/agent-native) · [Glossar](/de/glossary)
 

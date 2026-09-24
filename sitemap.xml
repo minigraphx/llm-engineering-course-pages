@@ -2,6 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://llm.onlinekurs.training/</loc></url>
   <url><loc>https://llm.onlinekurs.training/adaptation-comparison</loc></url>
+  <url><loc>https://llm.onlinekurs.training/agent-injection</loc></url>
   <url><loc>https://llm.onlinekurs.training/agent-loop</loc></url>
   <url><loc>https://llm.onlinekurs.training/agent-native</loc></url>
   <url><loc>https://llm.onlinekurs.training/attention</loc></url>
@@ -17,6 +18,7 @@
   <url><loc>https://llm.onlinekurs.training/data-policy</loc></url>
   <url><loc>https://llm.onlinekurs.training/data-quality</loc></url>
   <url><loc>https://llm.onlinekurs.training/de/adaptation-comparison</loc></url>
+  <url><loc>https://llm.onlinekurs.training/de/agent-injection</loc></url>
   <url><loc>https://llm.onlinekurs.training/de/agent-loop</loc></url>
   <url><loc>https://llm.onlinekurs.training/de/agent-native</loc></url>
   <url><loc>https://llm.onlinekurs.training/de/attention</loc></url>

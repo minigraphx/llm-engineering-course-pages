@@ -90,10 +90,11 @@ scripted transcript notice?
 
 ## Trace [#trace]
 
-Save your Unit 0 report where the tool can find it, then replay the transcript:
+Rerun the Unit 0 reference run, which saves its full report to
+`artifacts/unit0/report.json`, where the tool can find it. Then replay the transcript:
 
 ```
-mkdir -p artifacts/unit0 && python examples/run_unit0.py > artifacts/unit0/report.json
+python examples/run_unit0.py
 python examples/run_agent.py --preset scripted
 ```
 
@@ -294,10 +295,12 @@ explanation in your own words counts; the words on this page do not.
 
 ## What's next [#whats-next]
 
-AG02 puts the same agent on a native tool-use API and asks what the API did for
-you. AG03 connects it to the course's MCP server, then has you build your own.
-Both are *(coming soon)*. The [Applied: RAG track](/rag-build) shows what
-`search_course` becomes with real retrieval behind it.
+[AG02](/agent-native) puts the same agent on a native tool-use API and asks what
+the API did for you. [AG03](/agent-injection) measures what each defence against
+prompt injection actually buys, on this same agent and R02's RAG pipeline. AG04
+will connect it to the course's MCP server and then have you build your own
+*(coming soon)*. The [Applied: RAG track](/rag-build) shows what `search_course`
+becomes with real retrieval behind it.
 
 [← Learning guide](/learning-guide) · [AG02 — Native tool use →](/agent-native) · [Glossary](/glossary)
 

@@ -1,5 +1,5 @@
 {
-  "count": 82,
+  "count": 84,
   "generator": "blume@1.6.4",
   "pages": [
     {
@@ -21,6 +21,16 @@
       "route": "/adaptation-comparison",
       "title": "A02 — Choose an adaptation with evidence",
       "url": "https://llm.onlinekurs.training/adaptation-comparison"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://llm.onlinekurs.training/api/docs/pages/agent-injection.json",
+      "lastModified": null,
+      "locale": "en",
+      "markdownUrl": "https://llm.onlinekurs.training/agent-injection.md",
+      "route": "/agent-injection",
+      "title": "AG03 — Prompt injection: measure what each defence buys",
+      "url": "https://llm.onlinekurs.training/agent-injection"
     },
     {
       "contentType": "doc",
@@ -181,6 +191,16 @@
       "route": "/de/adaptation-comparison",
       "title": "A02 — Anpassung anhand von Evidenz wählen",
       "url": "https://llm.onlinekurs.training/de/adaptation-comparison"
+    },
+    {
+      "contentType": "doc",
+      "json": "https://llm.onlinekurs.training/api/docs/pages/de/agent-injection.json",
+      "lastModified": null,
+      "locale": "de",
+      "markdownUrl": "https://llm.onlinekurs.training/de/agent-injection.md",
+      "route": "/de/agent-injection",
+      "title": "AG03 — Prompt-Injection: messen, was jede Abwehr bringt",
+      "url": "https://llm.onlinekurs.training/de/agent-injection"
     },
     {
       "contentType": "doc",

@@ -25,7 +25,7 @@ python examples/diagnose_unit0.py
 | requested MPS/CUDA is unavailable | accelerator is unsupported or not visible to PyTorch | rerun with `--device cpu`; this is the full required route |
 | permission error under `artifacts/` | current directory is not writable | use `--artifact-dir` with a writable project-local directory |
 | checkpoint format/vocabulary error | assets came from another course version | run with a fresh directory such as `--artifact-dir artifacts/unit0-clean` |
-| `text must not be empty` | a language model needs at least one context token | provide a non-empty `--prompt` |
+| `--prompt must contain at least one character` | a language model needs at least one context token | provide a non-empty `--prompt` |
 | prompt contains `?` unexpectedly | unsupported characters map to the unknown token | use lowercase letters and the listed punctuation for this first model |
 | sampled runs differ | seed or command differs | use the same `--seed`, prompt, boost, temperature, and course commit |
 

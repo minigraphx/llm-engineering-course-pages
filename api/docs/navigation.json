@@ -244,6 +244,12 @@
           "label": "AG02 — Native tool use",
           "pageId": "filesystem:(applied-agents)/agent-native.mdx",
           "route": "/agent-native"
+        },
+        {
+          "kind": "page",
+          "label": "AG03 — Prompt injection",
+          "pageId": "filesystem:(applied-agents)/agent-injection.mdx",
+          "route": "/agent-injection"
         }
       ],
       "display": "flat",

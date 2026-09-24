@@ -14,7 +14,7 @@ Beginne mit der [Einrichtung](/de/setup) und dem [Lernleitfaden](/de/learning-gu
 Er nennt Voraussetzungen und Checkpoints. Das [Glossar](/de/glossary) erklärt
 unbekannte Begriffe. Vorkenntnisse in Machine Learning sind nicht erforderlich.
 
-Zuletzt aktualisiert am 22.09.2026 — siehe [Neu im Kurs](/de/changelog).
+Zuletzt aktualisiert am 24.09.2026 — siehe [Neu im Kurs](/de/changelog).
 
 ## Was du danach kannst [#was-du-danach-kannst]
 
@@ -48,6 +48,9 @@ kannst — nicht durch eine Leseliste.
   Tool-Protokoll, das du selbst parst, ein Schrittbudget und ein Trace, der
   zeigt, was das Modell tatsächlich gesehen hat, in [AG01](/de/agent-loop).
 - **Denselben Agenten auf eine native Tool-Use-API setzen und sagen, was die API übernommen hat** — Schemas, strukturierte Aufrufe, Aufruf-IDs — und was nicht, gemessen an derselben Frage auf drei Wegen, in [AG02](/de/agent-native).
+- **Messen, was eine Abwehr gegen Prompt Injection Stufe für Stufe tatsächlich
+  bringt** — eine kumulative Verteidigungsleiter gegen R02s Retrieval-Pipeline und
+  AG02s Agenten, nur mit lokalen Modellen, in [AG03](/de/agent-injection).
 - **Entscheiden, ob überhaupt trainiert wird** — aus einer Anforderung eine
   gemessene Baseline-Lücke und eine umkehrbare Entscheidung machen, in
   [C01](/de/company-strategy) und im [Capstone](/de/company-capstone).
@@ -88,7 +91,7 @@ zu prüfbaren Daten, geschützter Evaluation und Continued Pretraining; die
 Adaptationsstrecke [A01–A04](/de/sft-lora) behandelt SFT/LoRA, den
 Adaptationsvergleich, DPO und die RLHF-Brücke; der [Capstone](/de/company-capstone)
 verbindet alles zu einer umkehrbaren Firmenmodell-Entscheidung. Der Track
-[„Angewandt: RAG“](/de/rag-build) (R01–R02, derzeit nur auf Englisch) ist ein
+[„Angewandt: RAG“](/de/rag-build) (R01–R02) ist ein
 eigenständiger Einstieg, der nur Python und einen LLM-Aufruf braucht.
 
 Alle Pflichtziele haben einen CPU-Pfad. Prüfe vor größeren Experimenten die
@@ -114,8 +117,8 @@ Alle Kurseinheiten von Einheit 0 bis zum Capstone sind ausgeliefert und auf
 CPU ausführbar: die Grundlagen F01–F06 mit der B01-Brücke, der Kern T01–T06
 und I01, die Engineering-Einheiten E01–E04, die Firmeneinheiten C01–C04, die
 Adaptationseinheiten A01–A04 und der Capstone sowie der Track „Angewandt:
-RAG“ R01–R02 sowie die Einheiten AG01 und AG02 aus „Angewandt: Agenten“. Die deutsche
-Fassung ist vollständig bis auf R01/R02 (MIN-129).
+RAG“ R01–R02 sowie die Einheiten AG01, AG02 und AG03 aus „Angewandt: Agenten“. Die deutsche
+Fassung ist vollständig.
 Noch offen: die größeren bereitgestellten Datenpakete (M1A), die
 Interpretierbarkeitserweiterung (M2A), die Einheiten zu Quantisierung,
 Batching und Serving (M6), die menschliche Freigabe des versiegelten

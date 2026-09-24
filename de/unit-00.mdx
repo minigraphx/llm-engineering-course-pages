@@ -51,9 +51,23 @@ Prüfe danach deine Einrichtung:
 python examples/diagnose_unit0.py
 ```
 
-Jede Prüfung soll `pass` melden. Der Befehl prüft Python, CPU/MPS/CUDA,
-beschreibbaren Artefaktspeicher, das Laden des Checkpoints und eine
-Testgenerierung. Bei einem Fehler hilft die
+Du solltest fünf Zeilen wie diese sehen:
+
+```
+python      pass  3.12.13
+backend     pass  mps
+artifacts   pass  artifacts/unit0-diagnostic
+generation  pass  "the te t"
+ready       yes
+```
+
+Jede Zeile nennt eine Prüfung, ihr Ergebnis und was sie gefunden hat: deine
+Python-Version (nötig ist 3.11 oder neuer); das **Backend**, also den Prozessor,
+der rechnet — `cpu`, `mps` (eine Apple-GPU) oder `cuda` (eine NVIDIA-GPU); den
+Ordner, in den die vorbereiteten Dateien geschrieben wurden; und einen ersten
+Smoke-Test — die Eingabe `the ` plus die vier Zeichen, die das Modell danach
+geschrieben hat. Die letzte
+Zeile sagt, ob Einheit 0 startklar ist. Meldet eine Zeile `fail`, hilft die
 [Fehlerbehebung](/de/unit-00-troubleshooting).
 
 ## 10–20 Min. · Erste Generierung [#1020-min-erste-generierung]
@@ -62,17 +76,64 @@ Testgenerierung. Bei einem Fehler hilft die
 python examples/run_unit0.py
 ```
 
+Der Befehl gibt eine Zusammenfassung mit zehn Zeilen aus. Das ist die echte
+Ausgabe auf dem Rechner des Kursautors. Bei dir kann in der Zeile `backend`
+`cpu` stehen; mit `--device cpu` sind alle anderen Zeilen identisch:
+
+```
+backend      mps
+prompt       "the " → token IDs [26, 14, 11, 1]
+top 5 next   "t" 0.263 · "p" 0.176 · "a" 0.089 · "f" 0.089 · "m" 0.089
+baseline     "the te te te te te te te te "
+change       +4.0 on the score for "m" after " "
+changed      "the mode mode mode mode mode"
+probability  "m" after " ": 0.089 → 0.843
+corpus loss  1.695 → 1.890 (worse; lower is better)
+verdict      the probability of "m" rose and the text changed
+full report  artifacts/unit0/report.json
+```
+
 <aside className="course-note" aria-label="Was du sehen solltest">
 <strong>Was du sehen solltest</strong>
 
-Der erzeugte Text wirkt eintönig — etwa `the te te te te`. Das ist das
-richtige Ergebnis und kein kaputter Lauf. Ein Modell, das sich nur *ein*
-Zeichen Kontext merkt, kann es nicht besser; genau dieses Scheitern
-anzusehen ist der Zweck dieser Einheit. Der ganze restliche Kurs dreht sich
-darum, einem Modell mehr Kontext zu geben.
+Der Text in `baseline` wirkt eintönig — `"the te te te te te te te te "`.
+Das ist das richtige Ergebnis und kein kaputter Lauf. Ein Modell, das sich
+nur *ein* Zeichen Kontext merkt, kann es nicht besser; genau dieses
+Scheitern anzusehen ist der Zweck dieser Einheit. Der ganze restliche Kurs
+dreht sich darum, einem Modell mehr Kontext zu geben.
 
 
 </aside>
+
+Lies die Ausgabe Zeile für Zeile. Anführungszeichen zeigen genau, wo ein Text
+anfängt und aufhört; `" "` ist also ein einzelnes Leerzeichen.
+
+- `backend` — welcher Prozessor gerechnet hat, wie in der Diagnose.
+- `prompt` — deine Eingabe und dahinter dieselbe Eingabe, jedes Zeichen durch
+  seine Nummer im Alphabet des Modells ersetzt. Diese Nummern heißen
+  **Token-IDs**: `t` ist 26, das Leerzeichen 1.
+- `top 5 next` — die fünf Zeichen, die das Modell direkt nach dem letzten
+  Zeichen deiner Eingabe am wahrscheinlichsten hält, jeweils mit ihrer
+  **Wahrscheinlichkeit**: einer Zahl von 0 bis 1, wobei 0.263 etwa 26 % heißt.
+  Gleiche Wahrscheinlichkeiten stehen nach Token-ID sortiert, deshalb kann ein
+  Gleichstand über die Grenze reichen: `s` hat ebenfalls 0.089 und fehlt knapp
+  in der Liste.
+- `baseline` — was das Modell geschrieben hat: deine Eingabe plus 24 neue
+  Zeichen.
+- `change` — jeder Lauf ändert zusätzlich eine Kopie des Modells an genau einer
+  Stelle. Hier wird `m` nach einem Leerzeichen wahrscheinlicher; was der „Score“
+  ist, erklärt der nächste Abschnitt.
+- `changed` — was die geänderte Kopie aus derselben Eingabe geschrieben hat.
+- `probability` — wie wahrscheinlich `m` nach einem Leerzeichen ist, vor → nach
+  der Änderung.
+- `corpus loss` — eine Zahl dafür, wie überrascht das Modell vom gelernten Text
+  ist, vor → nach der Änderung; kleiner ist besser.
+- `verdict` — ein Satz, den das Skript aus den Zahlen darüber berechnet; kein
+  Modell schreibt ihn.
+- `full report` — die Datei mit allem, was der Lauf gemessen hat, ausführlicher.
+  Du öffnest sie später in dieser Einheit einmal.
+
+Vergleiche die Zeile `baseline` jetzt mit deiner ersten Vorhersage.
 
 Der erste Lauf erzeugt zwei von Git ignorierte Dateien unter `artifacts/unit0/`:
 
@@ -80,21 +141,8 @@ Der erste Lauf erzeugt zwei von Git ignorierte Dateien unter `artifacts/unit0/`:
 - einen vorbereiteten Zeichen-Bigramm-Checkpoint aus benachbarten Zeichen.
 
 Hashes und Herkunft stehen in `manifest.json`. Die Dateien entstehen lokal,
-weil Datensätze und Checkpoints nicht in Git gehören.
-
-Der Befehl gibt einen JSON-Bericht aus. Lies einen Namen mit Punkt als Pfad
-hinein: `baseline.corpus_loss` meint das Feld `corpus_loss` innerhalb von
-`baseline`. Suche diese Felder:
-
-- `backend` — welcher Prozessor gerechnet hat: cpu, mps oder cuda;
-- `prompt_token_ids` — deine Eingabe, jedes Zeichen durch seine Nummer ersetzt;
-- `baseline.top_next_tokens` — die fünf Zeichen, die das Modell als Nächstes am
-  wahrscheinlichsten hält, mit je einer Wahrscheinlichkeit;
-- `baseline.corpus_loss` — eine Zahl dafür, wie überrascht das Modell vom
-  gelernten Text war; kleiner ist besser;
-- `baseline.generation` — was das Modell tatsächlich geschrieben hat.
-
-Vergleiche `baseline.generation` jetzt mit deiner ersten Vorhersage.
+weil Datensätze und Checkpoints nicht in Git gehören. Der Bericht liegt als
+`report.json` daneben, und jeder Lauf ersetzt ihn.
 
 ## 20–30 Min. · Modell verfolgen [#2030-min-modell-verfolgen]
 
@@ -113,7 +161,7 @@ addieren, heißt **Softmax**. Den höchsten Wert zu nehmen und dieses Zeichen
 wieder einzuspeisen heißt **Greedy Decoding** — genau die Schleife, aus der du
 in den ersten zehn Minuten vorhergesagt hast.
 
-`corpus_loss` ist die **Cross-Entropy**: Für jedes Zeichen im Korpus misst sie,
+`corpus loss` ist die **Cross-Entropy**: Für jedes Zeichen im Korpus misst sie,
 wie viel Wahrscheinlichkeit das Modell dem tatsächlich folgenden Zeichen gegeben
 hat, und mittelt das. Ein kleinerer Wert heißt: weniger überrascht.
 
@@ -130,29 +178,130 @@ assert 0.0 <= report["baseline"]["target_probability"] <= 1.0
 ```
 
 Wenn du noch nicht programmierst, überspringe diesen Schritt nicht: Lies die
-drei `assert`-Zeilen als drei Behauptungen und prüfe sie von Hand im
-JSON-Bericht, den du schon hast — die vierstellige Eingabe ergab vier Token-IDs,
-das Modell nannte fünf Kandidaten, und die Zielwahrscheinlichkeit liegt zwischen
-0 und 1. Diesen Code schreibst du in [F01](/de/foundations-01-python-numpy)
-selbst.
+drei `assert`-Zeilen als drei Behauptungen und prüfe sie von Hand in der
+Zusammenfassung, die du schon hast — die Zeile `prompt` zeigt vier Token-IDs für
+die vierstellige Eingabe, die Zeile `top 5 next` nennt fünf Kandidaten, und die
+erste Zahl in der Zeile `probability` — die Zielwahrscheinlichkeit vor der
+Änderung — liegt zwischen 0 und 1. Diesen Code schreibst du in
+[F01](/de/foundations-01-python-numpy) selbst.
 
 ## 30–42 Min. · Kontrollierte Änderung bauen [#3042-min-kontrollierte-anderung-bauen]
 
-Der Referenzlauf addiert `4.0` auf genau einen Übergangslogit: Nach dem letzten
-Leerzeichen des Prompts wird `m` wahrscheinlicher. Weil die Änderung an einem
-Logit und nicht an einer Wahrscheinlichkeit passiert, bedeutet `+4.0` nicht
-„vier Prozent mehr“ — Softmax entscheidet, wie viel Wahrscheinlichkeit
-tatsächlich wandert, und nimmt sie den anderen Kandidaten weg.
+Der Referenzlauf addiert `4.0` auf genau einen Übergangslogit — den „Score“ aus
+der Zeile `change`: Nach dem letzten Leerzeichen des Prompts wird `m`
+wahrscheinlicher. Weil die Änderung an einem Logit und nicht an einer
+Wahrscheinlichkeit passiert, bedeutet `+4.0` nicht „vier Prozent mehr“ —
+Softmax entscheidet, wie viel Wahrscheinlichkeit tatsächlich wandert, und nimmt
+sie den anderen Kandidaten weg.
 
-Vergleiche `baseline` und `controlled_change`:
+Lies in der Zusammenfassung deines ersten Laufs:
 
-- die Zielwahrscheinlichkeit vorher und nachher;
-- ob sich die erzeugte Fortsetzung geändert hat;
-- ob der Korpus-Loss besser oder schlechter wurde.
+- die Zeile `probability` — die Zielwahrscheinlichkeit vorher und nachher;
+- die Zeilen `baseline` und `changed` — ob sich die erzeugte Fortsetzung
+  geändert hat;
+- die Zeile `corpus loss` — ob der Korpus-Loss besser oder schlechter wurde.
 
 Hier prüfst du deine zweite Vorhersage.
 
-Nutze dann eine eigene Eingabe:
+### Der vollständige Bericht [#der-vollstandige-bericht]
+
+Die Zusammenfassung wird aus einem größeren Bericht berechnet. Sieh ihn dir
+einmal an:
+
+```
+python examples/run_unit0.py --json
+```
+
+`--json` gibt statt der Zusammenfassung den ganzen Bericht aus; der Inhalt ist
+derselbe wie in `artifacts/unit0/report.json`. Hier steht er, die beiden
+Kandidatenlisten auf ihren ersten Eintrag gekürzt und die beiden Fingerabdrücke
+nach acht Zeichen abgeschnitten:
+
+```
+{
+  "backend": "mps",
+  "model": "character-bigram",
+  "vocabulary_size": 33,
+  "assets": {
+    "artifact_dir": "artifacts/unit0",
+    "corpus_path": "artifacts/unit0/tiny_corpus.txt",
+    "checkpoint_path": "artifacts/unit0/tiny_bigram.pt",
+    "manifest_path": "artifacts/unit0/manifest.json",
+    "dataset_sha256": "6d10e715[…]",
+    "checkpoint_sha256": "855912a6[…]"
+  },
+  "prompt": "the ",
+  "prompt_token_ids": [
+    26,
+    14,
+    11,
+    1
+  ],
+  "baseline": {
+    "generation": "the te te te te te te te te ",
+    "corpus_loss": 1.6954470872879028,
+    "top_next_tokens": [
+      {
+        "token": "t",
+        "token_id": 26,
+        "probability": 0.2628726065158844
+      },
+      […]
+    ],
+    "target_probability": 0.08943088352680206
+  },
+  "controlled_change": {
+    "source_character": " ",
+    "target_character": "m",
+    "logit_boost": 4.0,
+    "generation": "the mode mode mode mode mode",
+    "corpus_loss": 1.8896712064743042,
+    "top_next_tokens": [
+      {
+        "token": "m",
+        "token_id": 19,
+        "probability": 0.8428245186805725
+      },
+      […]
+    ],
+    "target_probability": 0.8428245186805725
+  },
+  "measured_effect": {
+    "target_probability_delta": 0.7533936351537704,
+    "generation_changed": true
+  }
+}
+```
+
+Lies einen Namen mit Punkt als Pfad hinein: `baseline.corpus_loss` meint das
+Feld `corpus_loss` innerhalb von `baseline`. Die Blöcke von oben nach unten:
+
+- `backend`, `prompt` und `prompt_token_ids` — die ersten beiden Zeilen der
+  Zusammenfassung.
+- `model` — die Art des Modells: ein Zeichen-Bigramm, ein Zeichen Kontext.
+  `vocabulary_size` — `V`, die 33 Zeichen aus dem vorigen Abschnitt.
+- `assets` — die Herkunft: wo Korpus, Checkpoint und Manifest liegen, dazu je
+  ein SHA-256-Fingerabdruck von Korpus und Checkpoint (ein Code aus 64 Zeichen,
+  der sich ändert, sobald sich ein einziges Byte der Datei ändert). Er belegt,
+  welche Daten und welches Modell diese Zahlen erzeugt haben. Am ersten Tag
+  kannst du ihn überspringen.
+- `baseline` — das unveränderte Modell: seine `generation`, sein `corpus_loss`,
+  seine `top_next_tokens` (jeweils mit Token-ID) und `target_probability`, die
+  Wahrscheinlichkeit des Zielzeichens nach der Eingabe.
+- `controlled_change` — dieselben Felder für die geänderte Kopie, dazu die
+  geänderte Zelle: `source_character` (die Zeile), `target_character` (die
+  Spalte) und `logit_boost` (wie viel addiert wurde).
+- `measured_effect` — die Antwort auf die Frage dieses Abschnitts, schon
+  ausgerechnet: `target_probability_delta` ist nachher minus vorher
+  (0.843 − 0.089 ≈ 0.753), und `generation_changed` sagt, ob sich die beiden
+  Texte unterscheiden. Die Zeile `verdict` entsteht aus diesen beiden Feldern.
+
+Für alltägliche Läufe reicht die Zusammenfassung; öffne den Bericht, wenn du
+eine Zahl brauchst, die die Zusammenfassung rundet oder weglässt.
+
+### Deine eigene Änderung [#deine-eigene-anderung]
+
+Nutze dann eine eigene Eingabe und ein eigenes Zielzeichen:
 
 ```
 python examples/run_unit0.py --prompt "a " --target-character t --boost 3
@@ -160,6 +309,42 @@ python examples/run_unit0.py --prompt "a " --target-character t --boost 3
 
 Sage die Richtung vorher. Nur eine Zelle in `[V,V]` ändert sich; das kann einen
 Übergang verbessern und gleichzeitig den gesamten Korpus-Loss verschlechtern.
+
+<details>
+<summary>Prüfe deine Vorhersage</summary>
+
+```
+backend      mps
+prompt       "a " → token IDs [7, 1]
+top 5 next   "t" 0.263 · "p" 0.176 · "a" 0.089 · "f" 0.089 · "m" 0.089
+baseline     "a te te te te te te te te "
+change       +3.0 on the score for "t" after " "
+changed      "a te te te te te te te te "
+probability  "t" after " ": 0.263 → 0.877
+corpus loss  1.695 → 1.828 (worse; lower is better)
+verdict      the probability of "t" rose, but the text did not change
+full report  artifacts/unit0/report.json
+```
+
+Die Wahrscheinlichkeit von `t` hat sich mehr als verdreifacht, trotzdem sind
+`baseline` und `changed` derselbe Text, und `verdict` sagt genau das. Schau auf
+`top 5 next`: `t` war nach einem Leerzeichen schon das wahrscheinlichste Zeichen.
+Greedy Decoding fragt nur, welches Zeichen am höchsten liegt, und `t` lag vorher
+wie nachher vorn — die Änderung hat das Modell sicherer gemacht, ohne zu ändern,
+was es schreibt. Eine Wahrscheinlichkeit und die Wahl, die daraus getroffen
+wird, sind zwei verschiedene Dinge: Die Wahl — die Position des höchsten Werts —
+heißt **Argmax**. Spätere Einheiten bauen darauf auf, zuerst
+[I01](/de/inference-decoding), wo Sampling aus den Wahrscheinlichkeiten zieht,
+statt immer das Argmax zu nehmen.
+
+
+</details>
+
+
+
+### Interaktiv · Einen Logit verstärken
+
+<BoostDemo locale="de" />
 
 ## 42–50 Min. · Annahme brechen [#4250-min-annahme-brechen]
 
@@ -170,8 +355,49 @@ python examples/run_unit0.py --prompt "a " --target-character t --boost -4
 ```
 
 Die Zielwahrscheinlichkeit soll fallen. Behauptet deine Erklärung weiter das
-Gegenteil, ist deine Interpretation defekt. Probiere danach einen leeren Prompt
-und lies die Grenzfehlermeldung, statt die Prüfung zu entfernen.
+Gegenteil, ist deine Interpretation defekt, nicht das Modell. Sage vorher, ob
+sich auch der Text ändert, und starte dann.
+
+<details>
+<summary>Prüfe deine Vorhersage</summary>
+
+```
+backend      mps
+prompt       "a " → token IDs [7, 1]
+top 5 next   "t" 0.263 · "p" 0.176 · "a" 0.089 · "f" 0.089 · "m" 0.089
+baseline     "a te te te te te te te te "
+change       -4.0 on the score for "t" after " "
+changed      "a pa pa pa pa pa pa pa pa "
+probability  "t" after " ": 0.263 → 0.006
+corpus loss  1.695 → 1.815 (worse; lower is better)
+verdict      the probability of "t" fell and the text changed
+full report  artifacts/unit0/report.json
+```
+
+Diesmal ändert sich auch der Text: Wird `t` nach unten gedrückt, liegt `p`,
+der zweite Eintrag in `top 5 next`, vorn.
+
+
+</details>
+
+Probiere danach einen leeren Prompt:
+
+```
+python examples/run_unit0.py --prompt ""
+
+run_unit0.py: error: --prompt must contain at least one character (characters outside the vocabulary are read as "?")
+```
+
+Das ist der erwartete Fehler und kein Absturz: Das Skript prüft seine Eingabe,
+bevor es das Modell startet, gibt eine Zeile aus und hört auf, ohne einen
+Bericht zu schreiben. Ein Modell, das das nächste Zeichen vorhersagt, braucht
+mindestens ein Zeichen als Anfang; jedes Zeichen geht, und eines, das das Modell
+nicht kennt, wird als `?` gelesen. Lies die Grenzfehlermeldung, statt die
+Prüfung zu entfernen.
+
+In Windows PowerShell können die leeren Anführungszeichen verloren gehen; dann
+siehst du `argument --prompt: expected one argument` — dieselbe Art von
+Eingabeprüfung, ebenfalls mit Exit-Code 2.
 
 ## 50–55 Min. · Reproduzierbarkeit messen [#5055-min-reproduzierbarkeit-messen]
 
@@ -179,14 +405,40 @@ Greedy Decoding nimmt immer den höchsten Score und liefert deshalb auf jedem
 Backend dasselbe. Sampling wählt stattdessen zufällig unter den Kandidaten und
 braucht darum einen Seed — einen festen Startpunkt für den Zufall —, um sich zu
 wiederholen. Sampling läuft hier auf CPU, damit derselbe Seed denselben Pfad
-nimmt:
+nimmt (die Zeile `backend` nennt trotzdem dein Gerät, auf dem das Modell
+rechnet; nur für die Zufallsziehungen werden die Wahrscheinlichkeiten auf die
+CPU kopiert):
 
 ```
 python examples/run_unit0.py --prompt "the " --sample --seed 11
 ```
 
-Starte zweimal und vergleiche. Auch mit Beschleuniger bleibt `--device cpu` der
-verbindliche Pflichtnachweis.
+Sage vorher, ob der gesampelte Text wie das `te te te` aus Greedy Decoding
+aussehen wird. Starte zweimal und vergleiche die Generierungen. Auch mit
+Beschleuniger bleibt `--device cpu` der verbindliche Pflichtnachweis.
+
+<details>
+<summary>Prüfe deine Vorhersage</summary>
+
+```
+backend      mps
+prompt       "the " → token IDs [26, 14, 11, 1]
+top 5 next   "t" 0.263 · "p" 0.176 · "a" 0.089 · "f" 0.089 · "m" 0.089
+baseline     "the aroke fchu.\nty thea tts?"
+change       +4.0 on the score for "m" after " "
+changed      "the m mke fchu.\nty thea mob?"
+probability  "m" after " ": 0.089 → 0.843
+corpus loss  1.695 → 1.890 (worse; lower is better)
+verdict      the probability of "m" rose and the text changed
+full report  artifacts/unit0/report.json
+```
+
+Gesampelter Text sieht ganz anders aus als das `te te te` aus Greedy Decoding:
+Er nimmt nicht mehr immer den obersten Kandidaten. `\n` zwischen den
+Anführungszeichen ist ein Zeilenumbruch, den das Modell geschrieben hat.
+
+
+</details>
 
 ## 55–60 Min. · Erklären [#5560-min-erklaren]
 
@@ -206,7 +458,9 @@ Du bestehst, wenn die Diagnose bereit ist, dein eigener Prompt Text generiert,
 du Token-IDs, Wahrscheinlichkeiten und Loss in deinem eigenen Bericht zeigen
 kannst und Erklärung sowie Vorhersage zur Messung passen. Eine Erklärung in
 eigenen Worten zählt; die Worte dieser Seite zu wiederholen zählt nicht. Bewahre
-den JSON-Bericht als Nachweis auf.
+den vollständigen Bericht deines eigenen Laufs, `artifacts/unit0/report.json`,
+als Nachweis auf. Jeder Lauf ersetzt ihn; kopiere ihn also, sobald du den Lauf
+hast, den du behalten willst.
 
 Die Kursfreigabe verlangt zusätzlich den dokumentierten Pilot mit fünf
 Lernenden.

@@ -115,11 +115,12 @@ python examples/diagnose_unit0.py
 python examples/run_unit0.py --device cpu
 ```
 
-Die Diagnoseprüfungen sollen `pass` melden. Der letzte Befehl gibt einen
-JSON-Bericht aus: In geschweiften Klammern stehen benannte Felder. Suche
-`baseline.generation` (erzeugter Text) und `baseline.corpus_loss`
-(Vorhersagefehler). Unsinniger Text ist bei diesem winzigen Lehrmodell normal.
-[Einheit 0](/de/unit-00) erklärt den Bericht Schritt für Schritt. Erzeugte Dateien
+Die Diagnoseprüfungen sollen `pass` melden. Der letzte Befehl gibt eine
+Zusammenfassung mit zehn Zeilen aus. Suche die Zeile `baseline` (erzeugter Text)
+und die Zeile `corpus loss` (Vorhersagefehler, vor → nach einer gezielten
+Änderung). Unsinniger Text ist bei diesem winzigen Lehrmodell normal. Der
+vollständige Bericht liegt in `artifacts/unit0/report.json`;
+[Einheit 0](/de/unit-00) erklärt Zusammenfassung und Bericht Schritt für Schritt. Erzeugte Dateien
 liegen in `artifacts/` und lassen sich mit demselben Befehl neu herstellen.
 
 ## 5. Kurs prüfen und Lektionen öffnen [#5-kurs-prufen-und-lektionen-offnen]

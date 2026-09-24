@@ -16,7 +16,7 @@ Start with [setup](/setup) and the [learning guide](/learning-guide).
 The guide names prerequisites and checkpoints; the [glossary](/glossary)
 explains unfamiliar terms. No prior machine learning is required.
 
-Last updated 2026-09-22 — see [What's new](/changelog).
+Last updated 2026-09-24 — see [What's new](/changelog).
 
 ## What you will be able to do [#what-you-will-be-able-to-do]
 
@@ -47,6 +47,9 @@ Every skill below is proved by a unit you can run on a CPU, not by a reading lis
   parse yourself, a step budget, and a trace that shows what the model actually
   saw, in [AG01](/agent-loop).
 - **Put the same agent on a native tool-use API and say what the API took over** — schemas, structured calls, call ids — and what it did not, measured on the same question three ways, in [AG02](/agent-native).
+- **Measure what a defence against prompt injection actually buys, one step at a
+  time** — a cumulative ladder run against R02's retrieval pipeline and AG02's
+  agent, on local models only, in [AG03](/agent-injection).
 - **Decide whether to train at all** — turn a requirement into a measured baseline
   gap and a reversible decision record, in [C01](/company-strategy) and the
   [capstone](/company-capstone).
@@ -116,8 +119,8 @@ Every course unit from Unit 0 through the capstone is shipped and executable
 on CPU: the foundations F01–F06 with the B01 bridge, the core T01–T06 and
 I01, the engineering units E01–E04, the company units C01–C04, the
 adaptation units A01–A04 and the capstone, plus the Applied: RAG track
-R01–R02 and the Applied: Agents units AG01 and AG02. German localisation is complete
-except R01/R02 (MIN-129). Still open: the supplied larger data packs (M1A),
+R01–R02 and the Applied: Agents units AG01, AG02 and AG03. German localisation is complete.
+Still open: the supplied larger data packs (M1A),
 the interpretability extension (M2A), the quantization/batching/serving
 units (M6), the human sign-off on the sealed company gold set and
 synthetic sample (MIN-95/96/100), and the real five-learner pilot. The

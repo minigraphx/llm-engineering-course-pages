@@ -7,7 +7,7 @@ sidebar:
 <span id="ag02-native-tool-use" />
 
 
-[← AG01 — Die Agentenschleife, von Hand](/de/agent-loop) · [Kursstart →](/de/) · [Glossar](/de/glossary)
+[← AG01 — Die Agentenschleife, von Hand](/de/agent-loop) · [AG03 — Prompt-Injection →](/de/agent-injection) · [Glossar](/de/glossary)
 
 Voraussetzungen: [AG01](/de/agent-loop) mit seinem Bericht unter
 `artifacts/unit0/report.json` und `ANTHROPIC_API_KEY` in deiner Shell — der
@@ -256,8 +256,9 @@ Deine eigenen Worte zählen; die Worte dieser Seite zählen nicht.
 
 ## Wie geht es weiter? [#wie-geht-es-weiter]
 
-AG03 verbindet diesen Agenten mit dem MCP-Server des Kurses und lässt dich dann
-einen eigenen bauen *(in Kürze)*. [G01](/de/) macht aus der Spalte „noch deine
-Sache“ eine eigene Schicht.
+AG03 misst, was jede Abwehr gegen Prompt Injection tatsächlich bringt, mit
+demselben Agenten und R02s RAG-Pipeline. AG04 verbindet den Agenten mit dem
+MCP-Server des Kurses und lässt dich dann einen eigenen bauen *(in Kürze)*.
+[G01](/de/) macht aus der Spalte „noch deine Sache“ eine eigene Schicht.
 
-[← AG01 — Die Agentenschleife, von Hand](/de/agent-loop) · [Kursstart →](/de/) · [Glossar](/de/glossary)
+[← AG01 — Die Agentenschleife, von Hand](/de/agent-loop) · [AG03 — Prompt-Injection →](/de/agent-injection) · [Glossar](/de/glossary)

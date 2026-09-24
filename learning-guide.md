@@ -23,7 +23,7 @@ understand the whole training system yet.
 | Python experience, new to ML | Same route; demonstrate F01 skills in the diagnostic before skipping it. |
 | Godot-RL course experience | Unit 0 → diagnostic → [B01 bridge](/foundations-godot-rl-bridge) → missing foundations → common F06 gate → T01–T06 → I01 → E01–E04 → C01–C04 → A01–A04 → Capstone. |
 | Python and one LLM call, wants retrieval first | Setup → [R01](/rag-build) → [R02](/rag-quality), then the core route above. |
-| Did Unit 0, wants to build an agent next | Setup → Unit 0 → [AG01](/agent-loop) → [AG02](/agent-native), then the core route above. |
+| Did Unit 0, wants to build an agent next | Setup → Unit 0 → [AG01](/agent-loop) → [AG02](/agent-native) → [AG03](/agent-injection), then the core route above. |
 
 The [diagnostic](/diagnostic) is not a barrier. An unanswered question means
 "learn this next". You can always choose the full lesson instead of a shortcut.
@@ -60,6 +60,7 @@ The [diagnostic](/diagnostic) is not a barrier. An unanswered question means
 | [R02 RAG quality](/rag-quality) | Does my retrieval system refuse and cite correctly? | Say, with numbers from your own run, which preset retrieves better, how often each refuses and what the judge cannot see. |
 | [AG01 agent loop](/agent-loop) | Why does the loop stop, and what does the model see after a tool runs? | Reference trace using both tools; the five Break reports; the five-run table; your own third tool. |
 | [AG02 native tool use](/agent-native) | What did the API take over, and what is still mine? | Three reference reports on one question; the four Break reports; the five-run table with cost; a schema-based tool. |
+| [AG03 prompt injection](/agent-injection) | What does each defence in the ladder actually buy, and why does removing a capability succeed where filtering text does not? | Predict ranking next to your own three tables; one sentence on the biggest surprise; `check_defenses.py`'s output; the two Break outputs; the classifier's catch and false-positive rates. |
 
 Completing these labs is evidence for the course rubrics; it is not an
 automatically issued certificate or a public-release approval.

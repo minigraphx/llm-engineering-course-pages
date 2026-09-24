@@ -112,7 +112,7 @@ if queries and self.name in QUERY_PROMPT_MODELS:
 ```
 
 A hosted embedding API trades this for a network round trip per question, a
-per-million-token price (the 30,000-word corpus is about 48,000 tokens, so a full
+per-million-token price (the 44,000-word corpus is about 74,000 tokens, so a full
 re-index costs less than a cent), documents leaving the machine, a dimensionality you do not
 choose and a model version the vendor can retire, which invalidates every stored
 vector at once. Local models cost seconds of CPU at index time and pin the version.
@@ -122,8 +122,8 @@ vector at once. Local models cost seconds of CPU at index time and pin the versi
 `VectorStore` is a `[chunks, dim]` float32 matrix plus `chunks.jsonl` with the
 metadata and a `meta.json` naming the embedder, so `load_index()` refuses an index
 built with the wrong model. `search()` is one matrix–vector product and an argsort:
-`scores = self.vectors @ query_vec`, `order = np.argsort(-scores, kind="stable")[:k]`. For 242
-heading chunks of 1,024 dimensions that is 248,000 multiplications, far below a
+`scores = self.vectors @ query_vec`, `order = np.argsort(-scores, kind="stable")[:k]`. For about 320
+heading chunks of 1,024 dimensions that is about 330,000 multiplications, far below a
 millisecond; no database is needed until the corpus is a thousand times larger.
 
 `k` is how many hits reach the prompt builder. With `k=1` a question whose answer
@@ -149,8 +149,8 @@ for k in (1, 3, 5, 8):
     print(f"k={k}: {len(prompt.used)}/{k} passages fit the budget, {words} words in the prompt")
 ```
 
-Offline, heading chunks: `k=1: 1/1, 261 words`, `k=3: 3/3, 448`, `k=5: 5/5, 589`,
-`k=8: 8/8, 930`. With the naive preset a fixed window costs 405 budget words
+Offline, heading chunks: `k=1: 1/1, 76 words`, `k=3: 3/3, 427`, `k=5: 5/5, 761`,
+`k=8: 8/8, 1337`. With the naive preset a fixed window costs 405 budget words
 including its tag, two of them plus the question spend 818 of the 1,200-word
 budget, and a third fits only when one hit is a short page tail: on the real
 MiniLM index the causal-mask question at `k=5` fits 3 of 5.
@@ -161,8 +161,9 @@ MiniLM index the causal-mask question at `k=5` fits 3 of 5.
 ## Assemble the prompt [#assemble-the-prompt]
 
 `build_prompt()` in `prompt.py` numbers the hits in rank order and wraps each in a
-tag that carries its provenance; the system prompt is four rules, sent verbatim on
-every request:
+tag that carries its provenance, escaping the text inside so no document can close
+the tag ([R02](/rag-quality) says why); the system prompt is four rules, sent
+verbatim on every request:
 
 ```text
 <passage n="1" source="content/attention.md" section="Build · One head">
@@ -205,31 +206,38 @@ greedily (`do_sample=False`) and stop after `max_new_tokens=300`;
 hash embedder and an echo generator, downloads nothing and reads `build/rag-index/offline`, so run
 `python rag/ingest.py --config improved --offline` first. The loop itself is
 `pipeline.ask()`: retrieve, build the prompt, generate, apply the guardrails;
-`rag/ask.py` is the thin CLI around it. The offline echo answer, at the time of
-writing:
+`rag/ask.py` is the thin CLI around it. The offline echo answer on the course as of
+2026-09-23:
 
 ```text
 $ python rag/ask.py "How does the causal mask hide future tokens?" --offline
 Based on the provided context, the answer is in the first passage [1].
 
 Sources:
-  [1] Evaluation: make a claim the evidence can support — 6. Practice, diagnose, explain (https://llm.onlinekurs.training/evaluation, 2026-09-09)
+  [1] AG01 — The agent loop, by hand — Explain (https://llm.onlinekurs.training/agent-loop, 2026-09-23)
 
 Latency 0.00 s · cost $0.00000 · guardrails: ok, ok
 ```
 
-Look at the source: the top passage is an exercise list from the evaluation lesson
-that shares only "how" and "the" with the question. The hash embedder folds every
-word into one of 64 buckets with a random sign, so unrelated words collide and two
-shared buckets can outscore a genuine match: this section, which quotes the question
-word for word, came second (0.351 against 0.353). The echo generator then cites `[1]`
-whatever `[1]` is. The loop ran, nothing was downloaded, every step is visible, and
-the first thing it showed is that the offline mode proves the plumbing, not the
-retrieval; the numbers a 64-bucket hash produces are not a judgement about the
-content. With the real models the same command took 16.4 s on an Apple-silicon
-laptop and answered that the mask sets future positions to negative infinity before
-the softmax, citing `[2]`, which was this section rather than
-[T04](/attention), where the mask is actually built: the corpus contains the page
+Look at the source: the top passage is the fill-in-the-blanks lab-notes list at the
+end of AG01, which shares only "the" with the question. The hash embedder folds every
+word into one of 64 buckets with a random sign, so unrelated words collide and a few
+colliding buckets can outscore a genuine match: this section, which quotes the
+question word for word, did not make the top three, and its exact rank changes with
+every edit to this paragraph, because the paragraph's own words move its hash score.
+The top two, AG01 and the evaluation lesson's exercise list, scored 0.350 and 0.349: a
+margin that narrow can flip with the next edit to either page, and the point does not
+depend on which one wins. The echo generator then cites `[1]` whatever `[1]` is. The
+loop ran, nothing was downloaded, every step is visible, and the first thing it showed
+is that the offline mode proves the plumbing, not the retrieval; the numbers a
+64-bucket hash produces are not a judgement about the content. With the real models,
+on the index of the reference run R02 reports, the same command took about 18 s on an
+Apple-silicon laptop and answered that the mask sets future positions to negative
+infinity before the softmax, citing `[2]`, which was this section rather than
+[T04](/attention), where the mask is actually built (T04's learning outcome was
+`[1]`; the section that builds the mask ranked eighth, past `k=5`). That `[2]` is a
+narrow margin too: this section scored 0.474 and the next passage 0.473, so an edit
+can push it to `[3]`. What does not flip is the pattern: the corpus contains the page
 you are reading, and a section that names the question can outrank the section that
 answers it. The answer passes the guardrails and cites a page that only describes the
 answer. [R02](/rag-quality) measures how often that happens; the reproducible

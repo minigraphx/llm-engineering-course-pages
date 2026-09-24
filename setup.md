@@ -110,10 +110,12 @@ python examples/diagnose_unit0.py
 python examples/run_unit0.py --device cpu
 ```
 
-The diagnostic's checks should report `pass`. The final command prints a JSON
-report: braces contain named fields. Find `baseline.generation` (generated text)
-and `baseline.corpus_loss` (prediction error). Nonsense text is expected from
-this tiny teaching model. [Unit 0](/unit-00) explains the report step by step.
+The diagnostic's checks should report `pass`. The final command prints a
+ten-line summary. Find the `baseline` line (generated text) and the
+`corpus loss` line (prediction error, before → after one deliberate edit).
+Nonsense text is expected from this tiny teaching model. The full report is
+saved to `artifacts/unit0/report.json`; [Unit 0](/unit-00) explains the
+summary and the report step by step.
 Generated files live in `artifacts/`; you can recreate them with the same command.
 
 ## 5. Check the course and open the lessons [#5-check-the-course-and-open-the-lessons]

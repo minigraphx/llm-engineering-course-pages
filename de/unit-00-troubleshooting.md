@@ -23,7 +23,7 @@ python examples/diagnose_unit0.py
 | MPS/CUDA nicht verfügbar | Beschleuniger fehlt oder ist für PyTorch unsichtbar | mit `--device cpu` starten; dies ist der vollständige Pflichtpfad |
 | Berechtigungsfehler in `artifacts/` | aktuelles Verzeichnis nicht beschreibbar | `--artifact-dir` auf ein beschreibbares Projektverzeichnis setzen |
 | Checkpoint-Format/Vokabular falsch | Artefakte stammen aus anderer Kursversion | frisches Verzeichnis wie `--artifact-dir artifacts/unit0-clean` nutzen |
-| `text must not be empty` | das Modell benötigt mindestens ein Kontexttoken | nicht leeren `--prompt` angeben |
+| `--prompt must contain at least one character` | das Modell benötigt mindestens ein Kontexttoken | nicht leeren `--prompt` angeben |
 | unerwartetes `?` im Prompt | unbekannte Zeichen werden zum Unknown-Token | Kleinbuchstaben und gelistete Satzzeichen nutzen |
 | Sampling-Läufe unterscheiden sich | Seed oder Befehl unterscheidet sich | Seed, Prompt, Boost, Temperatur und Commit angleichen |
 
